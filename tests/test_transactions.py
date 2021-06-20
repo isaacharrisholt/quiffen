@@ -5,6 +5,9 @@ from quiffen.core.transactions import Transaction
 
 
 class TestTransaction(TestCase):
+    """
+    unittest test class for the Transaction class
+    """
     def test_equality(self):
         date_obj = Transaction._parse_date('01/06/2021')
         trans1 = Transaction(date_obj, 150)

@@ -76,7 +76,7 @@ class Transaction(object):
 
     @staticmethod
     def _parse_date(date_string, day_first=True):
-        # Parse a string date and return a datetime object.
+        # Parse a string date of an unknown format and return a datetime object.
         day_first_patterns = ['%d/%m/%Y',
                               '%d-%m-%Y',
                               '%d/%m/%y',
