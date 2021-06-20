@@ -147,6 +147,6 @@ class Transaction(object):
 
     @classmethod
     def from_string(cls, string, separator='\n', day_first=True):
-        """Return a class instance from a string of properties separated by separator as found in a QIF file."""
+        """Return a class instance from a string of properties separated by separator."""
         property_list = string.split(separator)
         return cls.from_list(property_list, day_first)

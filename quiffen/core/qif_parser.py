@@ -1,6 +1,3 @@
-from quiffen.core import transactions
-
-
 class QifParser:
     """
     The main class of the package. For parsing QIF files.
