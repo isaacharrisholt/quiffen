@@ -1,4 +1,6 @@
+from abc import ABC
 from datetime import datetime
+import collections
 
 
 class Transaction(object):
@@ -40,14 +42,14 @@ class Transaction(object):
                  check_number: int = None,
                  flag: bool = None
                  ):
-        self.date = date
-        self.amount = amount
-        self.memo = memo
-        self.payee = payee
-        self.payee_address = payee_address
-        self.category = category
-        self.check_number = check_number
-        self.flag = flag
+        self._date = date
+        self._amount = amount
+        self._memo = memo
+        self._payee = payee
+        self._payee_address = payee_address
+        self._category = category
+        self._check_number = check_number
+        self._flag = flag
 
     def __eq__(self, other):
         if not isinstance(other, Transaction):
@@ -58,7 +60,8 @@ class Transaction(object):
     def __str__(self):
         properties = ''
         for object_property in self.__dict__:
-            properties += f'\n    {object_property.replace("_", " ").title()}: {self.__dict__[object_property]}'
+            properties += f'\n    {object_property.strip("_").replace("_", " ").title()}: ' \
+                          f'{self.__dict__[object_property]}'
 
         return 'Transaction:' + properties
 
@@ -66,17 +69,92 @@ class Transaction(object):
         properties = ''
         for object_property in self.__dict__:
             if self.__dict__[object_property] is not None:
-                if object_property != 'date':
-                    properties += f'{object_property}={self.__dict__[object_property]}, '
-                else:
-                    properties += f'{object_property}={repr(self.__dict__[object_property])}, '
+                properties += f'{object_property.strip("_")}={repr(self.__dict__[object_property])}, '
 
         properties = properties.strip(', ')
         return f'Transaction({properties})'
 
+    @property
+    def date(self):
+        return self._date
+
+    @date.setter
+    def date(self, new_date):
+        if not isinstance(new_date, datetime):
+            raise TypeError(f'New date must be datetime object')
+        self._date = new_date
+
+    @property
+    def amount(self):
+        return self._amount
+
+    @amount.setter
+    def amount(self, new_amount):
+        try:
+            self._amount = float(new_amount)
+        except ValueError:
+            raise TypeError('Amount can only be int or float')
+
+    @property
+    def memo(self):
+        return self._memo
+
+    @memo.setter
+    def memo(self, new_memo):
+        self._memo = str(new_memo)
+
+    @property
+    def payee(self):
+        return self._payee
+
+    @payee.setter
+    def payee(self, new_payee):
+        self._payee = str(new_payee)
+
+    @property
+    def payee_address(self):
+        return self._payee_address
+
+    @payee_address.setter
+    def payee_address(self, new_payee_address):
+        self._payee_address = str(new_payee_address)
+
+    @property
+    def category(self):
+        return self._category
+
+    @category.setter
+    def category(self, new_category):
+        self._category = str(new_category)
+
+    @property
+    def check_number(self):
+        return self._check_number
+
+    @check_number.setter
+    def check_number(self, new_number):
+        try:
+            new_number = int(new_number)
+
+            if new_number <= 0:
+                raise ValueError
+        except ValueError:
+            raise TypeError('Check number must be a positive integer')
+
+    @property
+    def flag(self):
+        return self._flag
+
+    @flag.setter
+    def flag(self, new_flag):
+        try:
+            self._flag = bool(new_flag)
+        except ValueError:
+            raise TypeError('Flag must be a boolean')
+
     @staticmethod
     def _parse_date(date_string, day_first=True):
-        # Parse a string date of an unknown format and return a datetime object.
+        """Parse a string date of an unknown format and return a datetime object."""
         day_first_patterns = ['%d/%m/%Y',
                               '%d-%m-%Y',
                               '%d/%m/%y',
@@ -150,3 +228,63 @@ class Transaction(object):
         """Return a class instance from a string of properties separated by separator."""
         property_list = string.split(separator)
         return cls.from_list(property_list, day_first)
+
+    def to_dict(self, ignore=None):
+        """Return a dictionary representation of the Transaction instance."""
+        if ignore is None:
+            ignore = []
+        return {key.strip('_'): value for (key, value) in self.__dict__.items()
+                if value is not None and key.strip('_') not in ignore}
+
+
+class TransactionList(collections.MutableSequence, ABC):
+    """
+    A class to store Transaction objects only in an ordered list.
+
+    Parameters
+    ----------
+    args : Transaction(s)
+        Transactions to be put in the list.
+    """
+    def __init__(self, *args):
+        self._list = []
+        self.extend(list(args))
+
+    def __len__(self):
+        return len(self._list)
+
+    def __getitem__(self, key):
+        return self._list[key]
+
+    def __delitem__(self, key):
+        del self._list[key]
+
+    def __setitem__(self, key, value):
+        self._check_if_transaction(value)
+        self._list[key] = value
+
+    def __str__(self):
+        return str(self._list)
+
+    def __repr__(self):
+        return f'TransactionList({", ".join(self._list)})'
+
+    def insert(self, key, value):
+        self._check_if_transaction(value)
+        self.list.insert(key, value)
+
+    @staticmethod
+    def _check_if_transaction(item):
+        """Check if a given item is an instance of the Transaction class and raise an error if not"""
+        if not isinstance(item, Transaction):
+            raise TypeError(f'Only Transaction objects can be appended to a TransactionList')
+
+    @property
+    def list(self):
+        return self._list
+
+    @list.setter
+    def list(self, new_list):
+        for item in new_list:
+            self._check_if_transaction(item)
+        self._list = new_list
