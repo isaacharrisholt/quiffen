@@ -56,3 +56,10 @@ class TestTransaction(TestCase):
         date_obj = datetime.strptime('01/06/2021', '%d/%m/%Y')
         self.assertEqual(Transaction.from_string(string, separator='_'), Transaction(date=date_obj, amount=-150.60,
                                                                                      payee='Me', memo='Memo'))
+    
+    def test_to_dict(self):
+        date_obj = Transaction._parse_date('01/06/2021')
+        trans = Transaction(date_obj, 150)
+        expected = {'date': date_obj, 'amount': 150}
+        self.assertEqual(trans.to_dict(), expected)
+        print(trans.to_dict())
