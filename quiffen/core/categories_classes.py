@@ -47,15 +47,76 @@ class Category:
         self._name = str(new_name)
 
     @property
+    def desc(self):
+        return self._desc
+
+    @desc.setter
+    def desc(self, new_desc):
+        self._desc = str(new_desc)
+
+    @property
+    def tax_related(self):
+        return self._tax_related
+
+    @tax_related.setter
+    def tax_related(self, new_bool):
+        if isinstance(new_bool, str) and new_bool.lower() == 'false':
+            self._tax_related = False
+        else:
+            self._tax_related = bool(new_bool)
+
+    @property
+    def expense(self):
+        return self._expense
+
+    @expense.setter
+    def expense(self, new_bool):
+        if isinstance(new_bool, str) and new_bool.lower() == 'false':
+            self._expense = False
+            self._income = True
+        else:
+            self._expense = bool(new_bool)
+            self._income = not bool(new_bool)
+
+    @property
+    def income(self):
+        return self._income
+
+    @income.setter
+    def income(self, new_bool):
+        if isinstance(new_bool, str) and new_bool.lower() == 'false':
+            self._income = False
+            self._expense = True
+        else:
+            self._income = bool(new_bool)
+            self._expense = not bool(new_bool)
+
+    @property
+    def budget_amount(self):
+        return self._budget_amount
+
+    @budget_amount.setter
+    def budget_amount(self, new_amount):
+        self._budget_amount = float(new_amount)
+
+    @property
+    def tax_schedule_info(self):
+        return self._tax_schedule_info
+
+    @tax_schedule_info.setter
+    def tax_schedule_info(self, new_info):
+        self._tax_schedule_info = str(new_info)
+
+    @property
     def parent(self):
         return self._parent
 
     @parent.setter
     def parent(self, new_parent):
-        if not isinstance(new_parent, Category):
+        if not isinstance(new_parent, (Category, type(None))):
             raise TypeError('New parent must be Category object')
         self._parent = new_parent
-        if self not in self._parent.children:
+        if self._parent and self not in self._parent.children:
             new_parent.add_child(self)
 
     @property
@@ -66,7 +127,7 @@ class Category:
     def children(self, new_children):
         # Check types
         for child in new_children:
-            if not isinstance(child, Category):
+            if not isinstance(child, (Category, type(None))):
                 raise TypeError('Children must be Category objects')
 
         self._children = new_children
@@ -104,14 +165,12 @@ class Category:
             if line_code == 'N':
                 categories = field_info.split(':')
                 kwargs['name'] = categories[-1]
-
-                if len(categories) > 1:
-                    kwargs['hierarchy'] = field_info
+                kwargs['hierarchy'] = field_info
             elif line_code == 'D':
                 kwargs['desc'] = field_info
             elif line_code == 'T':
-                if field_info:
-                    kwargs['tax_related'] = bool(field_info)
+                if field_info.lower() == 'false':
+                    kwargs['tax_related'] = False
                 else:
                     kwargs['tax_related'] = True
             elif line_code == 'E':
@@ -191,8 +250,31 @@ class Category:
             nodes_to_visit.extend(current_node.children)
         raise KeyError(f'Node with name \'{value}\' not found')
 
+    def to_dict(self, ignore=None):
+        """Return a representation of the Category object as a dict"""
+        if ignore is None:
+            ignore = []
+
+        res = {key.strip('_'): value for (key, value) in self.__dict__.items()
+               if key.strip('_') not in ignore and value is not None}
+
+        if self._children and 'children' not in ignore:
+            res['children'] = [category.name for category in self._children]
+
+        if self._parent and 'parent' not in ignore:
+            res['parent'] = self._parent.name
+
+        return res
+
 
 class Class:
+    """
+    A class used to represent a QIF Class.
+
+    Parameters
+    ----------
+
+    """
     def __init__(self,
                  name: str,
                  desc: str = None):
@@ -201,6 +283,18 @@ class Class:
 
     def __eq__(self, other):
         return self._name == other.name
+
+    def __str__(self):
+        res = f'Class:\n    Name: {self._name}'
+        if self._desc:
+            res += f'\n    Description: {self._desc}'
+        return res
+
+    def __repr__(self):
+        if self._desc:
+            return f'Class(name={repr(self._name)}, desc={repr(self._desc)})'
+        else:
+            return f'Class(name={repr(self._name)})'
 
     @property
     def name(self):
@@ -220,7 +314,7 @@ class Class:
         desc = None
 
         for field in lst:
-            field = field.replace('\n')
+            field = field.replace('\n', '')
 
             if not field:
                 continue
@@ -237,7 +331,7 @@ class Class:
                 desc = field_info
 
         if not name:
-            raise TypeError('No name specified for Class')
+            raise RuntimeError('No name specified for Class')
 
         return cls(name, desc)
 
@@ -246,3 +340,11 @@ class Class:
         """Return a Class from a string"""
         property_list = string.split(separator)
         return cls.from_list(property_list)
+
+    def to_dict(self, ignore=None):
+        """Return a representation of the Class object as a dict"""
+        if ignore is None:
+            ignore = []
+
+        return {key.strip('_'): value for (key, value) in self.__dict__.items()
+                if key.strip('_') not in ignore and value is not None}

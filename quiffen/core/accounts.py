@@ -9,8 +9,8 @@ VALID_ACCOUNT_TYPES = [
     'CCard',
     'Oth A',
     'Oth L',
-    'Invoice',  # Quicken for business only
-    'Invst',
+    'Invoice',
+    'Invst'
 ]
 
 
@@ -71,8 +71,66 @@ class Account:
         self._name = str(new_name)
 
     @property
+    def desc(self):
+        return self._desc
+
+    @desc.setter
+    def desc(self, new_desc):
+        self._desc = str(new_desc)
+
+    @property
+    def account_type(self):
+        return self._account_type
+
+    @account_type.setter
+    def account_type(self, new_type):
+        if new_type not in VALID_ACCOUNT_TYPES:
+            raise ValueError('Invalid account type')
+        self._account_type = str(new_type)
+
+    @property
+    def credit_limit(self):
+        return self._credit_limit
+
+    @credit_limit.setter
+    def credit_limit(self, new_limit):
+        self._credit_limit = float(new_limit)
+
+    @property
+    def balance(self):
+        return self._balance
+
+    @balance.setter
+    def balance(self, new_balance):
+        self._balance = float(new_balance)
+
+    @property
+    def date_at_balance(self):
+        return self._date_at_balance
+
+    @date_at_balance.setter
+    def date_at_balance(self, new_date):
+        date = parse_date(new_date)
+        self._date_at_balance = date
+
+    @property
     def transactions(self):
         return self._transactions
+
+    @transactions.setter
+    def transactions(self, new_transactions):
+        transactions = TransactionList(*new_transactions)
+        self._transactions = transactions
+
+    @property
+    def last_header(self):
+        return self._last_header
+
+    @last_header.setter
+    def last_header(self, new_header):
+        if new_header not in VALID_ACCOUNT_TYPES:
+            raise ValueError('Invalid header')
+        self._last_header = str(new_header)
 
     @classmethod
     def from_list(cls, lst, day_first=True):
@@ -138,14 +196,14 @@ class Account:
             res.append(tl.list)
         return res
 
-    def to_dict(self, ignore=None, dictify_splits=True):
+    def to_dict(self, ignore=None, dictify_transactions=True, dictify_splits=True):
         if ignore is None:
             ignore = []
 
         res = {key.strip('_'): value for (key, value) in self.__dict__.items()
                if value is not None and key.strip('_') not in ignore}
 
-        if 'transactions' not in ignore:
+        if dictify_transactions and 'transactions' not in ignore:
             dicted_transactions = {}
             for (header, tl) in self._transactions.items():
                 dict_list = [transaction.to_dict(ignore=ignore, dictify_splits=dictify_splits) for transaction in tl]

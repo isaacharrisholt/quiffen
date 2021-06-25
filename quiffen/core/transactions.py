@@ -6,6 +6,59 @@ from quiffen.utils import parse_date, create_categories
 from quiffen.core.categories_classes import Category, Class
 
 
+class TransactionList(collections.MutableSequence, ABC):
+    """
+    A class to store Transaction and Investment objects only in an ordered list.
+
+    Parameters
+    ----------
+    args : Transaction(s)/Investment(s)
+        Transactions/Investments to be put in the list.
+    """
+    def __init__(self, *args):
+        self._list = []
+        self.extend(list(args))
+
+    def __len__(self):
+        return len(self._list)
+
+    def __getitem__(self, key):
+        return self._list[key]
+
+    def __delitem__(self, key):
+        del self._list[key]
+
+    def __setitem__(self, key, value):
+        self._check_if_transaction(value)
+        self._list[key] = value
+
+    def __str__(self):
+        return str(self._list)
+
+    def __repr__(self):
+        return f'TransactionList({", ".join([repr(item) for item in self._list])})'
+
+    def insert(self, key, value):
+        self._check_if_transaction(value)
+        self.list.insert(key, value)
+
+    @staticmethod
+    def _check_if_transaction(item):
+        """Check if a given item is an instance of the Transaction or Investment classes and raise an error if not"""
+        if not isinstance(item, (Transaction, Investment, Split)):
+            raise TypeError(f'Only Transaction-type objects can be appended to a TransactionList')
+
+    @property
+    def list(self):
+        return self._list
+
+    @list.setter
+    def list(self, new_list):
+        for item in new_list:
+            self._check_if_transaction(item)
+        self._list = new_list
+
+
 class Transaction:
     """
     A class used to represent a transaction.
@@ -37,7 +90,7 @@ class Transaction:
                  cleared: str = None,
                  payee: str = None,
                  payee_address: str = None,
-                 category: str = None,
+                 category: Category = None,
                  check_number: int = None,
                  reimbursable_expense: bool = None,
                  small_business_expense: bool = None,
@@ -49,7 +102,7 @@ class Transaction:
                  interest_rate: float = None,
                  current_loan_balance: float = None,
                  original_loan_amount: float = None,
-                 splits: list = None
+                 splits: TransactionList = None
                  ):
         self._date = date
         self._amount = amount
@@ -74,21 +127,20 @@ class Transaction:
 
         if splits:
             self._assert_type(splits, Split)
-            self._splits = splits
+            self._splits = TransactionList(*splits)
             self._is_split = True
             self._last_split = splits[-1]
             for split in splits:
                 self._split_categories = create_categories(split.category, self._split_categories)
         else:
-            self._splits = []
+            self._splits = TransactionList()
             self._is_split = False
             self._last_split = None
 
     def __eq__(self, other):
         if not isinstance(other, Transaction):
             return False
-
-        return self.__dict__ == other.__dict__
+        return self._date == other.date and self._amount == other.amount
 
     def __str__(self):
         properties = ''
@@ -137,6 +189,14 @@ class Transaction:
         self._memo = str(new_memo)
 
     @property
+    def cleared(self):
+        return self._cleared
+
+    @cleared.setter
+    def cleared(self, new_str):
+        self._cleared = str(new_str)
+
+    @property
     def payee(self):
         return self._payee
 
@@ -181,10 +241,10 @@ class Transaction:
 
     @reimbursable_expense.setter
     def reimbursable_expense(self, new_flag):
-        try:
-            self._reimbursable_expense = bool(new_flag)
-        except ValueError:
-            raise TypeError('Flag must be a boolean')
+        if isinstance(new_flag, str) and new_flag.lower() == 'false':
+            self._reimbursable_expense = False
+        else:
+            self._reimbursable_expense = True
 
     @property
     def small_business_expense(self):
@@ -192,10 +252,10 @@ class Transaction:
 
     @small_business_expense.setter
     def small_business_expense(self, new_flag):
-        try:
-            self._small_business_expense = bool(new_flag)
-        except ValueError:
-            raise TypeError('Flag must be a boolean')
+        if isinstance(new_flag, str) and new_flag.lower() == 'false':
+            self._small_business_expense = False
+        else:
+            self._small_business_expense = True
 
     @property
     def to_account(self):
@@ -302,7 +362,7 @@ class Transaction:
         kwargs = {}
         categories = {}
         classes = []
-        splits = []
+        splits = TransactionList()
         current_split = None
         split_categories = {}
         for field in lst:
@@ -389,7 +449,10 @@ class Transaction:
                 else:
                     current_split.check_number = int(field_info)
             elif line_code == 'F':
-                kwargs['reimbursable_expense'] = bool(field_info)
+                if field_info.lower() == 'false':
+                    kwargs['reimbursable_expense'] = False
+                else:
+                    kwargs['reimbursable_expense'] = True
             elif line_code == '1':
                 kwargs['first_payment_date'] = parse_date(field_info, day_first)
             elif line_code == '2':
@@ -404,6 +467,13 @@ class Transaction:
                 kwargs['current_loan_balance'] = float(field_info)
             elif line_code == '7':
                 kwargs['original_loan_amount'] = float(field_info)
+
+        # Set splits percentage if they don't already have one
+        if splits:
+            total_amount = kwargs['amount']
+            for split in splits:
+                if not split.percent:
+                    split.percent = abs(split.amount / total_amount) * 100
 
         categories.update({name: category for (name, category) in split_categories.items() if name not in categories})
         kwargs['splits'] = splits
@@ -440,15 +510,18 @@ class Transaction:
             raise ValueError('Splits amounts cannot sum to more than Transaction amount')
 
         self._splits.append(new_split)
+        self.refresh_is_split()
 
     def remove_split(self, multiple=False, **kwargs):
-        """Remove Split(s) from Transaction based on given kwargs"""
+        """Remove Split(s) from Transaction if they match a set of kwargs"""
         kwargs = dict(kwargs)
         indices = []
 
         for (i, split) in enumerate(self._splits):
             found_split = False
             for (key, value) in kwargs.items():
+                if not key.startswith('_'):
+                    key = '_' + key
                 if split.__dict__.get(key) != value:
                     found_split = False
                     break
@@ -462,8 +535,9 @@ class Transaction:
         # Reverse so indices in list don't change as items get removed
         for idx in reversed(indices):
             self._splits.pop(idx)
+        self.refresh_is_split()
 
-    def to_dict(self, ignore=None, dictify_splits=True):
+    def to_dict(self, ignore=None, dictify_splits=True, dictify_category=True):
         """Return a dictionary representation of the Transaction instance."""
         if ignore is None:
             ignore = []
@@ -473,6 +547,9 @@ class Transaction:
 
         if dictify_splits and 'splits' not in ignore and self._is_split:
             res['splits'] = [split.to_dict(ignore=ignore) for split in res['splits']]
+
+        if dictify_category and 'category' not in ignore and self._category is not None:
+            res['category'] = self._category.to_dict()
 
         return res
 
@@ -491,7 +568,7 @@ class Split:
                  memo: str = None,
                  cleared: str = None,
                  payee_address: str = None,
-                 category: str = None,
+                 category: Category = None,
                  to_account: str = None,
                  check_number: int = None,
                  percent: float = None
@@ -613,11 +690,16 @@ class Split:
     def percent(self, new_percent):
         self._percent = float(new_percent)
 
-    def to_dict(self, ignore=None):
+    def to_dict(self, ignore=None, dictify_category=True):
         if ignore is None:
             ignore = []
-        return {key.strip('_'): value for (key, value) in self.__dict__.items()
-                if value is not None and key.strip('_') not in ignore}
+        res = {key.strip('_'): value for (key, value) in self.__dict__.items()
+               if value is not None and key.strip('_') not in ignore}
+
+        if dictify_category and 'category' not in ignore and self._category is not None:
+            res['category'] = self._category.to_dict()
+
+        return res
 
 
 class Investment:
@@ -631,7 +713,7 @@ class Investment:
     amount : float
         The amount of the transaction. May be positive or negative.
     memo : str
-        Also known as the reference. A string describing the purpose behind the transaction.
+        Also known as the reference. A string describing the purpose behind the investment.
 
     """
     def __init__(self,
@@ -854,56 +936,3 @@ class Investment:
             ignore = []
         return {key.strip('_'): value for (key, value) in self.__dict__.items()
                 if value is not None and key.strip('_') not in ignore}
-
-
-class TransactionList(collections.MutableSequence, ABC):
-    """
-    A class to store Transaction and Investment objects only in an ordered list.
-
-    Parameters
-    ----------
-    args : Transaction(s)/Investment(s)
-        Transactions/Investments to be put in the list.
-    """
-    def __init__(self, *args):
-        self._list = []
-        self.extend(list(args))
-
-    def __len__(self):
-        return len(self._list)
-
-    def __getitem__(self, key):
-        return self._list[key]
-
-    def __delitem__(self, key):
-        del self._list[key]
-
-    def __setitem__(self, key, value):
-        self._check_if_transaction(value)
-        self._list[key] = value
-
-    def __str__(self):
-        return str(self._list)
-
-    def __repr__(self):
-        return f'TransactionList({", ".join([repr(item) for item in self._list])})'
-
-    def insert(self, key, value):
-        self._check_if_transaction(value)
-        self.list.insert(key, value)
-
-    @staticmethod
-    def _check_if_transaction(item):
-        """Check if a given item is an instance of the Transaction or Investment classes and raise an error if not"""
-        if not isinstance(item, (Transaction, Investment)):
-            raise TypeError(f'Only Transaction and Investment objects can be appended to a TransactionList')
-
-    @property
-    def list(self):
-        return self._list
-
-    @list.setter
-    def list(self, new_list):
-        for item in new_list:
-            self._check_if_transaction(item)
-        self._list = new_list

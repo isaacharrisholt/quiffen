@@ -1,10 +1,11 @@
-from quiffen.core.transactions import Transaction, Investment, TransactionList
-from quiffen.core.categories_classes import Category, Class
-from quiffen.core.accounts import Account
 from quiffen import utils
+from quiffen.core.accounts import Account
+from quiffen.core.categories_classes import Category, Class
+from quiffen.core.transactions import Transaction, Investment
 
 try:
     import pandas as pd
+
     PANDAS_INSTALLED = True
 except ModuleNotFoundError:
     PANDAS_INSTALLED = False
@@ -31,14 +32,26 @@ class Qif:
     ----------
 
     """
+
     def __init__(self,
                  accounts: dict = None,
                  categories: dict = None,
-                 classes: list = None
+                 classes: dict = None
                  ):
-        self._assert_type(accounts, Account)
-        self._assert_type(categories, Category)
-        self._assert_type(classes, Class)
+        if accounts:
+            self._assert_type(accounts, Account)
+        else:
+            accounts = {}
+
+        if categories:
+            self._assert_type(categories, Category)
+        else:
+            categories = {}
+
+        if classes:
+            self._assert_type(classes, Class)
+        else:
+            classes = {}
 
         self._accounts = accounts
         self._categories = categories
@@ -48,17 +61,21 @@ class Qif:
         return self.__dict__ == other.__dict__
 
     def __str__(self):
+        accounts = {name: repr(account) for (name, account) in self._accounts.items()}
+        categories = {name: repr(cat) for (name, cat) in self._categories.items()}
         return f"""
 QIF:
-    Accounts: {[repr(account for account in self._accounts)]}
-    Categories: {[repr(cat) for cat in self._categories]}
+    Accounts: {accounts}
+    Categories: {categories}
     Classes: {[repr(klass) for klass in self._classes]}
 """
 
     def __repr__(self):
-        return f'Qif(accounts={[repr(account for account in self._accounts)]}, ' \
-               f'day_first={[repr(cat) for cat in self._categories]}, ' \
-               f'separator={[repr(klass) for klass in self._classes]})'
+        accounts = {name: repr(account) for (name, account) in self._accounts.items()}
+        categories = {name: repr(cat) for (name, cat) in self._categories.items()}
+        return f'Qif(accounts={accounts}, ' \
+               f'categories={categories}, ' \
+               f'classes={[repr(klass) for klass in self._classes]})'
 
     @property
     def accounts(self):
@@ -94,7 +111,7 @@ QIF:
         accounts = {}
         last_account = None
         categories = {}
-        classes = []
+        classes = {}
 
         sections = data.split('^\n')
         last_header = None
@@ -106,6 +123,15 @@ QIF:
             header_line = section.split('\n')[0]
             if header_line is None:
                 continue
+
+            # Allow for comments and blank lines at the top of sections
+            i = 0
+            while True:
+                if header_line:
+                    if header_line[0] != '#':
+                        break
+                i += 1
+                header_line = section.split('\n')[i]
 
             # Check for new categories and accounts first, as then we can be sure it's a transaction in case a default
             # account needs to be added
@@ -120,7 +146,7 @@ QIF:
                 categories = utils.create_categories(new_category, categories)
             elif '!Type:Class' in header_line:
                 new_class = Class.from_string(section)
-                classes.append(new_class)
+                classes[new_class.name] = new_class
             elif '!Account' in header_line:
                 new_account = Account.from_string(section)
                 accounts[new_account.name] = new_account
@@ -142,7 +168,7 @@ QIF:
                                                                                        day_first=day_first)
                 accounts[last_account].add_transaction(new_transaction, header_line)
                 categories.update(new_categories)
-                classes.extend(new_classes)
+                classes.update(new_classes)
 
             last_header = header_line
 
@@ -178,44 +204,483 @@ QIF:
         self._assert_type([new_account], Account)
         self._accounts[new_account.name] = new_account
 
+    def remove_account(self, account_name):
+        """Remove an account from this Qif object"""
+        return self._accounts.pop(account_name)
+
     def add_category(self, new_category):
         """Add a new category to the object"""
         self._assert_type([new_category], Category)
         self._categories[new_category.name] = new_category
+
+    def remove_category(self, category_name, keep_children=True):
+        """Remove a category from the Qif object."""
+        if category_name in self._categories:
+            if keep_children:
+                self._categories.update({category.name: category for category in self._categories[category_name].children})
+            return self._categories.pop(category_name)
+
+        categories_to_visit = list(self._categories.values())
+
+        for category in categories_to_visit:
+            if category.children:
+                categories_to_visit.extend(category.children)
+            if category.name == category_name:
+
+                # Change children hierarchies
+                children_to_visit = category.children
+                for child in children_to_visit:
+                    if child.children:
+                        children_to_visit.extend(child)
+                    if child.hierarchy:
+                        child.hierarchy = child.hierarchy.replace(f'{category.name}:', '')
+                    child.parent = category.parent
+
+                if parent := category.parent is not None:
+                    category_idx = parent.children.index(category)
+                    parent.children.pop(category_idx)
+                    parent.children.extend(category.children)
+                    category.parent = None
+                return category
 
     def add_class(self, new_class):
         """Add a new class to the object"""
         self._assert_type([new_class], Class)
         self._classes[new_class.name] = new_class
 
-    def to_dicts(self, ignore=None, dictify_splits=True):
+    def remove_class(self, class_name):
+        """Remove a class from the Qif object"""
+        return self._classes.pop(class_name)
+
+    def to_qif(self, path=None, date_format='%d/%m/%Y'):
+        """Write the Qif object to a QIF file and return the string."""
+        qif_data = ''
+
+        if self._classes:
+            qif_data += '!Type:Class\n'
+            for klass in self._classes.values():
+                qif_data += f'N{klass.name}\n'
+                if klass.desc:
+                    qif_data += f'D{klass.desc}\n'
+                qif_data += '^\n'
+
+        if self._categories:
+            categories_to_visit = list(self._categories.values())
+            qif_data += '!Type:Cat\n'
+            for category in categories_to_visit:
+                if category.children:
+                    categories_to_visit.extend(category.children)
+
+                qif_data += f'N{category.hierarchy}\n'
+
+                if category.desc:
+                    qif_data += f'D{category.desc}\n'
+
+                if category.tax_related is not None:
+                    qif_data += f'T{category.tax_related}\n'
+
+                if category.expense is not None:
+                    qif_data += f'E{category.expense}\n'
+
+                if category.income is not None:
+                    qif_data += f'I{category.income}\n'
+
+                if category.budget_amount is not None:
+                    qif_data += f'B{category.budget_amount}\n'
+
+                if category.tax_schedule_info:
+                    qif_data += f'R{category.tax_schedule_info}\n'
+
+                qif_data += '^\n'
+
+        if self._accounts:
+            for account in self._accounts.values():
+                qif_data += '!Account\n'
+
+                qif_data += f'N{account.name}\n'
+
+                if account.desc:
+                    qif_data += f'D{account.desc}\n'
+
+                if account.account_type:
+                    qif_data += f'T{account.account_type}\n'
+
+                if account.credit_limit is not None:
+                    qif_data += f'L{account.credit_limit}\n'
+
+                if account.balance is not None:
+                    qif_data += f'${account.balance}\n'
+
+                if account.date_at_balance:
+                    qif_data += f'/{account.date_at_balance.strftime(date_format)}\n'
+
+                qif_data += '^\n'
+
+                for (header, transaction_list) in account.transactions.items():
+                    qif_data += f'!Type:{header}\n'
+
+                    for transaction in transaction_list:
+                        qif_data += f'D{transaction.date.strftime(date_format)}\n'
+
+                        if transaction.amount is not None:
+                            qif_data += f'T{transaction.amount}\n'
+
+                        if transaction.memo:
+                            qif_data += f'M{transaction.memo}\n'
+
+                        if transaction.cleared:
+                            qif_data += f'C{transaction.cleared}\n'
+
+                        if 'Invst' not in header:
+                            if transaction.payee:
+                                qif_data += f'P{transaction.payee}\n'
+
+                            if transaction.payee_address:
+                                qif_data += f'A{transaction.payee_address}\n'
+
+                            if transaction.category:
+                                qif_data += f'L{transaction.category.hierarchy}\n'
+
+                            if transaction.to_account:
+                                qif_data += f'L[{transaction.to_account}]\n'
+
+                            if transaction.check_number is not None:
+                                qif_data += f'N{transaction.check_number}\n'
+
+                            if transaction.reimbursable_expense is not None:
+                                qif_data += f'F{transaction.reimbursable_expense}\n'
+
+                            if transaction.first_payment_date:
+                                qif_data += f'1{transaction.first_payment_date.strftime(date_format)}\n'
+
+                            if transaction.loan_length is not None:
+                                qif_data += f'2{transaction.loan_length}\n'
+
+                            if transaction.num_payments is not None:
+                                qif_data += f'3{transaction.num_payments}\n'
+
+                            if transaction.periods_per_annum is not None:
+                                qif_data += f'4{transaction.periods_per_annum}\n'
+
+                            if transaction.interest_rate is not None:
+                                qif_data += f'5{transaction.interest_rate}\n'
+
+                            if transaction.current_loan_balance is not None:
+                                qif_data += f'6{transaction.current_loan_balance}\n'
+
+                            if transaction.original_loan_amount is not None:
+                                qif_data += f'7{transaction.original_loan_amount}\n'
+
+                            if transaction.is_split:
+                                for split in transaction.splits:
+                                    if split.category:
+                                        qif_data += f'S{split.category.hierarchy}\n'
+
+                                    if split.date:
+                                        qif_data += f'D{split.date.strftime(date_format)}\n'
+
+                                    if split.amount is not None:
+                                        qif_data += f'${split.amount}\n'
+
+                                    if split.percent is not None:
+                                        qif_data += f'%{split.percent}\n'
+
+                                    if split.memo:
+                                        qif_data += f'E{split.memo}\n'
+
+                                    if split.cleared:
+                                        qif_data += f'C{split.cleared}\n'
+
+                                    if split.payee_address:
+                                        qif_data += f'A{split.payee_address}\n'
+
+                                    if split.to_account:
+                                        qif_data += f'L[{split.to_account}]\n'
+
+                                    if split.check_number is not None:
+                                        qif_data += f'N{split.check_number}\n'
+
+                        else:
+                            if transaction.action:
+                                qif_data += f'N{transaction.action}\n'
+
+                            if transaction.security:
+                                qif_data += f'Y{transaction.security}\n'
+
+                            if transaction.price is not None:
+                                qif_data += f'I{transaction.price}\n'
+
+                            if transaction.quantity is not None:
+                                qif_data += f'Q{transaction.quantity}\n'
+
+                            if transaction.first_line:
+                                qif_data += f'P{transaction.first_line}\n'
+
+                            if transaction.to_account:
+                                qif_data += f'L{transaction.to_account}\n'
+
+                            if transaction.transfer_amount is not None:
+                                qif_data += f'${transaction.transfer_amount}\n'
+
+                            if transaction.commission is not None:
+                                qif_data += f'O{transaction.commission}\n'
+
+                        qif_data += '^\n'
+
+        if path is not None:
+            with open(path, 'w') as f:
+                f.write(qif_data)
+
+        return qif_data
+
+    def to_dicts(self, data='transactions', ignore=None):
         """Return a list of dict representations of transactions."""
         if ignore is None:
             ignore = []
 
-        res = {}
+        data = data.lower()
+        options = ['transactions', 'investments', 'splits', 'accounts', 'categories', 'classes']
 
-        return [transaction.to_dict(ignore=ignore) for transaction in self._transactions]
+        if data not in options:
+            raise KeyError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
 
-    def to_csv(self, path, ignore=None):
-        """Write a CSV file containing all transaction data."""
+        if data == 'transactions':
+            transactions = []
+            for account in self._accounts.values():
+                for transaction_list in account.transactions.values():
+                    for transaction in transaction_list:
+                        if isinstance(transaction, Transaction):
+                            transactions.append(transaction.to_dict(ignore=ignore))
+            return transactions
+        elif data == 'investments':
+            investments = []
+            for account in self._accounts.values():
+                for transaction_list in account.transactions.values():
+                    for transaction in transaction_list:
+                        if isinstance(transaction, Investment):
+                            investments.append(transaction.to_dict(ignore=ignore))
+            return investments
+        elif data == 'splits':
+            splits = []
+            for account in self._accounts.values():
+                for transaction_list in account.transactions.values():
+                    for transaction in transaction_list:
+                        for split in transaction.splits:
+                            splits.append(split.to_dict(ignore=ignore))
+            return splits
+        elif data == 'accounts':
+            accounts = []
+            for account in self._accounts.values():
+                accounts.append(account.to_dict(ignore=ignore))
+            return accounts
+        elif data == 'categories':
+            categories = []
+            categories_to_visit = list(self._categories.values())
+
+            for category in categories_to_visit:
+                if category.children is not None:
+                    categories_to_visit.extend(category.children)
+                categories.append(category.to_dict(ignore=ignore))
+            return categories
+        elif data == 'classes':
+            classes = []
+            for klass in self._classes:
+                classes.append(klass.to_dict(ignore=ignore))
+            return classes
+
+    def to_csv(self, path=None, data='transactions', ignore=None, separator=',', sub_separator=';',
+               date_format='%d/%m/%Y'):
+        """Write a CSV file containing all transaction data and return the string."""
         if ignore is None:
             ignore = []
 
-        properties = [key for key in self._transactions[0].__dict__.keys() if key.replace('_', '') not in ignore]
+        data = data.lower()
+        options = ['transactions', 'splits', 'investments', 'accounts', 'categories', 'classes']
 
-        with open(path, 'w') as f:
-            f.write(','.join([property_name.strip('_').replace('_', ' ').title() for property_name in properties])
-                    + '\n')
+        if data not in options:
+            raise KeyError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
 
-            for transaction in self._transactions:
-                f.write(','.join([str(transaction.__dict__[property_name]) for property_name in properties]) + '\n')
+        if separator in sub_separator or sub_separator in separator:
+            raise ValueError('Separator and sub-separator cannot be equal or contain each other')
 
-    def to_dataframe(self, ignore=None):
+        csv_data = ''
+
+        if data == 'transactions':
+            headers = ['date', 'amount', 'memo', 'cleared', 'payee', 'payee_address', 'category', 'check_number',
+                       'reimbursable_expense', 'small_business_expense', 'to_account', 'first_payment_date',
+                       'loan_length', 'num_payments', 'periods_per_annum', 'interest_rate', 'current_loan_balance',
+                       'original_loan_amount', 'is_split', 'splits']
+
+            headers = [header for header in headers if header not in ignore]
+
+            csv_data += separator.join(headers) + '\n'
+
+            for account in self._accounts.values():
+                for transaction_list in account.transactions.values():
+                    for transaction in transaction_list:
+                        if not isinstance(transaction, Transaction):
+                            continue
+
+                        this_line = ''
+                        transaction_dict = transaction.to_dict()
+                        for header in headers:
+                            transaction_data = transaction_dict.get(header)
+
+                            if transaction_data is not None:
+                                if 'date' in header:
+                                    this_line += transaction_data.strftime(date_format)
+                                elif header == 'category':
+                                    this_line += transaction_data['name']
+                                elif header == 'splits':
+                                    this_line += str(len(transaction_data))
+                                else:
+                                    this_line += str(transaction_data).replace(separator, sub_separator)
+
+                            this_line += separator
+                        this_line = this_line.strip(separator) + '\n'
+                        csv_data += this_line
+        elif data == 'splits':
+            headers = ['date', 'amount', 'memo', 'cleared', 'payee_address', 'category', 'to_account', 'check_number',
+                       'percent']
+
+            headers = [header for header in headers if header not in ignore]
+
+            csv_data += separator.join(headers) + '\n'
+
+            for account in self._accounts.values():
+                for transaction_list in account.transactions.values():
+                    for transaction in transaction_list:
+                        for split in transaction.splits:
+                            this_line = ''
+                            split_dict = split.to_dict()
+
+                            for header in headers:
+                                split_data = split_dict.get(header)
+
+                                if split_data is not None:
+                                    if 'date' in header:
+                                        this_line += split_data.strftime(date_format)
+                                    elif header == 'category':
+                                        this_line += split_data['name']
+                                    else:
+                                        this_line += str(split_data).replace(separator, sub_separator)
+
+                                this_line += separator
+                            this_line = this_line.strip(separator) + '\n'
+                            csv_data += this_line
+        elif data == 'investments':
+            headers = ['date', 'action', 'security', 'price', 'quantity', 'cleared', 'amount', 'memo', 'first_line',
+                       'to_account', 'transfer_amount', 'commission']
+
+            headers = [header for header in headers if header not in ignore]
+
+            csv_data += separator.join(headers) + '\n'
+
+            for account in self._accounts.values():
+                for transaction_list in account.transactions.values():
+                    for investment in transaction_list:
+                        if not isinstance(investment, Investment):
+                            continue
+
+                        this_line = ''
+                        investment_dict = investment.to_dict()
+                        for header in headers:
+                            investment_data = investment_dict.get(header)
+
+                            if investment_data is not None:
+                                if 'date' in header:
+                                    this_line += investment_data.strftime(date_format)
+                                elif header == 'category':
+                                    this_line += investment_data['name']
+                                elif header == 'splits':
+                                    this_line += str(len(investment_data))
+                                else:
+                                    this_line += str(investment_data).replace(separator, sub_separator)
+
+                            this_line += separator
+                        this_line = this_line.strip(separator) + '\n'
+                        csv_data += this_line
+        elif data == 'accounts':
+            headers = ['name', 'desc', 'account_type', 'credit_limit', 'balance', 'date_at_balance', 'transactions']
+
+            headers = [header for header in headers if header not in ignore]
+
+            csv_data += separator.join(headers) + '\n'
+
+            for account in self._accounts.values():
+                this_line = ''
+                account_dict = account.to_dict()
+                for header in headers:
+                    account_data = account_dict.get(header)
+
+                    if account_data is not None:
+                        if header == 'date_at_balance':
+                            this_line += account_data.strftime(date_format)
+                        elif header == 'transactions':
+                            this_line += str(len(account_data))
+                        else:
+                            this_line += str(account_data).replace(separator, sub_separator)
+
+                    this_line += separator
+                this_line = this_line.strip(separator) + '\n'
+                csv_data += this_line
+        elif data == 'categories':
+            headers = ['name', 'desc', 'tax_related', 'expense', 'income', 'budget_amount', 'tax_schedule_info',
+                       'parent', 'children']
+
+            headers = [header for header in headers if header not in ignore]
+
+            csv_data += separator.join(headers) + '\n'
+
+            categories_to_visit = list(self._categories.values())
+            for category in categories_to_visit:
+                if category.children is not None:
+                    categories_to_visit.extend(category.children)
+
+                this_line = ''
+                category_dict = category.to_dict()
+                for header in headers:
+                    category_data = category_dict.get(header)
+
+                    if category_data is not None:
+                        if header == 'children':
+                            this_line += str(len(category_data))
+                        else:
+                            this_line += str(category_data).replace(separator, sub_separator)
+
+                    this_line += separator
+                this_line = this_line.strip(separator) + '\n'
+                csv_data += this_line
+        elif data == 'classes':
+            headers = [header for header in ['name', 'desc'] if header not in ignore]
+
+            csv_data += separator.join(headers) + '\n'
+
+            for klass in self._classes:
+                this_line = ''
+                class_dict = klass.to_dict()
+                for header in headers:
+                    class_data = class_dict.get(header)
+
+                    if class_data is not None:
+                        this_line += str(class_data).replace(separator, sub_separator)
+
+                    this_line += separator
+                this_line = this_line.strip(separator) + '\n'
+                csv_data += this_line
+
+        if path is not None:
+            with open(path, 'w') as f:
+                f.write(csv_data)
+
+        return csv_data
+
+    def to_dataframe(self, data='transactions', ignore=None):
         """Return a pandas DataFrame containing all transaction data."""
         if ignore is None:
             ignore = []
 
         if not PANDAS_INSTALLED:
             raise ModuleNotFoundError('The pandas module must be installed to use this method')
-        return pd.DataFrame(self.to_dicts(ignore=ignore))
+
+        return pd.DataFrame(self.to_dicts(data=data, ignore=ignore))

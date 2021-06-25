@@ -9,19 +9,19 @@ def parse_date(date_string, day_first=True):
                           '%d-%m-%Y',
                           '%d/%m/%y',
                           '%d-%m-%y',
-                          '%d %B %Y',
-                          '%d %B %y',
-                          '%d %b %Y',
-                          '%d %b %y']
+                          '%d0%B0%Y',  # 0 values instead of spaces for reasons explained below
+                          '%d0%B0%y',
+                          '%d0%b0%Y',
+                          '%d0%b0%y']
 
     month_first_patterns = ['%m/%d/%Y',
                             '%m-%d-%Y',
                             '%m/%d/%y',
                             '%m-%d-%y',
-                            '%B %d %Y',
-                            '%B %d %y',
-                            '%b %d %Y',
-                            '%b %d %y']
+                            '%B0%d0%Y',
+                            '%B0%d0%y',
+                            '%b0%d0%Y',
+                            '%b0%d0%y']
 
     if day_first:
         date_patterns = day_first_patterns + month_first_patterns
@@ -75,6 +75,7 @@ def create_categories(new_category, categories):
                 break
 
             parent = Category(category_to_find)
+            parent.hierarchy = ':'.join(hierarchy[:-i + 1])
             parent.add_child(current_category)
             current_category = parent
 
