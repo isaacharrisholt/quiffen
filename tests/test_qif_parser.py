@@ -1,5 +1,5 @@
 from unittest import TestCase
-from quiffen.core.qif_parser import QifParser
+from quiffen.core.qif import Qif
 
 
 class TestQifParser(TestCase):
@@ -16,7 +16,7 @@ class TestQifParser(TestCase):
         self.fail()
 
     def test_properties(self):
-        parser = QifParser('../test.qif')
+        parser = Qif('../test.qif')
         del parser.transactions
         print(parser.__dict__)
         print(parser.transactions[-1])
