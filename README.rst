@@ -80,6 +80,11 @@ And here's an example of creating a QIF structure and exporting to a QIF file:
 '!Type:Cat\nNGroceries\nETrue\nIFalse\n^\nNGroceries:Essentials\nETrue\nIFalse\n^\n!Account\nNPersonal Bank Account\nDMy
 personal bank account with Barclays.\n^\n!Type:Bank\nD02/07/2021\nT150.0\n^\n'
 
+Documentation
+-------------
+
+Documentation can be found at: https://quiffen.readthedocs.io/en/latest/
+
 Installation
 ------------
 
