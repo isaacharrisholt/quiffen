@@ -4,7 +4,25 @@ from quiffen.core.categories_classes import Category
 
 
 def parse_date(date_string, day_first=True):
-    """Parse a string date of an unknown format and return a datetime object."""
+    """Parse a string date of an unknown format and return a datetime object.
+
+    Parameters
+    ----------
+    date_string : str
+        String containing date found in QIF file
+    day_first : bool, default=True
+        Whether or not the day comes first in the date (e.g. UK date) or after the month (e.g. US date)
+
+    Returns
+    -------
+    datetime.datetime
+        datetime object with the date data from the ``date_string`` parameter.
+
+    Raises
+    -------
+    ValueError
+        If the date cannot be parsed.
+    """
     day_first_patterns = ['%d/%m/%Y',
                           '%d-%m-%Y',
                           '%d/%m/%y',
@@ -42,6 +60,22 @@ def parse_date(date_string, day_first=True):
 
 
 def create_categories(new_category, categories):
+    """Add ``new_category`` to ``categories`` after first creating necessary hierarchy.
+
+    If ``new_category`` fits under a category already in ``categories``, then it will just be added as a child.
+
+    Parameters
+    ----------
+    new_category : Category
+        The new category to be added to the iterable of categories.
+    categories : iterable
+        Iterable containing categories. If in a dict, Category objects are the values.
+
+    Returns
+    -------
+    iterable : categories
+        The new iterable, now containing ``new_category``
+    """
     # Add categories in hierarchy
     categories_is_dict = isinstance(categories, dict)
     if new_category.hierarchy is not None:

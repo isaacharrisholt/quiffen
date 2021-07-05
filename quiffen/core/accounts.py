@@ -1,7 +1,7 @@
 from datetime import datetime
 
+from quiffen.core.transactions import Transaction, TransactionList
 from quiffen.utils import parse_date
-from quiffen.core.transactions import Transaction, Investment, TransactionList
 
 VALID_ACCOUNT_TYPES = [
     'Cash',
@@ -15,6 +15,40 @@ VALID_ACCOUNT_TYPES = [
 
 
 class Account:
+    """
+    A class representing a QIF account.
+
+    Attributes
+    ----------
+    transactions : dict
+        A dict of header strings as keys and TransactionList objects as values.
+    last_header : {None, 'Cash', 'Bank', 'CCard', 'Oth A', 'Oth L', 'Invoice', 'Invst'}
+        The last transaction header used. This must be set before transactions can be added.
+
+    Examples
+    --------
+    Creating an Account instance, then adding a transaction.
+
+    >>> import quiffen
+    >>> from datetime import datetime
+    >>> acc = quiffen.Account(name='Example name', desc='Some description')
+    >>> acc
+    Account(name='Example name', desc='Some description')
+    >>> tr = quiffen.Transaction(date=datetime.now(), amount=150.0)
+    >>> acc.last_header = 'Bank'
+    >>> acc.add_transaction(tr)
+    >>> acc.transactions
+    {'Bank': TransactionList(Transaction(date=datetime.datetime(2021, 7, 2, 18, 31, 47, 817025), amount=150.0))}
+
+    Creating an account instance from a section list in a QIF file.
+
+    >>> import quiffen
+    >>> string = '!Account\\nNPersonal Bank Account\\nDMy Personal bank account with Barclays.\\n^\\n'
+    >>> acc = quiffen.Account.from_string(string)
+    >>> acc
+    Account(name='Personal Bank Account', desc='My Personal bank account with Barclays.')
+    """
+
     def __init__(self,
                  name: str,
                  desc: str = None,
@@ -23,6 +57,24 @@ class Account:
                  balance: float = None,
                  date_at_balance: datetime = None
                  ):
+        """Initialise an instance of the Account class.
+
+        Parameters
+        ----------
+        name : str
+            The name of the account.
+        desc : str, default=None
+            A description of the account.
+        account_type : {None, 'Cash', 'Bank', 'CCard', 'Oth A', 'Oth L', 'Invoice', 'Invst'}
+            The type of account specified in the QIF file. Relates to the type of transactions stored in the account,
+            but not on a functional level.
+        credit_limit : float, default=None
+            The credit limit on the account.
+        balance : float, default=None
+            The balance in the account at `date_at_balance`.
+        date_at_balance: datetime.datetime, default=None
+            The date at which `balance` was recorded.
+        """
         self._name = name
         self._desc = desc
 
@@ -64,6 +116,7 @@ class Account:
 
     @property
     def name(self):
+        """"""
         return self._name
 
     @name.setter
@@ -134,7 +187,20 @@ class Account:
 
     @classmethod
     def from_list(cls, lst, day_first=True):
-        """Return an Account object from a list of properties as found in a QIF file."""
+        """Return a class instance from a list of QIF strings.
+
+        Parameters
+        ----------
+        lst : list of str
+            List of strings containing QIF information about the account.
+        day_first : bool, default=True
+             Whether the day or month comes first in the date.
+
+        Returns
+        -------
+        Account
+            An Account object created from the QIF strings.
+        """
         kwargs = {}
         for field in lst:
             field = field.replace('\n', '')
@@ -170,12 +236,40 @@ class Account:
 
     @classmethod
     def from_string(cls, string, separator='\n', day_first=True):
-        """Return an Account object from a string of properties separated by separator."""
+        """Return a class instance from a QIF file section string.
+
+        Parameters
+        ----------
+        string : str
+            The string containing the QIF-formatted data.
+        separator : str, default='\n'
+             The line separator for the QIF file. This probably won't need changing.
+        day_first : bool, default=True
+             Whether the day or month comes first in the date.
+
+        Returns
+        -------
+        Account
+            An Account object created from the QIF strings.
+        """
         property_list = string.split(separator)
         return cls.from_list(property_list, day_first)
 
     def add_transaction(self, transaction, header=None):
-        """Add a transaction to the dict of TransactionList objects"""
+        """Add a transaction to the dict of TransactionList objects.
+
+        Parameters
+        ----------
+        transaction : Transaction or Investment
+            The Transaction-type object to be added.
+        header : {None, 'Cash', 'Bank', 'CCard', 'Oth A', 'Oth L', 'Invoice', 'Invst'}
+             The header under which the transaction falls. Will be used as a key in the dict of transactions.
+
+        Raises
+        -------
+        RuntimeError
+            If there is no header provided, and no ``last_header`` set.
+        """
         if not header and not self._last_header:
             raise RuntimeError('No header provided and no last header present')
         elif not header:
@@ -189,14 +283,23 @@ class Account:
 
         self._transactions[header].append(transaction)
 
-    def get_transactions(self):
-        """Return list of lists of all transactions in account"""
-        res = []
-        for tl in self._transactions.values():
-            res.append(tl.list)
-        return res
-
     def to_dict(self, ignore=None, dictify_transactions=True, dictify_splits=True):
+        """Return a dict object representing the Account.
+
+        Parameters
+        ----------
+        ignore : list of str, default=None
+             A list of strings of parameters that should be excluded from the dict.
+        dictify_transactions : bool, default=True
+             Whether the Transaction objects should be converted to dicts or left as they are.
+        dictify_splits : bool, default=True
+             Whether Splits within Transaction objects should be converted to dicts or left as they are.
+
+        Returns
+        -------
+        dict
+            A dict representing the Account object.
+        """
         if ignore is None:
             ignore = []
 

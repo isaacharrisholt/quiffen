@@ -28,8 +28,7 @@ class Qif:
     """
     The main class of the package. For parsing QIF files.
 
-    Parameters
-    ----------
+    See the readme for usage examples.
 
     """
 
@@ -38,6 +37,22 @@ class Qif:
                  categories: dict = None,
                  classes: dict = None
                  ):
+        """Initialise an instance of the Qif class.
+
+        Parameters
+        ----------
+        accounts : dict, default=None
+            A dict of accounts in the form {'Account Name': account_object}.
+        categories : dict, default=None
+            A dict of categories in the form {'Category Name': category_object}.
+        classes : dict, default=None
+            A dict of classes in the form {'Class Name': class_object}.
+
+        Raises
+        ------
+        TypeError
+            If any provided arguments are the wrong type.
+        """
         if accounts:
             self._assert_type(accounts, Account)
         else:
@@ -106,6 +121,22 @@ QIF:
 
     @classmethod
     def parse(cls, filepath, separator='\n', day_first=True):
+        """Return a class instance from a QIF file.
+
+        Parameters
+        ----------
+        filepath : str
+            The path to the QIF file.
+        separator : str, default='\n'
+             The line separator for the QIF file. This probably won't need changing.
+        day_first : bool, default=True
+             Whether the day or month comes first in the date.
+
+        Returns
+        -------
+        Qif
+            A Qif object containing all the data in the QIF file.
+        """
         data = cls._read_qif(filepath)
 
         accounts = {}
@@ -176,7 +207,7 @@ QIF:
 
     @staticmethod
     def _assert_type(iterable, types):
-        """Assert that all items in a list are of specific types"""
+        # Assert that all items in an iterable are of specific types.
         if isinstance(iterable, dict):
             for item in iterable.values():
                 if not isinstance(item, types):
@@ -188,7 +219,7 @@ QIF:
 
     @staticmethod
     def _read_qif(path):
-        """Validate QIF file provided and return data."""
+        # Validate QIF file provided and return data.
         if path[-3:].lower() != 'qif':
             raise FileNotFoundError(f'\'{path}\' does not point to a valid QIF file. Only .QIF file types are allowed')
 
@@ -200,24 +231,71 @@ QIF:
         return data
 
     def add_account(self, new_account):
-        """Add a new account to the object"""
+        """Add a new account to the Qif object.
+
+        Parameters
+        ----------
+        new_account : Account
+            The Account to be added to the Qif.
+
+        Raises
+        ------
+        TypeError
+            If ``new_account`` is not an Account object.
+        """
         self._assert_type([new_account], Account)
         self._accounts[new_account.name] = new_account
 
     def remove_account(self, account_name):
-        """Remove an account from this Qif object"""
+        """Remove an account from this Qif object.
+
+        Parameters
+        ----------
+        account_name : str
+            The name of the account.
+
+        Returns
+        -------
+        Account
+            The Account removed.
+        """
         return self._accounts.pop(account_name)
 
     def add_category(self, new_category):
-        """Add a new category to the object"""
+        """Add a new category to the object.
+
+        Parameters
+        ----------
+        new_category : Category
+            The Category to be added to the Qif.
+
+        Raises
+        ------
+        TypeError
+            If ``new_category`` is not a Category object.
+        """
         self._assert_type([new_category], Category)
         self._categories[new_category.name] = new_category
 
     def remove_category(self, category_name, keep_children=True):
-        """Remove a category from the Qif object."""
+        """Remove a category from the Qif object.
+
+        Parameters
+        ----------
+        category_name : str
+            The name of the category to be removed.
+        keep_children : bool, default=True
+            Whether or not the children of the category will be kept (grandparent node will become the parent node).
+
+        Returns
+        -------
+        Category
+            The Category removed.
+        """
         if category_name in self._categories:
             if keep_children:
-                self._categories.update({category.name: category for category in self._categories[category_name].children})
+                self._categories.update({category.name: category for category in
+                                         self._categories[category_name].children})
             return self._categories.pop(category_name)
 
         categories_to_visit = list(self._categories.values())
@@ -244,16 +322,51 @@ QIF:
                 return category
 
     def add_class(self, new_class):
-        """Add a new class to the object"""
+        """Add a new class to the object.
+
+        Parameters
+        ----------
+        new_class : Class
+            The Class to be added to the Qif.
+
+        Raises
+        ------
+        TypeError
+            If ``new_class`` is not a Class object.
+        """
         self._assert_type([new_class], Class)
         self._classes[new_class.name] = new_class
 
     def remove_class(self, class_name):
-        """Remove a class from the Qif object"""
+        """Remove a class from the Qif object.
+
+        Parameters
+        ----------
+        class_name : str
+            The name of the Class to be removed.
+
+        Returns
+        -------
+        Class
+            The Class removed.
+        """
         return self._classes.pop(class_name)
 
     def to_qif(self, path=None, date_format='%d/%m/%Y'):
-        """Write the Qif object to a QIF file and return the string."""
+        """Write the Qif object to a QIF file and return the string.
+
+        Parameters
+        ----------
+        path : str, default=None
+            The path of the QIF file to be generated, if desired.
+        date_format : str, default='%d/%m/%Y'
+            The format of the date (using ``datetime`` verbs) to be input into the QIF file.
+
+        Returns
+        -------
+        qif_data : str
+            The string of QIF data.
+        """
         qif_data = ''
 
         if self._classes:
@@ -434,7 +547,25 @@ QIF:
         return qif_data
 
     def to_dicts(self, data='transactions', ignore=None):
-        """Return a list of dict representations of transactions."""
+        """Return a list of dict representations of desired data.
+
+        Parameters
+        ----------
+        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes'}
+            The data type to be converted to dicts.
+        ignore : list of str, default=None
+             A list of strings of parameters that should be excluded from the dict.
+
+        Returns
+        -------
+        list of dict
+            A list of dict objects containing ``data`` specified.
+
+        Raises
+        ------
+        RuntimeError
+            If ``data`` is not a valid option.
+        """
         if ignore is None:
             ignore = []
 
@@ -442,7 +573,7 @@ QIF:
         options = ['transactions', 'investments', 'splits', 'accounts', 'categories', 'classes']
 
         if data not in options:
-            raise KeyError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
+            raise RuntimeError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
 
         if data == 'transactions':
             transactions = []
@@ -490,7 +621,35 @@ QIF:
 
     def to_csv(self, path=None, data='transactions', ignore=None, separator=',', sub_separator=';',
                date_format='%d/%m/%Y'):
-        """Write a CSV file containing all transaction data and return the string."""
+        """Write a CSV file containing desired data and return the string.
+
+        Parameters
+        ----------
+        path : str, default=None
+            The path of the CSV file to be created, if desired.
+        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes'}
+            The data type to be input into the CSV file.
+        ignore : list of str, default=None
+            A list of strings of parameters that should be excluded from the dict.
+        separator : str, default=','
+            The separator for the CSV file.
+        sub_separator : str, default=';'
+            The character to be used to replace ``separator`` if it appears in any strings.
+        date_format : str, default='%d/%m/%Y'
+            The format of the date (using ``datetime`` verbs) to be input into the QIF file.
+
+        Returns
+        -------
+        csv_data : str
+            A string containing the CSV data.
+
+        Raises
+        ------
+        RuntimeError
+            If ``data`` is not a valid option.
+        ValueError
+            If ``separator`` and ``sub_separator`` are present within each other.
+        """
         if ignore is None:
             ignore = []
 
@@ -498,7 +657,7 @@ QIF:
         options = ['transactions', 'splits', 'investments', 'accounts', 'categories', 'classes']
 
         if data not in options:
-            raise KeyError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
+            raise RuntimeError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
 
         if separator in sub_separator or sub_separator in separator:
             raise ValueError('Separator and sub-separator cannot be equal or contain each other')
@@ -676,7 +835,25 @@ QIF:
         return csv_data
 
     def to_dataframe(self, data='transactions', ignore=None):
-        """Return a pandas DataFrame containing all transaction data."""
+        """Return a pandas DataFrame containing desired data.
+
+        Parameters
+        ----------
+        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes'}
+            The data type to be input into the CSV file.
+        ignore : list of str, default=None
+            A list of strings of parameters that should be excluded from the dict.
+
+        Returns
+        -------
+        DataFrame
+            A DataFrame containing he desired data.
+
+        Raises
+        ------
+        ModuleNotFoundError
+            If the pandas module is not installed.
+        """
         if ignore is None:
             ignore = []
 

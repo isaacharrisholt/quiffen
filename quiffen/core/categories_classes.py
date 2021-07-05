@@ -1,4 +1,56 @@
 class Category:
+    """
+    A node-like class used to represent a category. Can be built into trees to represent category families.
+
+    Attributes
+    ----------
+    children : list of Category
+        A list of the category's children objects.
+
+    Examples
+    --------
+    Creating a category tree, then rendering it to console.
+
+    >>> import quiffen
+    >>> food = quiffen.Category('Food')
+    >>> food
+    Category(name='Food', expense=True, hierarchy='Food')
+    >>> essentials = quiffen.Category('Essentials')
+    >>> food.add_child(essentials)
+    >>> pastas = quiffen.Category('Pastas')
+    >>> essentials.add_child(pastas)
+    >>> pastas.hierarchy
+    'Food:Essentials:Pastas'
+    >>> meat = quiffen.Category('Meat')
+    >>> food.add_child(meat)
+    >>> print(food.render_tree())
+    Food (root)
+    └─ Essentials
+       └─ Pastas
+    └─ Meat
+
+    Removing a category from a tree by both passing in the Category instance or the category name string.
+
+    >>> print(food.render_tree())
+    Food (root)
+    └─ Essentials
+       └─ Pastas
+    └─ Meat
+       └─ Chicken
+    >>> meat
+    Category(name='Meat', expense=True, parent=Category(name='Food', expense=True, hierarchy='Food'), hierarchy='Food:Meat')
+    >>> food.remove_child(meat, keep_children=True)
+    >>> print(food.render_tree())
+    Food (root)
+    └─ Essentials
+       └─ Pastas
+    └─ Chicken
+    >>> food.remove_child('Essentials')
+    >>> print(food.render_tree())
+    Food (root)
+    └─ Chicken
+    """
+
     def __init__(self,
                  name: str,
                  desc: str = None,
@@ -9,6 +61,29 @@ class Category:
                  tax_schedule_info: str = None,
                  parent=None,
                  hierarchy: str = None):
+        """Initialise an instance of the Category class.
+
+        Parameters
+        ----------
+        name : str
+            The name of the category.
+        desc : str, default=None
+            The category's description.
+        tax_related : bool, default=None
+            Whether the category represents a tax related group of transactions.
+        expense : bool, default=True
+            Whether the category represents expenses as opposed to income.
+        income : bool, default=False
+            Whether the category represents income as opposed to expenses.
+        budget_amount : float, default=None
+            The budget amount for this category.
+        tax_schedule_info : str, default=None
+            Information about the tax schedule for this category.
+        parent : Category, default=None
+            The parent category for this category.
+        hierarchy : str, default=None
+            The category hierarchy, separated by : characters.
+        """
         self._name = name
         self._desc = desc
         self._tax_related = tax_related
@@ -17,7 +92,12 @@ class Category:
         self._budget_amount = budget_amount
         self._tax_schedule_info = tax_schedule_info
         self._parent = parent
-        self._hierarchy = hierarchy
+
+        if hierarchy is not None:
+            self._hierarchy = hierarchy
+        else:
+            self._hierarchy = name
+
         self._children = []
 
     def __eq__(self, other):
@@ -130,6 +210,12 @@ class Category:
             if not isinstance(child, (Category, type(None))):
                 raise TypeError('Children must be Category objects')
 
+            if child.hierarchy is None:
+                child.hierarchy = child.name
+
+            if self._hierarchy not in child.hierarchy:
+                child.hierarchy = f'{self._hierarchy}:{child.hierarchy}'
+
         self._children = new_children
 
         # Update parent nodes
@@ -148,7 +234,18 @@ class Category:
 
     @classmethod
     def from_list(cls, lst):
-        """Return a category instance from a list"""
+        """Return a Category instance from a list of QIF strings.
+
+        Parameters
+        ----------
+        lst : list of str
+            List of strings containing QIF information about the category.
+
+        Returns
+        -------
+        Category
+            A Category object created from the QIF strings.
+        """
         kwargs = {}
         for field in lst:
             field = field.replace('\n', '')
@@ -188,14 +285,41 @@ class Category:
 
     @classmethod
     def from_string(cls, string, separator='\n'):
-        """Return a Category from a string"""
+        """Return a Category instance from a QIF file section string
+
+        Parameters
+        ----------
+        string : str
+            The string containing the QIF-formatted data.
+        separator : str, default='\n'
+             The line separator for the QIF file. This probably won't need changing.
+
+        Returns
+        -------
+        Category
+            A Category object created from the QIF strings.
+        """
         property_list = string.split(separator)
         return cls.from_list(property_list)
 
     def add_child(self, child_category):
-        """Add a child category to current category."""
+        """Add a child category to current category.
+
+        Parameters
+        ----------
+        child_category : str or Category
+            A Category object to be added as a child or the string name of a new category to be added.
+
+        Raises
+        ------
+        TypeError
+            If ``child_category`` is not a str or Category.
+        """
+        if isinstance(child_category, str):
+            child_category = Category(child_category)
+
         if not isinstance(child_category, Category):
-            raise TypeError('Child must be of type Category')
+            raise TypeError('Child must be of type Category or a string')
 
         self._children.append(child_category)
         child_category = self._children[-1]
@@ -203,13 +327,53 @@ class Category:
         if child_category.parent != self:
             child_category.parent = self
 
-    def remove_child(self, child_category):
-        """Remove a child category from current category"""
-        child_category._parent = None
-        self._children = [child for child in self._children if child is not child_category]
+        if child_category.hierarchy is None:
+            child_category.hierarchy = child_category.name
+
+        if self._hierarchy not in child_category.hierarchy:
+            child_category.hierarchy = f'{self._hierarchy}:{child_category.hierarchy}'
+
+    def remove_child(self, child_category, keep_children=False):
+        """Remove a child category from the current category's hierarchy.
+
+        Parameters
+        ----------
+        child_category : str or Category
+            The Category object to be removed as a child or the string name of the category.
+        keep_children : bool, default=False
+            Whether or not the children of the removed category should be kept in the tree and moved up a level.
+
+        Raises
+        ------
+        TypeError
+            If ``child_category`` is not a str or Category.
+        """
+        if isinstance(child_category, str):
+            name = child_category
+        elif isinstance(child_category, Category):
+            name = child_category.name
+        else:
+            raise TypeError('Child must be of type Category or a string')
+
+        child_category = self.find_category(child_category)
+        parent = child_category.parent
+        child_category.parent = None
+        child_category.hierarchy.replace(self._hierarchy + ':', '')
+
+        if keep_children:
+            for child in child_category.children:
+                child.hierarchy = child.hierarchy.replace(child_category.name + ':', '')
+                parent.add_child(child)
+
+        parent.children = [child for child in parent.children if child is not child_category]
 
     def traverse_down(self):
-        """Return a list of all children, grandchildren etc."""
+        """Return a flat list of all children, grandchildren etc.
+
+        Returns
+        -------
+        all_children : list of Category
+        """
         nodes_to_visit = [self]
         all_children = []
         while nodes_to_visit:
@@ -219,7 +383,12 @@ class Category:
         return all_children
 
     def traverse_up(self):
-        """Return a list of all parents, grandparents etc."""
+        """Return a list of all parents, grandparents etc.
+
+        Returns
+        -------
+        all_parents : list of Category
+        """
         current_node = self
         all_parents = []
         while current_node._parent:
@@ -227,8 +396,11 @@ class Category:
             current_node = current_node._parent
         return all_parents
 
-    def render_tree(self, level=0):
-        """Renders a tree-like structure for categories."""
+    def render_tree(self, _level=0):
+        """Renders a tree-like structure for categories.
+
+        Runs recursively, and uses ``_level`` just to keep track of the indentation.
+        """
         if not self._children:
             return self._name
 
@@ -237,21 +409,47 @@ class Category:
         else:
             is_root_str = ''
 
-        return self._name + f'{is_root_str}\n' + '\n'.join(['   ' * level + '└─ ' + child.render_tree(level + 1)
+        return self._name + f'{is_root_str}\n' + '\n'.join(['   ' * _level + '└─ ' + child.render_tree(_level + 1)
                                                             for child in self._children])
 
-    def find_category(self, value):
-        """Returns a node with a given name from the children of current node"""
+    def find_category(self, node_name):
+        """Returns a node with a given name from the children of current node.
+
+        Parameters
+        ----------
+        node_name : str
+            The name of the category to find.
+
+        Returns
+        -------
+        Category
+            The category searched for.
+
+        Raises
+        ------
+        KeyError
+            If the category cannot be found.
+        """
         nodes_to_visit = [self]
         while nodes_to_visit:
             current_node = nodes_to_visit.pop()
-            if current_node.name == value:
+            if current_node.name == node_name:
                 return current_node
             nodes_to_visit.extend(current_node.children)
-        raise KeyError(f'Node with name \'{value}\' not found')
+        raise KeyError(f'Node with name \'{node_name}\' not found')
 
     def to_dict(self, ignore=None):
-        """Return a representation of the Category object as a dict"""
+        """Return a representation of the Category object as a dict.
+
+        Parameters
+        ----------
+        ignore : list of str
+            A list of the object's attributes that should not be included in the resulting dict.
+
+        Returns
+        -------
+        dict
+        """
         if ignore is None:
             ignore = []
 
@@ -270,14 +468,20 @@ class Category:
 class Class:
     """
     A class used to represent a QIF Class.
-
-    Parameters
-    ----------
-
     """
+
     def __init__(self,
                  name: str,
                  desc: str = None):
+        """Initialise an instance of the Class class.
+
+        Parameters
+        ----------
+        name : str
+            The name of the class.
+        desc : str, default=None
+            The description of the class.
+        """
         self._name = name
         self._desc = desc
 
@@ -310,6 +514,18 @@ class Class:
 
     @classmethod
     def from_list(cls, lst):
+        """Return a class instance from a list of QIF strings.
+
+        Parameters
+        ----------
+        lst : list of str
+            List of strings containing QIF information about the account.
+
+        Returns
+        -------
+        Class
+            A Class object created from the QIF strings.
+        """
         name = None
         desc = None
 
@@ -337,12 +553,36 @@ class Class:
 
     @classmethod
     def from_string(cls, string, separator='\n'):
-        """Return a Class from a string"""
+        """Return a class instance from a QIF file section string.
+
+        Parameters
+        ----------
+        string : str
+            The string containing the QIF-formatted data.
+        separator : str, default='\n'
+             The line separator for the QIF file. This probably won't need changing.
+
+        Returns
+        -------
+        Class
+            A Class object created from the QIF strings.
+        """
         property_list = string.split(separator)
         return cls.from_list(property_list)
 
     def to_dict(self, ignore=None):
-        """Return a representation of the Class object as a dict"""
+        """Return a dict object representing the Class.
+
+        Parameters
+        ----------
+        ignore : list of str, default=None
+             A list of strings of parameters that should be excluded from the dict.
+
+        Returns
+        -------
+        dict
+            A dict representing the Class object.
+        """
         if ignore is None:
             ignore = []
 

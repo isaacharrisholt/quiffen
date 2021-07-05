@@ -8,12 +8,14 @@ from quiffen.core.categories_classes import Category, Class
 
 class TransactionList(collections.MutableSequence, ABC):
     """
-    A class to store Transaction and Investment objects only in an ordered list.
+    A class to store Transaction-type objects only in an ordered list.
 
-    Parameters
+    Extends collections.MutableSequence, so all list operations will work on this class.
+
+    Attributes
     ----------
-    args : Transaction(s)/Investment(s)
-        Transactions/Investments to be put in the list.
+    list : list
+        The list of Transaction-type objects stored by the object.
     """
     def __init__(self, *args):
         self._list = []
@@ -39,12 +41,21 @@ class TransactionList(collections.MutableSequence, ABC):
         return f'TransactionList({", ".join([repr(item) for item in self._list])})'
 
     def insert(self, key, value):
+        """Insert an object into the list at a specified key. Overrides the MutableSequence.insert() method.
+
+        Parameters
+        ----------
+        key : int
+            The key at which to insert ``value``.
+        value : Transaction or Investment
+            The Transaction-type object to be inserted into the list.
+        """
         self._check_if_transaction(value)
         self.list.insert(key, value)
 
     @staticmethod
     def _check_if_transaction(item):
-        """Check if a given item is an instance of the Transaction or Investment classes and raise an error if not"""
+        # Check if a given item is an instance of the Transaction or Investment classes and raise an error if not.
         if not isinstance(item, (Transaction, Investment, Split)):
             raise TypeError(f'Only Transaction-type objects can be appended to a TransactionList')
 
@@ -63,25 +74,32 @@ class Transaction:
     """
     A class used to represent a transaction.
 
-    Parameters
+    Attributes
     ----------
-    date : datetime
-        Date transaction occurred. May not include timestamp.
-    amount : float
-        The amount of the transaction. May be positive or negative.
-    memo : str
-        Also known as the reference. A string describing the purpose behind the transaction.
-    payee : str
-        The name of the payee on the other end of the transaction. The payee is the receiver of the money if amount is
-        negative, else they are the sender of the money.
-    payee_address : str
-        The address of the aforementioned payee.
-    category : str
-        The category under which the transaction falls. E.g. 'groceries' or 'shopping'.
-    check_number : int
-        The check number if the transaction relates to a check
-    reimbursable_expense : bool
-        Whether or not this transaction is flagged as a reimbursable business expense.
+    is_split : bool
+        Whether or not this transaction is split (see documentation on parameter ``splits``)
+    split_categories : dict
+        The categories of the splits for this transaction, if transaction ``is_split``.
+
+    Examples
+    --------
+    Create a Transaction instance, then convert to a dict, ignoring the date.
+
+    >>> import quiffen
+    >>> from datetime import datetime
+    >>> cat = quiffen.Category('Finances')
+    >>> tr = quiffen.Transaction(date=datetime.now(), amount=150.60, category=cat)
+    >>> tr
+    Transaction(date=datetime.datetime(2021, 7, 5, 10, 45, 40, 48195), amount=150.6, category=Category(name='Finances',
+    expense=True, hierarchy='Finances'))
+    >>> print(tr)
+    Transaction:
+        Date: 2021-07-05 10:45:40.048195
+        Amount: 150.6
+        Category: Finances
+    >>> tr.to_dict(ignore=['date'], dictify_category=True)
+    {'amount': 150.6, 'category': {'name': 'Finances', 'expense': True, 'income': False, 'hierarchy': 'Finances',
+    'children': []}}
     """
     def __init__(self,
                  date: datetime,
@@ -104,6 +122,52 @@ class Transaction:
                  original_loan_amount: float = None,
                  splits: TransactionList = None
                  ):
+        """Initialise an instance of the Transaction class.
+
+        Parameters
+        ----------
+        date : datetime
+            Date transaction occurred. May or may not include timestamp.
+        amount : float
+            The amount of the transaction. May be positive or negative.
+        memo : str, default=None
+            Also known as the reference. A string describing the purpose behind the transaction.
+        cleared : str, default=None
+            The cleared status of this transaction. See the QIF standards for valid values.
+        payee : str, default=None
+            The name of the payee on the other end of the transaction. The payee is the receiver of the money if amount is
+            negative, else they are the sender of the money.
+        payee_address : str, default=None
+            The address of the aforementioned payee.
+        category : Category, default=None
+            The category object that represents the transaction.
+        check_number : int, default=None
+            The check number if the transaction relates to a check
+        reimbursable_expense : bool, default=None
+            Whether or not this transaction is flagged as a reimbursable business expense.
+        small_business_expense : bool, default=None
+            Whether or not this transaction is flagged as a small business expense.
+        to_account : str, default=None
+            The account the transaction was sent to, if applicable.
+        first_payment_date : datetime.datetime, default=None
+            If this transaction was completed over multiple days, the first payment date.
+        loan_length : float, default=None
+            The length of the loan, if applicable.
+        num_payments : int, default=None
+            If this payment was split over multiple payments, the number of such payments.
+        periods_per_annum : int, default=None
+            The periods per annum for this transaction.
+        interest_rate : float, default=None
+            The interest rate on this transaction.
+        current_loan_balance : float, default=None
+            The current loan balance, if applicable.
+        original_loan_amount : float, default=None
+            The original loan amount, if applicable.
+        splits : TransactionList, default=None
+            If this transaction has multiple categories (e.g. an Amazon purchase of an electrical item and a book), it
+            can be split in QIF files to represent this. Each split has its own memo, category and amount.
+            This parameter is a TransactionList containing the splits for this transaction.
+        """
         self._date = date
         self._amount = amount
         self._memo = memo
@@ -144,9 +208,17 @@ class Transaction:
 
     def __str__(self):
         properties = ''
+        ignore = ['_last_split', '_is_split']
         for (object_property, value) in self.__dict__.items():
-            if value:
-                properties += f'\n    {object_property.strip("_").replace("_", " ").title()}: {value}'
+            if value and object_property not in ignore:
+                if object_property == '_category':
+                    properties += f'\n    Category: {value.name}'
+                elif object_property == '_split_categories':
+                    properties += f'\n    Split Categories: {[name for name in value]}'
+                elif object_property == '_splits':
+                    properties += f'\n    Splits: {len(value)} total split(s)'
+                else:
+                    properties += f'\n    {object_property.strip("_").replace("_", " ").title()}: {value}'
 
         return 'Transaction:' + properties
 
@@ -339,26 +411,25 @@ class Transaction:
         self._is_split = bool(self._splits)
 
     @property
-    def last_split(self):
-        return self._last_split
-
-    @last_split.setter
-    def last_split(self, new_split):
-        self._assert_type([new_split], Split)
-        self._last_split = new_split
-
-    @property
     def split_categories(self):
         return self._split_categories
 
-    @split_categories.setter
-    def split_categories(self, new_split_categories):
-        self._assert_type(new_split_categories, Category)
-        self._split_categories = new_split_categories
-
     @classmethod
     def from_list(cls, lst, day_first=True):
-        """Return a Transaction object from a list of properties as found in a QIF file."""
+        """Return a class instance from a list of QIF strings.
+
+        Parameters
+        ----------
+        lst : list of str
+            List of strings containing QIF information about the transaction.
+        day_first : bool, default=True
+             Whether the day or month comes first in the date.
+
+        Returns
+        -------
+        Transaction
+            A Transaction object created from the QIF strings.
+        """
         kwargs = {}
         categories = {}
         classes = []
@@ -481,13 +552,28 @@ class Transaction:
 
     @classmethod
     def from_string(cls, string, separator='\n', day_first=True):
-        """Return a Transaction object from a string of properties separated by separator."""
+        """Return a class instance from a QIF file section string.
+
+        Parameters
+        ----------
+        string : str
+            The string containing the QIF-formatted data.
+        separator : str, default='\n'
+             The line separator for the QIF file. This probably won't need changing.
+        day_first : bool, default=True
+             Whether the day or month comes first in the date.
+
+        Returns
+        -------
+        Transaction
+            A Transaction object created from the QIF strings.
+        """
         property_list = string.split(separator)
         return cls.from_list(property_list, day_first)
 
     @staticmethod
     def _assert_type(iterable, types):
-        """Assert that all items in a given list are of specific types"""
+        # Assert that all items in a given list are of specific types.
         if isinstance(iterable, dict):
             for item in iterable.values():
                 if not isinstance(item, types):
@@ -498,7 +584,22 @@ class Transaction:
                     raise TypeError(f'\'{repr(item)} is not of type {types}')
 
     def add_split(self, new_split):
-        """Add a Split to Transaction"""
+        """Add a Split to Transaction.
+
+        Parameters
+        ----------
+        new_split : Split
+            The Split object to be added.
+
+        Raises
+        -------
+        TypeError
+            If ``new_split`` is not a Split.
+        ValueError
+            If percentage sum of all splits added is greater than 100.
+        ValueError
+            If sum of split amounts is greater than overall transaction amount.
+        """
         if not isinstance(new_split, Split):
             raise TypeError('Must be a Split object')
 
@@ -513,8 +614,23 @@ class Transaction:
         self.refresh_is_split()
 
     def remove_split(self, multiple=False, **kwargs):
-        """Remove Split(s) from Transaction if they match a set of kwargs"""
-        kwargs = dict(kwargs)
+        """Remove Split(s) from Transaction if they match a set of kwargs.
+
+        Parameters
+        ----------
+        multiple : bool, default=None
+            Whether or not to remove multiple splits that match ``kwargs``.
+        kwargs
+            The keyword arguments to filter the splits by (e.g. amount=150 would only remove splits with amount=150)
+
+        Raises
+        -------
+        RuntimeError
+            If no kwargs are provided.
+        """
+        if not kwargs:
+            raise RuntimeError('No kwargs provided')
+
         indices = []
 
         for (i, split) in enumerate(self._splits):
@@ -538,7 +654,22 @@ class Transaction:
         self.refresh_is_split()
 
     def to_dict(self, ignore=None, dictify_splits=True, dictify_category=True):
-        """Return a dictionary representation of the Transaction instance."""
+        """Return a dict object representing the Transaction.
+
+        Parameters
+        ----------
+        ignore : list of str, default=None
+             A list of strings of parameters that should be excluded from the dict.
+        dictify_splits : bool, default=True
+             Whether Splits within Transaction objects should be converted to dicts or left as they are.
+        dictify_category : bool, default=True
+             Whether the Transaction's category should be converted to a dict or left as it is.
+
+        Returns
+        -------
+        dict
+            A dict representing the Transaction object.
+        """
         if ignore is None:
             ignore = []
 
@@ -558,10 +689,32 @@ class Split:
     """
     A class used to represent a split in a transaction.
 
-    Parameters
-    ----------
+    Examples
+    --------
+    Adding Splits to a transaction to show that there were two categories that represent the transaction.
 
+    >>> import quiffen
+    >>> from datetime import datetime
+    >>> tr = quiffen.Transaction(date=datetime.now(), amount=150.60)
+    >>> beauty = quiffen.Category('Beauty')
+    >>> electrical = quiffen.Category('Electrical')
+    >>> splt1 = quiffen.Split(amount=50, category=beauty)
+    >>> splt2 = quiffen.Split(amount=100.60, category=electrical)
+    >>> tr.add_split(splt1)
+    >>> tr.add_split(splt2)
+    >>> print(tr)
+    Transaction:
+        Date: 2021-07-05 10:59:02.456190
+        Amount: 150.6
+        Splits: 2 total split(s)
+    >>> print(tr.splits)
+    [Split(amount=50, category=Category(name='Beauty', expense=True, hierarchy='Beauty')), Split(amount=100.6,
+    category=Category(name='Electrical', expense=True, hierarchy='Electrical'))]
+    >>> tr.remove_split(amount=50)
+    >>> print(tr.splits)
+    [Split(amount=100.6, category=Category(name='Electrical', expense=True, hierarchy='Electrical'))]
     """
+
     def __init__(self,
                  date: datetime = None,
                  amount: float = None,
@@ -573,6 +726,29 @@ class Split:
                  check_number: int = None,
                  percent: float = None
                  ):
+        """Initialise an instance of the Split class.
+
+        Parameters
+        ----------
+        date : datetime, default=None
+            The date of the split transaction.
+        amount : float, default=None
+            The amount this of this split.
+        memo : str, default=None
+            The memo (reference) for this split.
+        cleared : str, default=None
+            The cleared status of this split. See the QIF standards for valid values.
+        payee_address : str, default=None
+            The address of the payee for this split.
+        category : Category, default=None
+            The Category object that represents the category this split falls under.
+        to_account : str, default=None
+            The to account for this split.
+        check_number : int, default=None
+            The check number if this transaction relates to a check.
+        percent : float, default=None
+            The percentage value of this split compared to the overall transaction.
+        """
         self._date = date
         self._amount = amount
         self._memo = memo
@@ -592,7 +768,10 @@ class Split:
         properties = ''
         for (object_property, value) in self.__dict__.items():
             if value:
-                properties += f'\n        {object_property.strip("_").replace("_", " ").title()}: {value}'
+                if object_property == '_category':
+                    properties += f'\n        Category: {value.name}'
+                else:
+                    properties += f'\n        {object_property.strip("_").replace("_", " ").title()}: {value}'
 
         return '\n    Split:' + properties
 
@@ -691,6 +870,20 @@ class Split:
         self._percent = float(new_percent)
 
     def to_dict(self, ignore=None, dictify_category=True):
+        """Return a dict object representing the Split.
+
+        Parameters
+        ----------
+        ignore : list of str, default=None
+             A list of strings of parameters that should be excluded from the dict.
+        dictify_category : bool, default=True
+             Whether the Split's category should be converted to a dict or left as it is.
+
+        Returns
+        -------
+        dict
+            A dict representing the Split object.
+        """
         if ignore is None:
             ignore = []
         res = {key.strip('_'): value for (key, value) in self.__dict__.items()
@@ -706,16 +899,9 @@ class Investment:
     """
     A class used to represent an investment.
 
-    Parameters
-    ----------
-    date : datetime
-        Date transaction occurred. May not include timestamp.
-    amount : float
-        The amount of the transaction. May be positive or negative.
-    memo : str
-        Also known as the reference. A string describing the purpose behind the investment.
-
+    Acts almost identically to the Transaction class, but with a few different parameters and no splits.
     """
+
     def __init__(self,
                  date: datetime,
                  action: str = None,
@@ -730,6 +916,35 @@ class Investment:
                  transfer_amount: float = None,
                  commission: float = None
                  ):
+        """Initialise an instance of the Investment class.
+
+        Parameters
+        ----------
+        date : datetime
+            Date investment occurred. May or may not include timestamp.
+        action : str, default=None
+            The investment action (Buy, Sell, etc.)
+        security : str, default=None
+            The security name.
+        price : float, default=None
+            The price of the security.
+        quantity : float, default=None
+            The quantity of the security bought, sold, etc.
+        cleared : str, default=None
+            The cleared status of this investment. See the QIF standards for valid values.
+        amount : float, default=None
+            The overall amount of this investment.
+        memo : str, default=None
+            Also known as the reference. A string describing the purpose behind the investment.
+        first_line : str, default=None
+            The first line of the investment.
+        to_account : str, default=None
+            The to account of the investment, if applicable.
+        transfer_amount : float, default=None
+            The amount transferred for the investment.
+        commission : float, default=None
+            The commission paid/received on the investment.
+        """
         self._date = date
         self._action = action
         self._security = security
@@ -881,7 +1096,20 @@ class Investment:
 
     @classmethod
     def from_list(cls, lst, day_first=True):
-        """Return an Investment object from a list of properties as found in a QIF file."""
+        """Return a class instance from a list of QIF strings.
+
+        Parameters
+        ----------
+        lst : list of str
+            List of strings containing QIF information about the investment.
+        day_first : bool, default=True
+             Whether the day or month comes first in the date.
+
+        Returns
+        -------
+        Investment
+            An Investment object created from the QIF strings.
+        """
         kwargs = {}
         for field in lst:
             field = field.replace('\n', '')
@@ -926,12 +1154,38 @@ class Investment:
 
     @classmethod
     def from_string(cls, string, separator='\n', day_first=True):
-        """Return an Investment object from a string of properties separated by separator."""
+        """Return a class instance from a QIF file section string.
+
+        Parameters
+        ----------
+        string : str
+            The string containing the QIF-formatted data.
+        separator : str, default='\n'
+             The line separator for the QIF file. This probably won't need changing.
+        day_first : bool, default=True
+             Whether the day or month comes first in the date.
+
+        Returns
+        -------
+        Investment
+            An Investment object created from the QIF strings.
+        """
         property_list = string.split(separator)
         return cls.from_list(property_list, day_first)
 
     def to_dict(self, ignore=None):
-        """Return a dictionary representation of the Investment instance."""
+        """Return a dict object representing the Transaction.
+
+        Parameters
+        ----------
+        ignore : list of str, default=None
+             A list of strings of parameters that should be excluded from the dict.
+
+        Returns
+        -------
+        dict
+            A dict representing the Investment object.
+        """
         if ignore is None:
             ignore = []
         return {key.strip('_'): value for (key, value) in self.__dict__.items()
