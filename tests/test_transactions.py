@@ -50,13 +50,13 @@ class TestTransaction(TestCase):
     def test_from_string(self):
         string = 'D01/06/2021\nT-150.60\nPMe\nMMemo'
         date_obj = datetime.strptime('01/06/2021', '%d/%m/%Y')
-        self.assertEqual(Transaction.from_string(string)[0], Transaction(date=date_obj, amount=-150.60, payee='Me',
-                                                                         memo='Memo'))
+        tr, _, _ = Transaction.from_string(string)
+        self.assertEqual(tr, Transaction(date=date_obj, amount=-150.60, payee='Me', memo='Memo'))
 
         string = 'D01/06/2021_T-150.60_PMe_MMemo'
         date_obj = datetime.strptime('01/06/2021', '%d/%m/%Y')
-        self.assertEqual(Transaction.from_string(string, separator='_')[0], Transaction(date=date_obj, amount=-150.60,
-                                                                                        payee='Me', memo='Memo'))
+        tr, _, _ = Transaction.from_string(string, separator='_')
+        self.assertEqual(tr, Transaction(date=date_obj, amount=-150.60, payee='Me', memo='Memo'))
 
     def test_add_remove_split(self):
         date_obj = datetime.strptime('01/06/2021', '%d/%m/%Y')
