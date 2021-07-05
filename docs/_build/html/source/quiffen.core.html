@@ -1,0 +1,1887 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>quiffen.core package &mdash; Quiffen 0.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="quiffen package" href="quiffen.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Quiffen
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Full API:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">quiffen</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="quiffen.html">quiffen package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="quiffen.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">quiffen.core package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="quiffen.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quiffen.html#module-quiffen.utils">quiffen.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quiffen.html#module-quiffen">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Quiffen</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">quiffen</a> &raquo;</li>
+        
+          <li><a href="quiffen.html">quiffen package</a> &raquo;</li>
+        
+      <li>quiffen.core package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/source/quiffen.core.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="quiffen-core-package">
+<h1>quiffen.core package<a class="headerlink" href="#quiffen-core-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-quiffen.core.accounts">
+<span id="quiffen-core-accounts-module"></span><h2>quiffen.core.accounts module<a class="headerlink" href="#module-quiffen.core.accounts" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quiffen.core.accounts.</span></span><span class="sig-name descname"><span class="pre">Account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credit_limit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">balance</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_at_balance</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.accounts.Account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class representing a QIF account.</p>
+<p class="rubric">Examples</p>
+<p>Creating an Account instance, then adding a transaction.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">quiffen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Account</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Example name&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Some description&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span>
+<span class="go">Account(name=&#39;Example name&#39;, desc=&#39;Some description&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tr</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Transaction</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">amount</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">last_header</span> <span class="o">=</span> <span class="s1">&#39;Bank&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">add_transaction</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">transactions</span>
+<span class="go">{&#39;Bank&#39;: TransactionList(Transaction(date=datetime.datetime(2021, 7, 2, 18, 31, 47, 817025), amount=150.0))}</span>
+</pre></div>
+</div>
+<p>Creating an account instance from a section list in a QIF file.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">quiffen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;!Account</span><span class="se">\n</span><span class="s1">NPersonal Bank Account</span><span class="se">\n</span><span class="s1">DMy Personal bank account with Barclays.</span><span class="se">\n</span><span class="s1">^</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Account</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span>
+<span class="go">Account(name=&#39;Personal Bank Account&#39;, desc=&#39;My Personal bank account with Barclays.&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>transactions</strong><span class="classifier">dict</span></dt><dd><p>A dict of header strings as keys and TransactionList objects as values.</p>
+</dd>
+<dt><strong>last_header</strong><span class="classifier">{None, ‘Cash’, ‘Bank’, ‘CCard’, ‘Oth A’, ‘Oth L’, ‘Invoice’, ‘Invst’}</span></dt><dd><p>The last transaction header used. This must be set before transactions can be added.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.accounts.Account.add_transaction" title="quiffen.core.accounts.Account.add_transaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_transaction</span></code></a>(transaction[, header])</p></td>
+<td><p>Add a transaction to the dict of TransactionList objects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.accounts.Account.from_list" title="quiffen.core.accounts.Account.from_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_list</span></code></a>(lst[, day_first])</p></td>
+<td><p>Return a class instance from a list of QIF strings.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.accounts.Account.from_string" title="quiffen.core.accounts.Account.from_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_string</span></code></a>(string[, separator, day_first])</p></td>
+<td><p>Return a class instance from a QIF file section string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.accounts.Account.to_dict" title="quiffen.core.accounts.Account.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>([ignore, dictify_transactions, …])</p></td>
+<td><p>Return a dict object representing the Account.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.account_type">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">account_type</span></span><a class="headerlink" href="#quiffen.core.accounts.Account.account_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.add_transaction">
+<span class="sig-name descname"><span class="pre">add_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.accounts.Account.add_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a transaction to the dict of TransactionList objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>transaction</strong><span class="classifier">Transaction or Investment</span></dt><dd><p>The Transaction-type object to be added.</p>
+</dd>
+<dt><strong>header</strong><span class="classifier">{None, ‘Cash’, ‘Bank’, ‘CCard’, ‘Oth A’, ‘Oth L’, ‘Invoice’, ‘Invst’}</span></dt><dd><p>The header under which the transaction falls. Will be used as a key in the dict of transactions.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>RuntimeError</dt><dd><p>If there is no header provided, and no <code class="docutils literal notranslate"><span class="pre">last_header</span></code> set.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.balance">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">balance</span></span><a class="headerlink" href="#quiffen.core.accounts.Account.balance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.credit_limit">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">credit_limit</span></span><a class="headerlink" href="#quiffen.core.accounts.Account.credit_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.date_at_balance">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">date_at_balance</span></span><a class="headerlink" href="#quiffen.core.accounts.Account.date_at_balance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.desc">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">desc</span></span><a class="headerlink" href="#quiffen.core.accounts.Account.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.from_list">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.accounts.Account.from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a class instance from a list of QIF strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>lst</strong><span class="classifier">list of str</span></dt><dd><p>List of strings containing QIF information about the account.</p>
+</dd>
+<dt><strong>day_first</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether the day or month comes first in the date.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Account</dt><dd><p>An Account object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.from_string">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.accounts.Account.from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a class instance from a QIF file section string.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>string</strong><span class="classifier">str</span></dt><dd><blockquote>
+<div><p>The string containing the QIF-formatted data.</p>
+</div></blockquote>
+<p>separator : str, default=’</p>
+</dd>
+<dt><strong>‘</strong></dt><dd><blockquote>
+<div><p>The line separator for the QIF file. This probably won’t need changing.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>day_first<span class="classifier">bool, default=True</span></dt><dd><p>Whether the day or month comes first in the date.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Account</dt><dd><p>An Account object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.last_header">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">last_header</span></span><a class="headerlink" href="#quiffen.core.accounts.Account.last_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#quiffen.core.accounts.Account.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dictify_transactions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dictify_splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.accounts.Account.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dict object representing the Account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ignore</strong><span class="classifier">list of str, default=None</span></dt><dd><p>A list of strings of parameters that should be excluded from the dict.</p>
+</dd>
+<dt><strong>dictify_transactions</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether the Transaction objects should be converted to dicts or left as they are.</p>
+</dd>
+<dt><strong>dictify_splits</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether Splits within Transaction objects should be converted to dicts or left as they are.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>dict</dt><dd><p>A dict representing the Account object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.accounts.Account.transactions">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">transactions</span></span><a class="headerlink" href="#quiffen.core.accounts.Account.transactions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-quiffen.core.categories_classes">
+<span id="quiffen-core-categories-classes-module"></span><h2>quiffen.core.categories_classes module<a class="headerlink" href="#module-quiffen.core.categories_classes" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quiffen.core.categories_classes.</span></span><span class="sig-name descname"><span class="pre">Category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_related</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expense</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">income</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">budget_amount</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_schedule_info</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A node-like class used to represent a category. Can be built into trees to represent category families.</p>
+<p class="rubric">Examples</p>
+<p>Creating a category tree, then rendering it to console.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">quiffen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">food</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Category</span><span class="p">(</span><span class="s1">&#39;Food&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">food</span>
+<span class="go">Category(name=&#39;Food&#39;, expense=True, hierarchy=&#39;Food&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">essentials</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Category</span><span class="p">(</span><span class="s1">&#39;Essentials&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">food</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">essentials</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pastas</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Category</span><span class="p">(</span><span class="s1">&#39;Pastas&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">essentials</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">pastas</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pastas</span><span class="o">.</span><span class="n">hierarchy</span>
+<span class="go">&#39;Food:Essentials:Pastas&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meat</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Category</span><span class="p">(</span><span class="s1">&#39;Meat&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">food</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">meat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">food</span><span class="o">.</span><span class="n">render_tree</span><span class="p">())</span>
+<span class="go">Food (root)</span>
+<span class="go">└─ Essentials</span>
+<span class="go">   └─ Pastas</span>
+<span class="go">└─ Meat</span>
+</pre></div>
+</div>
+<p>Removing a category from a tree by both passing in the Category instance or the category name string.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">food</span><span class="o">.</span><span class="n">render_tree</span><span class="p">())</span>
+<span class="go">Food (root)</span>
+<span class="go">└─ Essentials</span>
+<span class="go">   └─ Pastas</span>
+<span class="go">└─ Meat</span>
+<span class="go">   └─ Chicken</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meat</span>
+<span class="go">Category(name=&#39;Meat&#39;, expense=True, parent=Category(name=&#39;Food&#39;, expense=True, hierarchy=&#39;Food&#39;), hierarchy=&#39;Food:Meat&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">food</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">meat</span><span class="p">,</span> <span class="n">keep_children</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">food</span><span class="o">.</span><span class="n">render_tree</span><span class="p">())</span>
+<span class="go">Food (root)</span>
+<span class="go">└─ Essentials</span>
+<span class="go">   └─ Pastas</span>
+<span class="go">└─ Chicken</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">food</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="s1">&#39;Essentials&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">food</span><span class="o">.</span><span class="n">render_tree</span><span class="p">())</span>
+<span class="go">Food (root)</span>
+<span class="go">└─ Chicken</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>children</strong><span class="classifier">list of Category</span></dt><dd><p>A list of the category’s children objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Category.add_child" title="quiffen.core.categories_classes.Category.add_child"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_child</span></code></a>(child_category)</p></td>
+<td><p>Add a child category to current category.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Category.find_category" title="quiffen.core.categories_classes.Category.find_category"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_category</span></code></a>(node_name)</p></td>
+<td><p>Returns a node with a given name from the children of current node.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Category.from_list" title="quiffen.core.categories_classes.Category.from_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_list</span></code></a>(lst)</p></td>
+<td><p>Return a Category instance from a list of QIF strings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Category.from_string" title="quiffen.core.categories_classes.Category.from_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_string</span></code></a>(string[, separator])</p></td>
+<td><p>Return a Category instance from a QIF file section string</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Category.remove_child" title="quiffen.core.categories_classes.Category.remove_child"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_child</span></code></a>(child_category[, keep_children])</p></td>
+<td><p>Remove a child category from the current category’s hierarchy.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Category.render_tree" title="quiffen.core.categories_classes.Category.render_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_tree</span></code></a>([_level])</p></td>
+<td><p>Renders a tree-like structure for categories.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Category.to_dict" title="quiffen.core.categories_classes.Category.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>([ignore])</p></td>
+<td><p>Return a representation of the Category object as a dict.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Category.traverse_down" title="quiffen.core.categories_classes.Category.traverse_down"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_down</span></code></a>()</p></td>
+<td><p>Return a flat list of all children, grandchildren etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Category.traverse_up" title="quiffen.core.categories_classes.Category.traverse_up"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_up</span></code></a>()</p></td>
+<td><p>Return a list of all parents, grandparents etc.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">child_category</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category.add_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a child category to current category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>child_category</strong><span class="classifier">str or Category</span></dt><dd><p>A Category object to be added as a child or the string name of a new category to be added.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>TypeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">child_category</span></code> is not a str or Category.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.budget_amount">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">budget_amount</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.budget_amount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.children">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.desc">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">desc</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.expense">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">expense</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.expense" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.find_category">
+<span class="sig-name descname"><span class="pre">find_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category.find_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a node with a given name from the children of current node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>node_name</strong><span class="classifier">str</span></dt><dd><p>The name of the category to find.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Category</dt><dd><p>The category searched for.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>KeyError</dt><dd><p>If the category cannot be found.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.from_list">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category.from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Category instance from a list of QIF strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>lst</strong><span class="classifier">list of str</span></dt><dd><p>List of strings containing QIF information about the category.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Category</dt><dd><p>A Category object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.from_string">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category.from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Category instance from a QIF file section string</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>string</strong><span class="classifier">str</span></dt><dd><blockquote>
+<div><p>The string containing the QIF-formatted data.</p>
+</div></blockquote>
+<p>separator : str, default=’</p>
+</dd>
+<dt><strong>‘</strong></dt><dd><p>The line separator for the QIF file. This probably won’t need changing.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Category</dt><dd><p>A Category object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.hierarchy">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">hierarchy</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.hierarchy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.income">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">income</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.income" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.parent">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">parent</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.parent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.remove_child">
+<span class="sig-name descname"><span class="pre">remove_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">child_category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category.remove_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a child category from the current category’s hierarchy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>child_category</strong><span class="classifier">str or Category</span></dt><dd><p>The Category object to be removed as a child or the string name of the category.</p>
+</dd>
+<dt><strong>keep_children</strong><span class="classifier">bool, default=False</span></dt><dd><p>Whether or not the children of the removed category should be kept in the tree and moved up a level.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>TypeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">child_category</span></code> is not a str or Category.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.render_tree">
+<span class="sig-name descname"><span class="pre">render_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category.render_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders a tree-like structure for categories.</p>
+<p>Runs recursively, and uses <code class="docutils literal notranslate"><span class="pre">_level</span></code> just to keep track of the indentation.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.tax_related">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">tax_related</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.tax_related" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.tax_schedule_info">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">tax_schedule_info</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Category.tax_schedule_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a representation of the Category object as a dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ignore</strong><span class="classifier">list of str</span></dt><dd><p>A list of the object’s attributes that should not be included in the resulting dict.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>dict</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.traverse_down">
+<span class="sig-name descname"><span class="pre">traverse_down</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category.traverse_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a flat list of all children, grandchildren etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>all_children</strong><span class="classifier">list of Category</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Category.traverse_up">
+<span class="sig-name descname"><span class="pre">traverse_up</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Category.traverse_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all parents, grandparents etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>all_parents</strong><span class="classifier">list of Category</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Class">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quiffen.core.categories_classes.</span></span><span class="sig-name descname"><span class="pre">Class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used to represent a QIF Class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>desc</strong></dt><dd></dd>
+<dt><strong>name</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Class.from_list" title="quiffen.core.categories_classes.Class.from_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_list</span></code></a>(lst)</p></td>
+<td><p>Return a class instance from a list of QIF strings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Class.from_string" title="quiffen.core.categories_classes.Class.from_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_string</span></code></a>(string[, separator])</p></td>
+<td><p>Return a class instance from a QIF file section string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.categories_classes.Class.to_dict" title="quiffen.core.categories_classes.Class.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>([ignore])</p></td>
+<td><p>Return a dict object representing the Class.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Class.desc">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">desc</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Class.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Class.from_list">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Class.from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a class instance from a list of QIF strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>lst</strong><span class="classifier">list of str</span></dt><dd><p>List of strings containing QIF information about the account.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Class</dt><dd><p>A Class object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Class.from_string">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Class.from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a class instance from a QIF file section string.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>string</strong><span class="classifier">str</span></dt><dd><blockquote>
+<div><p>The string containing the QIF-formatted data.</p>
+</div></blockquote>
+<p>separator : str, default=’</p>
+</dd>
+<dt><strong>‘</strong></dt><dd><p>The line separator for the QIF file. This probably won’t need changing.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Class</dt><dd><p>A Class object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Class.name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#quiffen.core.categories_classes.Class.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.categories_classes.Class.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.categories_classes.Class.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dict object representing the Class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ignore</strong><span class="classifier">list of str, default=None</span></dt><dd><p>A list of strings of parameters that should be excluded from the dict.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>dict</dt><dd><p>A dict representing the Class object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-quiffen.core.qif">
+<span id="quiffen-core-qif-module"></span><h2>quiffen.core.qif module<a class="headerlink" href="#module-quiffen.core.qif" title="Permalink to this headline">¶</a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="quiffen.core.qif.ParserException">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">quiffen.core.qif.</span></span><span class="sig-name descname"><span class="pre">ParserException</span></span><a class="headerlink" href="#quiffen.core.qif.ParserException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quiffen.core.qif.</span></span><span class="sig-name descname"><span class="pre">Qif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accounts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The main class of the package. For parsing QIF files.</p>
+<p>See the readme for usage examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>accounts</strong></dt><dd></dd>
+<dt><strong>categories</strong></dt><dd></dd>
+<dt><strong>classes</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.add_account" title="quiffen.core.qif.Qif.add_account"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_account</span></code></a>(new_account)</p></td>
+<td><p>Add a new account to the Qif object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.add_category" title="quiffen.core.qif.Qif.add_category"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_category</span></code></a>(new_category)</p></td>
+<td><p>Add a new category to the object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.add_class" title="quiffen.core.qif.Qif.add_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_class</span></code></a>(new_class)</p></td>
+<td><p>Add a new class to the object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.parse" title="quiffen.core.qif.Qif.parse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse</span></code></a>(filepath[, separator, day_first])</p></td>
+<td><p>Return a class instance from a QIF file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.remove_account" title="quiffen.core.qif.Qif.remove_account"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_account</span></code></a>(account_name)</p></td>
+<td><p>Remove an account from this Qif object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.remove_category" title="quiffen.core.qif.Qif.remove_category"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_category</span></code></a>(category_name[, keep_children])</p></td>
+<td><p>Remove a category from the Qif object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.remove_class" title="quiffen.core.qif.Qif.remove_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_class</span></code></a>(class_name)</p></td>
+<td><p>Remove a class from the Qif object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.to_csv" title="quiffen.core.qif.Qif.to_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_csv</span></code></a>([path, data, ignore, separator, …])</p></td>
+<td><p>Write a CSV file containing desired data and return the string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.to_dataframe" title="quiffen.core.qif.Qif.to_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dataframe</span></code></a>([data, ignore])</p></td>
+<td><p>Return a pandas DataFrame containing desired data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.to_dicts" title="quiffen.core.qif.Qif.to_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dicts</span></code></a>([data, ignore])</p></td>
+<td><p>Return a list of dict representations of desired data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.qif.Qif.to_qif" title="quiffen.core.qif.Qif.to_qif"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_qif</span></code></a>([path, date_format])</p></td>
+<td><p>Write the Qif object to a QIF file and return the string.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.accounts">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">accounts</span></span><a class="headerlink" href="#quiffen.core.qif.Qif.accounts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.add_account">
+<span class="sig-name descname"><span class="pre">add_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_account</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.add_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new account to the Qif object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>new_account</strong><span class="classifier">Account</span></dt><dd><p>The Account to be added to the Qif.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>TypeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">new_account</span></code> is not an Account object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.add_category">
+<span class="sig-name descname"><span class="pre">add_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_category</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.add_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new category to the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>new_category</strong><span class="classifier">Category</span></dt><dd><p>The Category to be added to the Qif.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>TypeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">new_category</span></code> is not a Category object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.add_class">
+<span class="sig-name descname"><span class="pre">add_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_class</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.add_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new class to the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>new_class</strong><span class="classifier">Class</span></dt><dd><p>The Class to be added to the Qif.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>TypeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">new_class</span></code> is not a Class object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.categories">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">categories</span></span><a class="headerlink" href="#quiffen.core.qif.Qif.categories" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.classes">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">classes</span></span><a class="headerlink" href="#quiffen.core.qif.Qif.classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.parse">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a class instance from a QIF file.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><blockquote>
+<div><p>The path to the QIF file.</p>
+</div></blockquote>
+<p>separator : str, default=’</p>
+</dd>
+<dt><strong>‘</strong></dt><dd><blockquote>
+<div><p>The line separator for the QIF file. This probably won’t need changing.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>day_first<span class="classifier">bool, default=True</span></dt><dd><p>Whether the day or month comes first in the date.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Qif</dt><dd><p>A Qif object containing all the data in the QIF file.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.remove_account">
+<span class="sig-name descname"><span class="pre">remove_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.remove_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an account from this Qif object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>account_name</strong><span class="classifier">str</span></dt><dd><p>The name of the account.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Account</dt><dd><p>The Account removed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.remove_category">
+<span class="sig-name descname"><span class="pre">remove_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.remove_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a category from the Qif object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>category_name</strong><span class="classifier">str</span></dt><dd><p>The name of the category to be removed.</p>
+</dd>
+<dt><strong>keep_children</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether or not the children of the category will be kept (grandparent node will become the parent node).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Category</dt><dd><p>The Category removed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.remove_class">
+<span class="sig-name descname"><span class="pre">remove_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.remove_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a class from the Qif object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>class_name</strong><span class="classifier">str</span></dt><dd><p>The name of the Class to be removed.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Class</dt><dd><p>The Class removed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.to_csv">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'transactions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">';'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%d/%m/%Y'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a CSV file containing desired data and return the string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">str, default=None</span></dt><dd><p>The path of the CSV file to be created, if desired.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">{‘transactions’, ‘investments’, ‘splits’, ‘accounts’, ‘categories’, ‘classes’}</span></dt><dd><p>The data type to be input into the CSV file.</p>
+</dd>
+<dt><strong>ignore</strong><span class="classifier">list of str, default=None</span></dt><dd><p>A list of strings of parameters that should be excluded from the dict.</p>
+</dd>
+<dt><strong>separator</strong><span class="classifier">str, default=’,’</span></dt><dd><p>The separator for the CSV file.</p>
+</dd>
+<dt><strong>sub_separator</strong><span class="classifier">str, default=’;’</span></dt><dd><p>The character to be used to replace <code class="docutils literal notranslate"><span class="pre">separator</span></code> if it appears in any strings.</p>
+</dd>
+<dt><strong>date_format</strong><span class="classifier">str, default=’%d/%m/%Y’</span></dt><dd><p>The format of the date (using <code class="docutils literal notranslate"><span class="pre">datetime</span></code> verbs) to be input into the QIF file.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>csv_data</strong><span class="classifier">str</span></dt><dd><p>A string containing the CSV data.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>RuntimeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">data</span></code> is not a valid option.</p>
+</dd>
+<dt>ValueError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">separator</span></code> and <code class="docutils literal notranslate"><span class="pre">sub_separator</span></code> are present within each other.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.to_dataframe">
+<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'transactions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a pandas DataFrame containing desired data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">{‘transactions’, ‘investments’, ‘splits’, ‘accounts’, ‘categories’, ‘classes’}</span></dt><dd><p>The data type to be input into the CSV file.</p>
+</dd>
+<dt><strong>ignore</strong><span class="classifier">list of str, default=None</span></dt><dd><p>A list of strings of parameters that should be excluded from the dict.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>DataFrame</dt><dd><p>A DataFrame containing he desired data.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ModuleNotFoundError</dt><dd><p>If the pandas module is not installed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.to_dicts">
+<span class="sig-name descname"><span class="pre">to_dicts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'transactions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.to_dicts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of dict representations of desired data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">{‘transactions’, ‘investments’, ‘splits’, ‘accounts’, ‘categories’, ‘classes’}</span></dt><dd><p>The data type to be converted to dicts.</p>
+</dd>
+<dt><strong>ignore</strong><span class="classifier">list of str, default=None</span></dt><dd><p>A list of strings of parameters that should be excluded from the dict.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>list of dict</dt><dd><p>A list of dict objects containing <code class="docutils literal notranslate"><span class="pre">data</span></code> specified.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>RuntimeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">data</span></code> is not a valid option.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.qif.Qif.to_qif">
+<span class="sig-name descname"><span class="pre">to_qif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%d/%m/%Y'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.qif.Qif.to_qif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the Qif object to a QIF file and return the string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">str, default=None</span></dt><dd><p>The path of the QIF file to be generated, if desired.</p>
+</dd>
+<dt><strong>date_format</strong><span class="classifier">str, default=’%d/%m/%Y’</span></dt><dd><p>The format of the date (using <code class="docutils literal notranslate"><span class="pre">datetime</span></code> verbs) to be input into the QIF file.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>qif_data</strong><span class="classifier">str</span></dt><dd><p>The string of QIF data.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-quiffen.core.transactions">
+<span id="quiffen-core-transactions-module"></span><h2>quiffen.core.transactions module<a class="headerlink" href="#module-quiffen.core.transactions" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quiffen.core.transactions.</span></span><span class="sig-name descname"><span class="pre">Investment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">datetime.datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">security</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleared</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_line</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_account</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer_amount</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commission</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Investment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used to represent an investment.</p>
+<p>Acts almost identically to the Transaction class, but with a few different parameters and no splits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>action</strong></dt><dd></dd>
+<dt><strong>amount</strong></dt><dd></dd>
+<dt><strong>cleared</strong></dt><dd></dd>
+<dt><strong>commission</strong></dt><dd></dd>
+<dt><strong>date</strong></dt><dd></dd>
+<dt><strong>first_line</strong></dt><dd></dd>
+<dt><strong>memo</strong></dt><dd></dd>
+<dt><strong>price</strong></dt><dd></dd>
+<dt><strong>quantity</strong></dt><dd></dd>
+<dt><strong>security</strong></dt><dd></dd>
+<dt><strong>to_account</strong></dt><dd></dd>
+<dt><strong>transfer_amount</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.transactions.Investment.from_list" title="quiffen.core.transactions.Investment.from_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_list</span></code></a>(lst[, day_first])</p></td>
+<td><p>Return a class instance from a list of QIF strings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.transactions.Investment.from_string" title="quiffen.core.transactions.Investment.from_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_string</span></code></a>(string[, separator, day_first])</p></td>
+<td><p>Return a class instance from a QIF file section string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.transactions.Investment.to_dict" title="quiffen.core.transactions.Investment.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>([ignore])</p></td>
+<td><p>Return a dict object representing the Transaction.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.action">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">action</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.amount">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">amount</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.amount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.cleared">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cleared</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.cleared" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.commission">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">commission</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.commission" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.date">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.first_line">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">first_line</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.first_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.from_list">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Investment.from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a class instance from a list of QIF strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>lst</strong><span class="classifier">list of str</span></dt><dd><p>List of strings containing QIF information about the investment.</p>
+</dd>
+<dt><strong>day_first</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether the day or month comes first in the date.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Investment</dt><dd><p>An Investment object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.from_string">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Investment.from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a class instance from a QIF file section string.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>string</strong><span class="classifier">str</span></dt><dd><blockquote>
+<div><p>The string containing the QIF-formatted data.</p>
+</div></blockquote>
+<p>separator : str, default=’</p>
+</dd>
+<dt><strong>‘</strong></dt><dd><blockquote>
+<div><p>The line separator for the QIF file. This probably won’t need changing.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>day_first<span class="classifier">bool, default=True</span></dt><dd><p>Whether the day or month comes first in the date.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Investment</dt><dd><p>An Investment object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.memo">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">memo</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.memo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.price">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">price</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.price" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.quantity">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">quantity</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.quantity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.security">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">security</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.security" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.to_account">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">to_account</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.to_account" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Investment.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dict object representing the Transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ignore</strong><span class="classifier">list of str, default=None</span></dt><dd><p>A list of strings of parameters that should be excluded from the dict.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>dict</dt><dd><p>A dict representing the Investment object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Investment.transfer_amount">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">transfer_amount</span></span><a class="headerlink" href="#quiffen.core.transactions.Investment.transfer_amount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quiffen.core.transactions.</span></span><span class="sig-name descname"><span class="pre">Split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleared</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payee_address</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#quiffen.core.categories_classes.Category" title="quiffen.core.categories_classes.Category"><span class="pre">quiffen.core.categories_classes.Category</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_account</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used to represent a split in a transaction.</p>
+<p class="rubric">Examples</p>
+<p>Adding Splits to a transaction to show that there were two categories that represent the transaction.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">quiffen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tr</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Transaction</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">amount</span><span class="o">=</span><span class="mf">150.60</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">beauty</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Category</span><span class="p">(</span><span class="s1">&#39;Beauty&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">electrical</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Category</span><span class="p">(</span><span class="s1">&#39;Electrical&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">splt1</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Split</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">beauty</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">splt2</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Split</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mf">100.60</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">electrical</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tr</span><span class="o">.</span><span class="n">add_split</span><span class="p">(</span><span class="n">splt1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tr</span><span class="o">.</span><span class="n">add_split</span><span class="p">(</span><span class="n">splt2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+<span class="go">Transaction:</span>
+<span class="go">    Date: 2021-07-05 10:59:02.456190</span>
+<span class="go">    Amount: 150.6</span>
+<span class="go">    Splits: 2 total split(s)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+<span class="go">[Split(amount=50, category=Category(name=&#39;Beauty&#39;, expense=True, hierarchy=&#39;Beauty&#39;)), Split(amount=100.6,</span>
+<span class="go">category=Category(name=&#39;Electrical&#39;, expense=True, hierarchy=&#39;Electrical&#39;))]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tr</span><span class="o">.</span><span class="n">remove_split</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+<span class="go">[Split(amount=100.6, category=Category(name=&#39;Electrical&#39;, expense=True, hierarchy=&#39;Electrical&#39;))]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>amount</strong></dt><dd></dd>
+<dt><strong>category</strong></dt><dd></dd>
+<dt><strong>check_number</strong></dt><dd></dd>
+<dt><strong>cleared</strong></dt><dd></dd>
+<dt><strong>date</strong></dt><dd></dd>
+<dt><strong>memo</strong></dt><dd></dd>
+<dt><strong>payee_address</strong></dt><dd></dd>
+<dt><strong>percent</strong></dt><dd></dd>
+<dt><strong>to_account</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.transactions.Split.to_dict" title="quiffen.core.transactions.Split.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>([ignore, dictify_category])</p></td>
+<td><p>Return a dict object representing the Split.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.amount">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">amount</span></span><a class="headerlink" href="#quiffen.core.transactions.Split.amount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.category">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">category</span></span><a class="headerlink" href="#quiffen.core.transactions.Split.category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.check_number">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">check_number</span></span><a class="headerlink" href="#quiffen.core.transactions.Split.check_number" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.cleared">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cleared</span></span><a class="headerlink" href="#quiffen.core.transactions.Split.cleared" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.date">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#quiffen.core.transactions.Split.date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.memo">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">memo</span></span><a class="headerlink" href="#quiffen.core.transactions.Split.memo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.payee_address">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">payee_address</span></span><a class="headerlink" href="#quiffen.core.transactions.Split.payee_address" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.percent">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">percent</span></span><a class="headerlink" href="#quiffen.core.transactions.Split.percent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.to_account">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">to_account</span></span><a class="headerlink" href="#quiffen.core.transactions.Split.to_account" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Split.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dictify_category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Split.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dict object representing the Split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ignore</strong><span class="classifier">list of str, default=None</span></dt><dd><p>A list of strings of parameters that should be excluded from the dict.</p>
+</dd>
+<dt><strong>dictify_category</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether the Split’s category should be converted to a dict or left as it is.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>dict</dt><dd><p>A dict representing the Split object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quiffen.core.transactions.</span></span><span class="sig-name descname"><span class="pre">Transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">datetime.datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleared</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payee</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payee_address</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#quiffen.core.categories_classes.Category" title="quiffen.core.categories_classes.Category"><span class="pre">quiffen.core.categories_classes.Category</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reimbursable_expense</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_business_expense</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_account</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_payment_date</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loan_length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_payments</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periods_per_annum</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interest_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_loan_balance</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_loan_amount</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splits</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#quiffen.core.transactions.TransactionList" title="quiffen.core.transactions.TransactionList"><span class="pre">quiffen.core.transactions.TransactionList</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used to represent a transaction.</p>
+<p class="rubric">Examples</p>
+<p>Create a Transaction instance, then convert to a dict, ignoring the date.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">quiffen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Category</span><span class="p">(</span><span class="s1">&#39;Finances&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tr</span> <span class="o">=</span> <span class="n">quiffen</span><span class="o">.</span><span class="n">Transaction</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">amount</span><span class="o">=</span><span class="mf">150.60</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">cat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tr</span>
+<span class="go">Transaction(date=datetime.datetime(2021, 7, 5, 10, 45, 40, 48195), amount=150.6, category=Category(name=&#39;Finances&#39;,</span>
+<span class="go">expense=True, hierarchy=&#39;Finances&#39;))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+<span class="go">Transaction:</span>
+<span class="go">    Date: 2021-07-05 10:45:40.048195</span>
+<span class="go">    Amount: 150.6</span>
+<span class="go">    Category: Finances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tr</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">dictify_category</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">{&#39;amount&#39;: 150.6, &#39;category&#39;: {&#39;name&#39;: &#39;Finances&#39;, &#39;expense&#39;: True, &#39;income&#39;: False, &#39;hierarchy&#39;: &#39;Finances&#39;,</span>
+<span class="go">&#39;children&#39;: []}}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>is_split</strong><span class="classifier">bool</span></dt><dd><p>Whether or not this transaction is split (see documentation on parameter <code class="docutils literal notranslate"><span class="pre">splits</span></code>)</p>
+</dd>
+<dt><strong>split_categories</strong><span class="classifier">dict</span></dt><dd><p>The categories of the splits for this transaction, if transaction <code class="docutils literal notranslate"><span class="pre">is_split</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.transactions.Transaction.add_split" title="quiffen.core.transactions.Transaction.add_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_split</span></code></a>(new_split)</p></td>
+<td><p>Add a Split to Transaction.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.transactions.Transaction.from_list" title="quiffen.core.transactions.Transaction.from_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_list</span></code></a>(lst[, day_first])</p></td>
+<td><p>Return a class instance from a list of QIF strings.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.transactions.Transaction.from_string" title="quiffen.core.transactions.Transaction.from_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_string</span></code></a>(string[, separator, day_first])</p></td>
+<td><p>Return a class instance from a QIF file section string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.transactions.Transaction.remove_split" title="quiffen.core.transactions.Transaction.remove_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_split</span></code></a>([multiple])</p></td>
+<td><p>Remove Split(s) from Transaction if they match a set of kwargs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quiffen.core.transactions.Transaction.to_dict" title="quiffen.core.transactions.Transaction.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>([ignore, dictify_splits, …])</p></td>
+<td><p>Return a dict object representing the Transaction.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 67%" />
+<col style="width: 33%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>refresh_is_split</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.add_split">
+<span class="sig-name descname"><span class="pre">add_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_split</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Transaction.add_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a Split to Transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>new_split</strong><span class="classifier">Split</span></dt><dd><p>The Split object to be added.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>TypeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">new_split</span></code> is not a Split.</p>
+</dd>
+<dt>ValueError</dt><dd><p>If percentage sum of all splits added is greater than 100.</p>
+</dd>
+<dt>ValueError</dt><dd><p>If sum of split amounts is greater than overall transaction amount.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.amount">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">amount</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.amount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.category">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">category</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.check_number">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">check_number</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.check_number" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.cleared">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cleared</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.cleared" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.current_loan_balance">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">current_loan_balance</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.current_loan_balance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.date">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.first_payment_date">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">first_payment_date</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.first_payment_date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.from_list">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Transaction.from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a class instance from a list of QIF strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>lst</strong><span class="classifier">list of str</span></dt><dd><p>List of strings containing QIF information about the transaction.</p>
+</dd>
+<dt><strong>day_first</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether the day or month comes first in the date.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Transaction</dt><dd><p>A Transaction object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.from_string">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Transaction.from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a class instance from a QIF file section string.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>string</strong><span class="classifier">str</span></dt><dd><blockquote>
+<div><p>The string containing the QIF-formatted data.</p>
+</div></blockquote>
+<p>separator : str, default=’</p>
+</dd>
+<dt><strong>‘</strong></dt><dd><blockquote>
+<div><p>The line separator for the QIF file. This probably won’t need changing.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>day_first<span class="classifier">bool, default=True</span></dt><dd><p>Whether the day or month comes first in the date.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Transaction</dt><dd><p>A Transaction object created from the QIF strings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.interest_rate">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">interest_rate</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.interest_rate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.is_split">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">is_split</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.is_split" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.loan_length">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">loan_length</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.loan_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.memo">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">memo</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.memo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.num_payments">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">num_payments</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.num_payments" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.original_loan_amount">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">original_loan_amount</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.original_loan_amount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.payee">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">payee</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.payee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.payee_address">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">payee_address</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.payee_address" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.periods_per_annum">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">periods_per_annum</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.periods_per_annum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.refresh_is_split">
+<span class="sig-name descname"><span class="pre">refresh_is_split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Transaction.refresh_is_split" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.reimbursable_expense">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">reimbursable_expense</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.reimbursable_expense" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.remove_split">
+<span class="sig-name descname"><span class="pre">remove_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multiple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Transaction.remove_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove Split(s) from Transaction if they match a set of kwargs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>multiple</strong><span class="classifier">bool, default=None</span></dt><dd><p>Whether or not to remove multiple splits that match <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
+</dd>
+<dt><strong>kwargs</strong></dt><dd><p>The keyword arguments to filter the splits by (e.g. amount=150 would only remove splits with amount=150)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>RuntimeError</dt><dd><p>If no kwargs are provided.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.small_business_expense">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">small_business_expense</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.small_business_expense" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.split_categories">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">split_categories</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.split_categories" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.splits">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">splits</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.splits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.to_account">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">to_account</span></span><a class="headerlink" href="#quiffen.core.transactions.Transaction.to_account" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.Transaction.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dictify_splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dictify_category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.Transaction.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dict object representing the Transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ignore</strong><span class="classifier">list of str, default=None</span></dt><dd><p>A list of strings of parameters that should be excluded from the dict.</p>
+</dd>
+<dt><strong>dictify_splits</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether Splits within Transaction objects should be converted to dicts or left as they are.</p>
+</dd>
+<dt><strong>dictify_category</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether the Transaction’s category should be converted to a dict or left as it is.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>dict</dt><dd><p>A dict representing the Transaction object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quiffen.core.transactions.TransactionList">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quiffen.core.transactions.</span></span><span class="sig-name descname"><span class="pre">TransactionList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.TransactionList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>A class to store Transaction-type objects only in an ordered list.</p>
+<p>Extends collections.MutableSequence, so all list operations will work on this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>list</strong><span class="classifier">list</span></dt><dd><p>The list of Transaction-type objects stored by the object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code>(value)</p></td>
+<td><p>S.append(value) – append value to the end of the sequence</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extend</span></code>(values)</p></td>
+<td><p>S.extend(iterable) – extend sequence by appending elements from the iterable</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value, [start, [stop]])</p></td>
+<td><p>Raises ValueError if the value is not present.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quiffen.core.transactions.TransactionList.insert" title="quiffen.core.transactions.TransactionList.insert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">insert</span></code></a>(key, value)</p></td>
+<td><p>Insert an object into the list at a specified key.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop</span></code>([index])</p></td>
+<td><p>Raise IndexError if list is empty or index is out of range.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove</span></code>(value)</p></td>
+<td><p>S.remove(value) – remove first occurrence of value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse</span></code>()</p></td>
+<td><p>S.reverse() – reverse <em>IN PLACE</em></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="quiffen.core.transactions.TransactionList.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quiffen.core.transactions.TransactionList.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an object into the list at a specified key. Overrides the MutableSequence.insert() method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>key</strong><span class="classifier">int</span></dt><dd><p>The key at which to insert <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+</dd>
+<dt><strong>value</strong><span class="classifier">Transaction or Investment</span></dt><dd><p>The Transaction-type object to be inserted into the list.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quiffen.core.transactions.TransactionList.list">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">list</span></span><a class="headerlink" href="#quiffen.core.transactions.TransactionList.list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-quiffen.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-quiffen.core" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="quiffen.html" class="btn btn-neutral float-left" title="quiffen package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Isaac Harris-Holt.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
