@@ -277,7 +277,7 @@ class Category:
                 kwargs['expense'] = False
                 kwargs['income'] = True
             elif line_code == 'B':
-                kwargs['budget_amount'] = float(field_info)
+                kwargs['budget_amount'] = float(field_info.replace(',', ''))
             elif line_code == 'R':
                 kwargs['tax_schedule_info'] = field_info
 

@@ -467,14 +467,14 @@ class Transaction:
             elif line_code == 'E':
                 current_split.memo = field_info
             elif line_code == '$' or line_code == '£':
-                current_split.amount = float(field_info)
+                current_split.amount = float(field_info.replace(',', ''))
             elif line_code == '%':
                 current_split.percent = float(field_info.split(' ')[0].replace('%', ''))
             elif line_code == 'T' or line_code == 'U':
                 if not splits:
-                    kwargs['amount'] = float(field_info)
+                    kwargs['amount'] = float(field_info.replace(',', ''))
                 else:
-                    current_split.amount = float(field_info)
+                    current_split.amount = float(field_info.replace(',', ''))
             elif line_code == 'M':
                 if not splits:
                     kwargs['memo'] = field_info
@@ -527,17 +527,17 @@ class Transaction:
             elif line_code == '1':
                 kwargs['first_payment_date'] = parse_date(field_info, day_first)
             elif line_code == '2':
-                kwargs['loan_length'] = float(field_info)
+                kwargs['loan_length'] = float(field_info.replace(',', ''))
             elif line_code == '3':
-                kwargs['num_payments'] = int(field_info)
+                kwargs['num_payments'] = int(field_info.replace(',', ''))
             elif line_code == '4':
-                kwargs['periods_per_annum'] = int(field_info)
+                kwargs['periods_per_annum'] = int(field_info.replace(',', ''))
             elif line_code == '5':
-                kwargs['interest_rate'] = float(field_info)
+                kwargs['interest_rate'] = float(field_info.replace(',', ''))
             elif line_code == '6':
-                kwargs['current_loan_balance'] = float(field_info)
+                kwargs['current_loan_balance'] = float(field_info.replace(',', ''))
             elif line_code == '7':
-                kwargs['original_loan_amount'] = float(field_info)
+                kwargs['original_loan_amount'] = float(field_info.replace(',', ''))
 
         # Set splits percentage if they don't already have one
         if splits:
@@ -1132,13 +1132,13 @@ class Investment:
             elif line_code == 'Y':
                 kwargs['security'] = field_info
             elif line_code == 'I':
-                kwargs['price'] = float(field_info)
+                kwargs['price'] = float(field_info.replace(',', ''))
             elif line_code == 'Q':
-                kwargs['quantity'] = float(field_info)
+                kwargs['quantity'] = float(field_info.replace(',', ''))
             elif line_code == 'C':
                 kwargs['cleared'] = field_info
             elif line_code == 'T' or line_code == 'U':
-                kwargs['amount'] = float(field_info)
+                kwargs['amount'] = float(field_info.replace(',', ''))
             elif line_code == 'M':
                 kwargs['memo'] = field_info
             elif line_code == 'P':
@@ -1146,9 +1146,9 @@ class Investment:
             elif line_code == 'L':
                 kwargs['to_account'] = field_info
             elif line_code == '$':
-                kwargs['transfer_amount'] = float(field_info)
+                kwargs['transfer_amount'] = float(field_info.replace(',', ''))
             elif line_code == 'O':
-                kwargs['commission'] = float(field_info)
+                kwargs['commission'] = float(field_info.replace(',', ''))
 
         return cls(**kwargs)
 

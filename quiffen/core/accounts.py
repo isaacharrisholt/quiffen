@@ -225,9 +225,9 @@ class Account:
             elif line_code == 'T':
                 kwargs['account_type'] = field_info
             elif line_code == 'L':
-                kwargs['credit_limit'] = float(field_info)
+                kwargs['credit_limit'] = float(field_info.replace(',', ''))
             elif line_code == '$' or line_code == '£':
-                kwargs['balance'] = float(field_info)
+                kwargs['balance'] = float(field_info.replace(',', ''))
             elif line_code == '/':
                 balance_date = parse_date(field_info, day_first)
                 kwargs['date_at_balance'] = balance_date
