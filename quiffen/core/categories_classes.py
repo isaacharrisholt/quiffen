@@ -1,3 +1,6 @@
+from decimal import Decimal
+
+
 class Category:
     """
     A node-like class used to represent a category. Can be built into trees to represent category families.
@@ -57,7 +60,7 @@ class Category:
                  tax_related: bool = None,
                  expense: bool = True,
                  income: bool = False,
-                 budget_amount: float = None,
+                 budget_amount: Decimal = None,
                  tax_schedule_info: str = None,
                  parent=None,
                  hierarchy: str = None):
@@ -75,7 +78,7 @@ class Category:
             Whether the category represents expenses as opposed to income.
         income : bool, default=False
             Whether the category represents income as opposed to expenses.
-        budget_amount : float, default=None
+        budget_amount : decimal.Decimal, default=None
             The budget amount for this category.
         tax_schedule_info : str, default=None
             Information about the tax schedule for this category.
@@ -177,7 +180,7 @@ class Category:
 
     @budget_amount.setter
     def budget_amount(self, new_amount):
-        self._budget_amount = float(new_amount)
+        self._budget_amount = Decimal(new_amount)
 
     @property
     def tax_schedule_info(self):
@@ -277,7 +280,7 @@ class Category:
                 kwargs['expense'] = False
                 kwargs['income'] = True
             elif line_code == 'B':
-                kwargs['budget_amount'] = float(field_info.replace(',', ''))
+                kwargs['budget_amount'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'R':
                 kwargs['tax_schedule_info'] = field_info
 
