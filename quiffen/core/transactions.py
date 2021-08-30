@@ -2,6 +2,8 @@ from abc import ABC
 from datetime import datetime
 import collections
 
+from decimal import Decimal
+
 from quiffen.utils import parse_date, create_categories
 from quiffen.core.categories_classes import Category, Class
 
@@ -17,6 +19,7 @@ class TransactionList(collections.MutableSequence, ABC):
     list : list
         The list of Transaction-type objects stored by the object.
     """
+
     def __init__(self, *args):
         self._list = []
         self.extend(list(args))
@@ -86,9 +89,10 @@ class Transaction:
     Create a Transaction instance, then convert to a dict, ignoring the date.
 
     >>> import quiffen
+    >>> import decimal
     >>> from datetime import datetime
     >>> cat = quiffen.Category('Finances')
-    >>> tr = quiffen.Transaction(date=datetime.now(), amount=150.60, category=cat)
+    >>> tr = quiffen.Transaction(date=datetime.now(), amount=decimal.Decimal(150.60), category=cat)
     >>> tr
     Transaction(date=datetime.datetime(2021, 7, 5, 10, 45, 40, 48195), amount=150.6, category=Category(name='Finances',
     expense=True, hierarchy='Finances'))
@@ -101,9 +105,10 @@ class Transaction:
     {'amount': 150.6, 'category': {'name': 'Finances', 'expense': True, 'income': False, 'hierarchy': 'Finances',
     'children': []}}
     """
+
     def __init__(self,
                  date: datetime,
-                 amount: float,
+                 amount: Decimal,
                  memo: str = None,
                  cleared: str = None,
                  payee: str = None,
@@ -114,7 +119,7 @@ class Transaction:
                  small_business_expense: bool = None,
                  to_account: str = None,
                  first_payment_date: datetime = None,
-                 loan_length: float = None,
+                 loan_length: Decimal = None,
                  num_payments: int = None,
                  periods_per_annum: int = None,
                  interest_rate: float = None,
@@ -129,7 +134,7 @@ class Transaction:
         ----------
         date : datetime
             Date transaction occurred. May or may not include timestamp.
-        amount : float
+        amount : decimal.Decimal
             The amount of the transaction. May be positive or negative.
         memo : str, default=None
             Also known as the reference. A string describing the purpose behind the transaction.
@@ -152,17 +157,17 @@ class Transaction:
             The account the transaction was sent to, if applicable.
         first_payment_date : datetime.datetime, default=None
             If this transaction was completed over multiple days, the first payment date.
-        loan_length : float, default=None
+        loan_length : decimal.Decimal, default=None
             The length of the loan, if applicable.
         num_payments : int, default=None
             If this payment was split over multiple payments, the number of such payments.
         periods_per_annum : int, default=None
             The periods per annum for this transaction.
-        interest_rate : float, default=None
+        interest_rate : decimal.Decimal, default=None
             The interest rate on this transaction.
-        current_loan_balance : float, default=None
+        current_loan_balance : decimal.Decimal, default=None
             The current loan balance, if applicable.
-        original_loan_amount : float, default=None
+        original_loan_amount : decimal.Decimal, default=None
             The original loan amount, if applicable.
         line_number : int, default=None
             The line number of the header line of the transaction in the QIF file.
@@ -252,9 +257,9 @@ class Transaction:
     @amount.setter
     def amount(self, new_amount):
         try:
-            self._amount = float(new_amount)
+            self._amount = Decimal(new_amount)
         except ValueError:
-            raise TypeError('Amount can only be int or float')
+            raise TypeError('Amount can only be int, float or decimal.Decimal')
 
     @property
     def memo(self):
@@ -355,7 +360,7 @@ class Transaction:
 
     @loan_length.setter
     def loan_length(self, new_length):
-        self._loan_length = float(new_length)
+        self._loan_length = Decimal(new_length)
 
     @property
     def num_payments(self):
@@ -379,7 +384,7 @@ class Transaction:
 
     @interest_rate.setter
     def interest_rate(self, new_rate):
-        self._interest_rate = float(new_rate)
+        self._interest_rate = Decimal(new_rate)
 
     @property
     def current_loan_balance(self):
@@ -387,7 +392,7 @@ class Transaction:
 
     @current_loan_balance.setter
     def current_loan_balance(self, new_balance):
-        self._current_loan_balance = float(new_balance)
+        self._current_loan_balance = Decimal(new_balance)
 
     @property
     def original_loan_amount(self):
@@ -395,7 +400,7 @@ class Transaction:
 
     @original_loan_amount.setter
     def original_loan_amount(self, new_amount):
-        self._original_loan_amount = float(new_amount)
+        self._original_loan_amount = Decimal(new_amount)
 
     @property
     def splits(self):
@@ -477,14 +482,14 @@ class Transaction:
             elif line_code == 'E':
                 current_split.memo = field_info
             elif line_code == '$' or line_code == '£':
-                current_split.amount = float(field_info)
+                current_split.amount = Decimal(field_info.replace(',', ''))
             elif line_code == '%':
-                current_split.percent = float(field_info.split(' ')[0].replace('%', ''))
+                current_split.percent = Decimal(field_info.split(' ')[0].replace('%', ''))
             elif line_code == 'T' or line_code == 'U':
                 if not splits:
-                    kwargs['amount'] = float(field_info)
+                    kwargs['amount'] = Decimal(field_info.replace(',', ''))
                 else:
-                    current_split.amount = float(field_info)
+                    current_split.amount = Decimal(field_info.replace(',', ''))
             elif line_code == 'M':
                 if not splits:
                     kwargs['memo'] = field_info
@@ -537,17 +542,17 @@ class Transaction:
             elif line_code == '1':
                 kwargs['first_payment_date'] = parse_date(field_info, day_first)
             elif line_code == '2':
-                kwargs['loan_length'] = float(field_info)
+                kwargs['loan_length'] = Decimal(field_info.replace(',', ''))
             elif line_code == '3':
-                kwargs['num_payments'] = int(field_info)
+                kwargs['num_payments'] = int(field_info.replace(',', ''))
             elif line_code == '4':
-                kwargs['periods_per_annum'] = int(field_info)
+                kwargs['periods_per_annum'] = int(field_info.replace(',', ''))
             elif line_code == '5':
-                kwargs['interest_rate'] = float(field_info)
+                kwargs['interest_rate'] = Decimal(field_info.replace(',', ''))
             elif line_code == '6':
-                kwargs['current_loan_balance'] = float(field_info)
+                kwargs['current_loan_balance'] = Decimal(field_info.replace(',', ''))
             elif line_code == '7':
-                kwargs['original_loan_amount'] = float(field_info)
+                kwargs['original_loan_amount'] = Decimal(field_info.replace(',', ''))
 
         if line_number is not None:
             kwargs['line_number'] = line_number
@@ -732,14 +737,14 @@ class Split:
 
     def __init__(self,
                  date: datetime = None,
-                 amount: float = None,
+                 amount: Decimal = None,
                  memo: str = None,
                  cleared: str = None,
                  payee_address: str = None,
                  category: Category = None,
                  to_account: str = None,
                  check_number: int = None,
-                 percent: float = None
+                 percent: Decimal = None
                  ):
         """Initialise an instance of the Split class.
 
@@ -747,7 +752,7 @@ class Split:
         ----------
         date : datetime, default=None
             The date of the split transaction.
-        amount : float, default=None
+        amount : decimal.Decimal, default=None
             The amount this of this split.
         memo : str, default=None
             The memo (reference) for this split.
@@ -761,7 +766,7 @@ class Split:
             The to account for this split.
         check_number : int, default=None
             The check number if this transaction relates to a check.
-        percent : float, default=None
+        percent : decimal.Decimal, default=None
             The percentage value of this split compared to the overall transaction.
         """
         self._date = date
@@ -816,9 +821,9 @@ class Split:
     @amount.setter
     def amount(self, new_amount):
         try:
-            self._amount = float(new_amount)
+            self._amount = Decimal(new_amount)
         except ValueError:
-            raise TypeError('Amount can only be int or float')
+            raise TypeError('Amount can only be int, float or Decimal')
 
     @property
     def memo(self):
@@ -882,7 +887,7 @@ class Split:
 
     @percent.setter
     def percent(self, new_percent):
-        self._percent = float(new_percent)
+        self._percent = Decimal(new_percent)
 
     def to_dict(self, ignore=None, dictify_category=True):
         """Return a dict object representing the Split.
@@ -921,10 +926,10 @@ class Investment:
                  date: datetime,
                  action: str = None,
                  security: str = None,
-                 price: float = None,
-                 quantity: float = None,
+                 price: Decimal = None,
+                 quantity: Decimal = None,
                  cleared: str = None,
-                 amount: float = None,
+                 amount: Decimal = None,
                  memo: str = None,
                  first_line: str = None,
                  to_account: str = None,
@@ -942,13 +947,13 @@ class Investment:
             The investment action (Buy, Sell, etc.)
         security : str, default=None
             The security name.
-        price : float, default=None
+        price : decimal.Decimal, default=None
             The price of the security.
-        quantity : float, default=None
+        quantity : decimal.Decimal, default=None
             The quantity of the security bought, sold, etc.
         cleared : str, default=None
             The cleared status of this investment. See the QIF standards for valid values.
-        amount : float, default=None
+        amount : decimal.Decimal, default=None
             The overall amount of this investment.
         memo : str, default=None
             Also known as the reference. A string describing the purpose behind the investment.
@@ -956,9 +961,9 @@ class Investment:
             The first line of the investment.
         to_account : str, default=None
             The to account of the investment, if applicable.
-        transfer_amount : float, default=None
+        transfer_amount : decimal.Decimal, default=None
             The amount transferred for the investment.
-        commission : float, default=None
+        commission : decimal.Decimal, default=None
             The commission paid/received on the investment.
         line_number : int, default=None
             The line number of the investment in the QIF file.
@@ -1033,9 +1038,9 @@ class Investment:
     @price.setter
     def price(self, new_price):
         try:
-            self._price = float(new_price)
+            self._price = Decimal(new_price)
         except ValueError:
-            raise TypeError('Price can only be int or float')
+            raise TypeError('Price can only be int, float or decimal.Decimal')
 
     @property
     def quantity(self):
@@ -1044,9 +1049,9 @@ class Investment:
     @quantity.setter
     def quantity(self, new_quantity):
         try:
-            self._quantity = float(new_quantity)
+            self._quantity = Decimal(new_quantity)
         except ValueError:
-            raise TypeError('Quantity can only be int or float')
+            raise TypeError('Quantity can only be int, float or decimal.Decimal')
 
     @property
     def cleared(self):
@@ -1063,9 +1068,9 @@ class Investment:
     @amount.setter
     def amount(self, new_amount):
         try:
-            self._amount = float(new_amount)
+            self._amount = Decimal(new_amount)
         except ValueError:
-            raise TypeError('Amount can only be int or float')
+            raise TypeError('Amount can only be int, float or decimal.Decimal')
 
     @property
     def memo(self):
@@ -1098,9 +1103,9 @@ class Investment:
     @transfer_amount.setter
     def transfer_amount(self, new_transfer_amount):
         try:
-            self._transfer_amount = float(new_transfer_amount)
+            self._transfer_amount = Decimal(new_transfer_amount)
         except ValueError:
-            raise TypeError('Transfer amount can only be int or float')
+            raise TypeError('Transfer amount can only be int, float or decimal.Decimal')
 
     @property
     def commission(self):
@@ -1109,9 +1114,9 @@ class Investment:
     @commission.setter
     def commission(self, new_commission):
         try:
-            self._commission = float(new_commission)
+            self._commission = Decimal(new_commission)
         except ValueError:
-            raise TypeError('Commission can only be int or float')
+            raise TypeError('Commission can only be int, float or decimal.Decimal')
 
     @property
     def line_number(self):
@@ -1157,13 +1162,13 @@ class Investment:
             elif line_code == 'Y':
                 kwargs['security'] = field_info
             elif line_code == 'I':
-                kwargs['price'] = float(field_info)
+                kwargs['price'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'Q':
-                kwargs['quantity'] = float(field_info)
+                kwargs['quantity'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'C':
                 kwargs['cleared'] = field_info
             elif line_code == 'T' or line_code == 'U':
-                kwargs['amount'] = float(field_info)
+                kwargs['amount'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'M':
                 kwargs['memo'] = field_info
             elif line_code == 'P':
@@ -1171,9 +1176,9 @@ class Investment:
             elif line_code == 'L':
                 kwargs['to_account'] = field_info
             elif line_code == '$':
-                kwargs['transfer_amount'] = float(field_info)
+                kwargs['transfer_amount'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'O':
-                kwargs['commission'] = float(field_info)
+                kwargs['commission'] = Decimal(field_info.replace(',', ''))
 
         if line_number is not None:
             kwargs['line_number'] = line_number
