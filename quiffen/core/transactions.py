@@ -122,9 +122,10 @@ class Transaction:
                  loan_length: Decimal = None,
                  num_payments: int = None,
                  periods_per_annum: int = None,
-                 interest_rate: Decimal = None,
-                 current_loan_balance: Decimal = None,
-                 original_loan_amount: Decimal = None,
+                 interest_rate: float = None,
+                 current_loan_balance: float = None,
+                 original_loan_amount: float = None,
+                 line_number: int = None,
                  splits: TransactionList = None
                  ):
         """Initialise an instance of the Transaction class.
@@ -168,6 +169,8 @@ class Transaction:
             The current loan balance, if applicable.
         original_loan_amount : decimal.Decimal, default=None
             The original loan amount, if applicable.
+        line_number : int, default=None
+            The line number of the header line of the transaction in the QIF file.
         splits : TransactionList, default=None
             If this transaction has multiple categories (e.g. an Amazon purchase of an electrical item and a book), it
             can be split in QIF files to represent this. Each split has its own memo, category and amount.
@@ -191,6 +194,7 @@ class Transaction:
         self._interest_rate = interest_rate
         self._current_loan_balance = current_loan_balance
         self._original_loan_amount = original_loan_amount
+        self._line_number = line_number
 
         self._split_categories = {}
 
@@ -419,8 +423,12 @@ class Transaction:
     def split_categories(self):
         return self._split_categories
 
+    @property
+    def line_number(self):
+        return self._line_number
+
     @classmethod
-    def from_list(cls, lst, day_first=True):
+    def from_list(cls, lst, day_first=True, line_number=None):
         """Return a class instance from a list of QIF strings.
 
         Parameters
@@ -429,6 +437,8 @@ class Transaction:
             List of strings containing QIF information about the transaction.
         day_first : bool, default=True
              Whether the day or month comes first in the date.
+        line_number : int, default=None
+            The line number of the header line of the transaction in the QIF file.
 
         Returns
         -------
@@ -544,6 +554,9 @@ class Transaction:
             elif line_code == '7':
                 kwargs['original_loan_amount'] = Decimal(field_info.replace(',', ''))
 
+        if line_number is not None:
+            kwargs['line_number'] = line_number
+
         # Set splits percentage if they don't already have one
         if splits:
             total_amount = kwargs['amount']
@@ -556,7 +569,7 @@ class Transaction:
         return cls(**kwargs), categories, classes
 
     @classmethod
-    def from_string(cls, string, separator='\n', day_first=True):
+    def from_string(cls, string, separator='\n', day_first=True, line_number=None):
         """Return a class instance from a QIF file section string.
 
         Parameters
@@ -567,6 +580,8 @@ class Transaction:
              The line separator for the QIF file. This probably won't need changing.
         day_first : bool, default=True
              Whether the day or month comes first in the date.
+        line_number : int, default=None
+            The line number of the header line of the transaction in the QIF file.
 
         Returns
         -------
@@ -574,7 +589,7 @@ class Transaction:
             A Transaction object created from the QIF strings.
         """
         property_list = string.split(separator)
-        return cls.from_list(property_list, day_first)
+        return cls.from_list(property_list, day_first, line_number)
 
     @staticmethod
     def _assert_type(iterable, types):
@@ -918,8 +933,9 @@ class Investment:
                  memo: str = None,
                  first_line: str = None,
                  to_account: str = None,
-                 transfer_amount: Decimal = None,
-                 commission: Decimal = None
+                 transfer_amount: float = None,
+                 commission: float = None,
+                 line_number: int = None
                  ):
         """Initialise an instance of the Investment class.
 
@@ -949,6 +965,8 @@ class Investment:
             The amount transferred for the investment.
         commission : decimal.Decimal, default=None
             The commission paid/received on the investment.
+        line_number : int, default=None
+            The line number of the investment in the QIF file.
         """
         self._date = date
         self._action = action
@@ -962,6 +980,7 @@ class Investment:
         self._to_account = to_account
         self._transfer_amount = transfer_amount
         self._commission = commission
+        self._line_number = line_number
 
     def __eq__(self, other):
         if not isinstance(other, Investment):
@@ -1099,8 +1118,12 @@ class Investment:
         except ValueError:
             raise TypeError('Commission can only be int, float or decimal.Decimal')
 
+    @property
+    def line_number(self):
+        return self._line_number
+
     @classmethod
-    def from_list(cls, lst, day_first=True):
+    def from_list(cls, lst, day_first=True, line_number=None):
         """Return a class instance from a list of QIF strings.
 
         Parameters
@@ -1108,7 +1131,9 @@ class Investment:
         lst : list of str
             List of strings containing QIF information about the investment.
         day_first : bool, default=True
-             Whether the day or month comes first in the date.
+            Whether the day or month comes first in the date.
+        line_number : int, default=None
+            The line number of the header line of the investment in the QIF file.
 
         Returns
         -------
@@ -1155,10 +1180,13 @@ class Investment:
             elif line_code == 'O':
                 kwargs['commission'] = Decimal(field_info.replace(',', ''))
 
+        if line_number is not None:
+            kwargs['line_number'] = line_number
+
         return cls(**kwargs)
 
     @classmethod
-    def from_string(cls, string, separator='\n', day_first=True):
+    def from_string(cls, string, separator='\n', day_first=True, line_number=None):
         """Return a class instance from a QIF file section string.
 
         Parameters
@@ -1169,6 +1197,8 @@ class Investment:
              The line separator for the QIF file. This probably won't need changing.
         day_first : bool, default=True
              Whether the day or month comes first in the date.
+        line_number : int, default=None
+            The line number of the header line of the investment in the QIF file.
 
         Returns
         -------
@@ -1176,7 +1206,7 @@ class Investment:
             An Investment object created from the QIF strings.
         """
         property_list = string.split(separator)
-        return cls.from_list(property_list, day_first)
+        return cls.from_list(property_list, day_first, line_number)
 
     def to_dict(self, ignore=None):
         """Return a dict object representing the Transaction.
