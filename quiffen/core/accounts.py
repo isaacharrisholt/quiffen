@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 from quiffen.core.transactions import Transaction, TransactionList
 from quiffen.utils import parse_date
@@ -53,8 +54,8 @@ class Account:
                  name: str,
                  desc: str = None,
                  account_type: str = None,
-                 credit_limit: float = None,
-                 balance: float = None,
+                 credit_limit: Decimal = None,
+                 balance: Decimal = None,
                  date_at_balance: datetime = None
                  ):
         """Initialise an instance of the Account class.
@@ -68,9 +69,9 @@ class Account:
         account_type : {None, 'Cash', 'Bank', 'CCard', 'Oth A', 'Oth L', 'Invoice', 'Invst'}
             The type of account specified in the QIF file. Relates to the type of transactions stored in the account,
             but not on a functional level.
-        credit_limit : float, default=None
+        credit_limit : decimal.Decimal, default=None
             The credit limit on the account.
-        balance : float, default=None
+        balance : decimal.Decimal, default=None
             The balance in the account at `date_at_balance`.
         date_at_balance: datetime.datetime, default=None
             The date at which `balance` was recorded.
@@ -147,7 +148,7 @@ class Account:
 
     @credit_limit.setter
     def credit_limit(self, new_limit):
-        self._credit_limit = float(new_limit)
+        self._credit_limit = Decimal(new_limit)
 
     @property
     def balance(self):
@@ -155,7 +156,7 @@ class Account:
 
     @balance.setter
     def balance(self, new_balance):
-        self._balance = float(new_balance)
+        self._balance = Decimal(new_balance)
 
     @property
     def date_at_balance(self):
@@ -225,9 +226,9 @@ class Account:
             elif line_code == 'T':
                 kwargs['account_type'] = field_info
             elif line_code == 'L':
-                kwargs['credit_limit'] = float(field_info.replace(',', ''))
+                kwargs['credit_limit'] = Decimal(field_info.replace(',', ''))
             elif line_code == '$' or line_code == '£':
-                kwargs['balance'] = float(field_info.replace(',', ''))
+                kwargs['balance'] = Decimal(field_info.replace(',', ''))
             elif line_code == '/':
                 balance_date = parse_date(field_info, day_first)
                 kwargs['date_at_balance'] = balance_date
