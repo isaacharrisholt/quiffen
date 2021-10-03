@@ -314,7 +314,8 @@ QIF:
                         child.hierarchy = child.hierarchy.replace(f'{category.name}:', '')
                     child.parent = category.parent
 
-                if parent := category.parent is not None:
+                parent = category.parent
+                if parent is not None:
                     category_idx = parent.children.index(category)
                     parent.children.pop(category_idx)
                     parent.children.extend(category.children)
