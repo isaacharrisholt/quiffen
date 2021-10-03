@@ -146,6 +146,7 @@ QIF:
 
         sections = data.split('^\n')
         last_header = None
+        line_number = 1
 
         for section in sections:
             if not section:
@@ -158,10 +159,11 @@ QIF:
             # Allow for comments and blank lines at the top of sections
             i = 0
             while True:
-                if header_line:
+                if header_line.strip() != '':
                     if header_line[0] != '#':
                         break
                 i += 1
+                print(i, section.split('\n'))
                 header_line = section.split('\n')[i]
 
             # Check for new categories and accounts first, as then we can be sure it's a transaction in case a default
@@ -191,17 +193,20 @@ QIF:
                 last_account = default_account.name
             elif '!Type:Invst' in header_line:
                 # Investment
-                new_investment = Investment.from_string(section, separator=separator, day_first=day_first)
+                new_investment = Investment.from_string(section, separator=separator, day_first=day_first,
+                                                        line_number=line_number)
                 accounts[last_account].add_transaction(new_investment, 'Invst')
             elif header_line in VALID_TRANSACTION_ACCOUNT_TYPES:
                 # Other transaction type
                 new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
-                                                                                       day_first=day_first)
+                                                                                       day_first=day_first,
+                                                                                       line_number=line_number)
                 accounts[last_account].add_transaction(new_transaction, header_line)
                 categories.update(new_categories)
                 classes.update(new_classes)
 
             last_header = header_line
+            line_number += len(section.split('\n'))
 
         return cls(accounts=accounts, categories=categories, classes=classes)
 
@@ -224,7 +229,7 @@ QIF:
             raise FileNotFoundError(f'\'{path}\' does not point to a valid QIF file. Only .QIF file types are allowed')
 
         with open(path, 'r') as f:
-            data = f.read()
+            data = f.read().strip().strip('\n')
             if not data:
                 raise ParserException('File is empty')
 

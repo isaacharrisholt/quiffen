@@ -30,13 +30,14 @@ Usage
 Here's an example parsing of a QIF file:
 
 >>> from quiffen import Qif
+>>> import decimal
 >>> qif = Qif.parse('test.qif')
 >>> qif.accounts
 {'Quiffen Default Account': Account(name='Quiffen Default Account', desc='The default account created by Quiffen when no
 other accounts were present')}
 >>> acc = qif.accounts['Quiffen Default Account']
 >>> acc.transactions
-{'Bank': TransactionList(Transaction(date=datetime.datetime(2021, 2, 14, 0 , 0), amount=150.0, ...), ...),
+{'Bank': TransactionList(Transaction(date=datetime.datetime(2021, 2, 14, 0 , 0), amount=decimal.Decimal(150.0), ...), ...),
 'Invst': TransactionList(...)}
 >>> tr = acc.transactions['Bank'][0]
 >>> print(tr)
