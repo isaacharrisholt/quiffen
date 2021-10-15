@@ -1,6 +1,6 @@
 from abc import ABC
 from datetime import datetime
-import collections
+import collections.abc
 
 from decimal import Decimal
 
@@ -8,7 +8,7 @@ from quiffen.utils import parse_date, create_categories
 from quiffen.core.categories_classes import Category, Class
 
 
-class TransactionList(collections.MutableSequence, ABC):
+class TransactionList(collections.abc.MutableSequence, ABC):
     """
     A class to store Transaction-type objects only in an ordered list.
 
