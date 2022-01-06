@@ -1,3 +1,4 @@
+import decimal
 from abc import ABC
 from datetime import datetime
 import collections.abc
@@ -451,6 +452,7 @@ class Transaction:
         splits = TransactionList()
         current_split = None
         split_categories = {}
+        last_category = None
         for field in lst:
             field = field.replace('\n', '')
 
@@ -482,14 +484,15 @@ class Transaction:
             elif line_code == 'E':
                 current_split.memo = field_info
             elif line_code == '$' or line_code == '£':
-                current_split.amount = Decimal(field_info.replace(',', ''))
+                current_split.amount = Decimal(round(float(field_info.replace(',', '')), 2))
             elif line_code == '%':
                 current_split.percent = Decimal(field_info.split(' ')[0].replace('%', ''))
             elif line_code == 'T' or line_code == 'U':
+                amount = round(float(field_info.replace(',', '')), 2)
                 if not splits:
-                    kwargs['amount'] = Decimal(field_info.replace(',', ''))
+                    kwargs['amount'] = Decimal(amount)
                 else:
-                    current_split.amount = Decimal(field_info.replace(',', ''))
+                    current_split.amount = Decimal(amount)
             elif line_code == 'M':
                 if not splits:
                     kwargs['memo'] = field_info
@@ -523,8 +526,16 @@ class Transaction:
                 else:
                     category_name = field_info.split(':')[-1]
                     new_category = Category(category_name)
-                    new_category.hierarchy = field_info
+
+                    if last_category is None:
+                        new_category.hierarchy = field_info
+                        last_category = field_info
+                    else:
+                        new_category.hierarchy = f'{last_category}:{field_info}'
+                        last_category = f'{last_category}:{field_info}'
+
                     categories = create_categories(new_category, categories)
+
                     if not splits:
                         kwargs['category'] = new_category
                     else:
@@ -542,17 +553,17 @@ class Transaction:
             elif line_code == '1':
                 kwargs['first_payment_date'] = parse_date(field_info, day_first)
             elif line_code == '2':
-                kwargs['loan_length'] = Decimal(field_info.replace(',', ''))
+                kwargs['loan_length'] = Decimal(round(float(field_info.replace(',', '')), 2))
             elif line_code == '3':
                 kwargs['num_payments'] = int(field_info.replace(',', ''))
             elif line_code == '4':
                 kwargs['periods_per_annum'] = int(field_info.replace(',', ''))
             elif line_code == '5':
-                kwargs['interest_rate'] = Decimal(field_info.replace(',', ''))
+                kwargs['interest_rate'] = Decimal(round(float(field_info.replace(',', '')), 2))
             elif line_code == '6':
-                kwargs['current_loan_balance'] = Decimal(field_info.replace(',', ''))
+                kwargs['current_loan_balance'] = Decimal(round(float(field_info.replace(',', '')), 2))
             elif line_code == '7':
-                kwargs['original_loan_amount'] = Decimal(field_info.replace(',', ''))
+                kwargs['original_loan_amount'] = Decimal(round(float(field_info.replace(',', '')), 2))
 
         if line_number is not None:
             kwargs['line_number'] = line_number
@@ -1162,13 +1173,13 @@ class Investment:
             elif line_code == 'Y':
                 kwargs['security'] = field_info
             elif line_code == 'I':
-                kwargs['price'] = Decimal(field_info.replace(',', ''))
+                kwargs['price'] = Decimal(round(float(field_info.replace(',', '')), 2))
             elif line_code == 'Q':
-                kwargs['quantity'] = Decimal(field_info.replace(',', ''))
+                kwargs['quantity'] = Decimal(round(float(field_info.replace(',', '')), 2))
             elif line_code == 'C':
                 kwargs['cleared'] = field_info
             elif line_code == 'T' or line_code == 'U':
-                kwargs['amount'] = Decimal(field_info.replace(',', ''))
+                kwargs['amount'] = Decimal(round(float(field_info.replace(',', '')), 2))
             elif line_code == 'M':
                 kwargs['memo'] = field_info
             elif line_code == 'P':
@@ -1176,9 +1187,9 @@ class Investment:
             elif line_code == 'L':
                 kwargs['to_account'] = field_info
             elif line_code == '$':
-                kwargs['transfer_amount'] = Decimal(field_info.replace(',', ''))
+                kwargs['transfer_amount'] = Decimal(round(float(field_info.replace(',', '')), 2))
             elif line_code == 'O':
-                kwargs['commission'] = Decimal(field_info.replace(',', ''))
+                kwargs['commission'] = Decimal(round(float(field_info.replace(',', '')), 2))
 
         if line_number is not None:
             kwargs['line_number'] = line_number
