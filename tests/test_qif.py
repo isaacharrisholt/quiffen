@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from unittest import TestCase
 
 from quiffen.core.accounts import Account
@@ -72,7 +73,7 @@ class TestQif(TestCase):
         qif.add_account(acc)
         date_now = datetime.now()
 
-        tr = Transaction(date=date_now, amount=150)
+        tr = Transaction(date=date_now, amount=Decimal(150))
         acc.last_header = 'Bank'
         acc.add_transaction(tr)
 

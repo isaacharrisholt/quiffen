@@ -8,3 +8,12 @@ from quiffen.core.qif import Qif
 from quiffen.core.transactions import Transaction, Investment, TransactionList, Split
 from quiffen.core.accounts import Account
 from quiffen.core.categories_classes import Category, Class
+
+
+def init():
+    import decimal
+    context = decimal.Context(prec=2, rounding=decimal.ROUND_05UP)
+    decimal.setcontext(context)
+
+
+init()

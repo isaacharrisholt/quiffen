@@ -280,7 +280,7 @@ class Category:
                 kwargs['expense'] = False
                 kwargs['income'] = True
             elif line_code == 'B':
-                kwargs['budget_amount'] = Decimal(field_info.replace(',', ''))
+                kwargs['budget_amount'] = Decimal(round(float(field_info.replace(',', '')), 2))
             elif line_code == 'R':
                 kwargs['tax_schedule_info'] = field_info
 
