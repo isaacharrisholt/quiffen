@@ -448,7 +448,7 @@ class Transaction:
         """
         kwargs = {}
         categories = {}
-        classes = []
+        classes = {}
         splits = TransactionList()
         current_split = None
         split_categories = {}
@@ -514,7 +514,7 @@ class Transaction:
                 # 'L' can store classes, denoted by '/'
                 if '/' in field_info:
                     field_info, class_name = field_info.split('/')[0], field_info.split('/')[1]
-                    classes.append(Class(name=class_name))
+                    classes[class_name] = Class(name=class_name)
 
                 # 'L' can represent both categories and the 'to' transfer account
                 # Transfer accounts are denoted by [ ] so check for those
@@ -541,10 +541,16 @@ class Transaction:
                     else:
                         current_split.category = new_category
             elif line_code == 'N':
-                if not splits:
-                    kwargs['check_number'] = int(field_info)
-                else:
-                    current_split.check_number = int(field_info)
+                try:
+                    if not splits:
+                        kwargs['check_number'] = int(field_info)
+                    else:
+                        current_split.check_number = int(field_info)
+                except ValueError:
+                    # Some financial software stores strings (like
+                    # transaction types) in the check number field,
+                    # ignore anything that is not an integer.
+                    pass
             elif line_code == 'F':
                 if field_info.lower() == 'false':
                     kwargs['reimbursable_expense'] = False
