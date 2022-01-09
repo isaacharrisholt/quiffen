@@ -498,14 +498,14 @@ QIF:
                                     if split.date:
                                         qif_data += f'D{split.date.strftime(date_format)}\n'
 
+                                    if split.memo:
+                                        qif_data += f'E{split.memo}\n'
+                                        
                                     if split.amount is not None:
                                         qif_data += f'${split.amount}\n'
 
                                     if split.percent is not None:
                                         qif_data += f'%{split.percent}\n'
-
-                                    if split.memo:
-                                        qif_data += f'E{split.memo}\n'
 
                                     if split.cleared:
                                         qif_data += f'C{split.cleared}\n'

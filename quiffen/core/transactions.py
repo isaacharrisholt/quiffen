@@ -638,7 +638,7 @@ class Transaction:
                                       if split.percent]) + new_split.percent > 100:
             raise ValueError('Percentage sum of splits cannot add up to more than 100%')
 
-        if new_split.amount and sum([split.amount for split in self._splits if split.amount]) > self._amount:
+        if new_split.amount and abs(sum([split.amount for split in self._splits if split.amount])) > abs(self._amount):
             raise ValueError('Splits amounts cannot sum to more than Transaction amount')
 
         self._splits.append(new_split)
