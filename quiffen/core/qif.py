@@ -11,12 +11,12 @@ except ModuleNotFoundError:
     PANDAS_INSTALLED = False
 
 VALID_TRANSACTION_ACCOUNT_TYPES = [
-    '!Type:Cash',
-    '!Type:Bank',
-    '!Type:Ccard',
-    '!Type:Oth A',
-    '!Type:Oth L',
-    '!Type:Invoice'
+    '!type:cash',
+    '!type:bank',
+    '!type:ccard',
+    '!type:oth a',
+    '!type:oth l',
+    '!type:invoice'
 ]
 
 
@@ -196,7 +196,7 @@ QIF:
                 new_investment = Investment.from_string(section, separator=separator, day_first=day_first,
                                                         line_number=line_number)
                 accounts[last_account].add_transaction(new_investment, 'Invst')
-            elif header_line in VALID_TRANSACTION_ACCOUNT_TYPES:
+            elif header_line.lower() in VALID_TRANSACTION_ACCOUNT_TYPES:
                 # Other transaction type
                 new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
                                                                                        day_first=day_first,
