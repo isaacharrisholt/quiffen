@@ -1,12 +1,11 @@
+import collections.abc
 import decimal
 from abc import ABC
 from datetime import datetime
-import collections.abc
-
 from decimal import Decimal
 
-from quiffen.utils import parse_date, create_categories
 from quiffen.core.categories_classes import Category, Class
+from quiffen.utils import parse_date, create_categories
 
 
 class TransactionList(collections.abc.MutableSequence, ABC):
@@ -644,8 +643,9 @@ class Transaction:
                                       if split.percent]) + new_split.percent > 100:
             raise ValueError('Percentage sum of splits cannot add up to more than 100%')
 
-        if new_split.amount and sum([split.amount for split in self._splits if split.amount]) > self._amount:
-            raise ValueError('Splits amounts cannot sum to more than Transaction amount')
+        if new_split.amount and (abs(sum([split.amount for split in self._splits if
+                                          split.amount]) + new_split.amount) > abs(self._amount)):
+            raise ValueError('Splits amounts cannot exceed Transaction amount')
 
         self._splits.append(new_split)
         self.refresh_is_split()
