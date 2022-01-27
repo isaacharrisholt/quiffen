@@ -1,11 +1,14 @@
 import collections.abc
 import decimal
 from abc import ABC
+import logging
 from datetime import datetime
 from decimal import Decimal
 
 from quiffen.core.categories_classes import Category, Class
 from quiffen.utils import parse_date, create_categories
+
+logger = logging.getLogger(__name__)
 
 
 class TransactionList(collections.abc.MutableSequence, ABC):
@@ -481,6 +484,9 @@ class Transaction:
                 else:
                     current_split.date = transaction_date
             elif line_code == 'E':
+                if current_split is None:
+                    logger.warning(f"no split yet given for memo '{field_info}'--skipping")
+                    continue
                 current_split.memo = field_info
             elif line_code == '$' or line_code == '£':
                 current_split.amount = Decimal(round(float(field_info.replace(',', '')), 2))
