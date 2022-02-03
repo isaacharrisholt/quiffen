@@ -26,7 +26,7 @@ class TestTransaction(TestCase):
 
     def test_repr(self):
         date_obj = parse_date('01/06/2021')
-        trans = Transaction(date_obj, Decimal(-150.60))
+        trans = Transaction(date_obj, Decimal('-150.60'))
         print(repr(trans))
 
     def test_parse_date(self):
@@ -46,18 +46,18 @@ class TestTransaction(TestCase):
         lst = ['D01/06/2021', 'T-150.60', 'PMe', 'MMemo']
         date_obj = datetime.strptime('01/06/2021', '%d/%m/%Y')
         tr, _, _ = Transaction.from_list(lst)
-        self.assertEqual(tr, Transaction(date=date_obj, amount=Decimal(-150.60), payee='Me', memo='Memo'))
+        self.assertEqual(tr, Transaction(date=date_obj, amount=Decimal('-150.60'), payee='Me', memo='Memo'))
 
     def test_from_string(self):
         string = 'D01/06/2021\nT-150.60\nPMe\nMMemo'
         date_obj = datetime.strptime('01/06/2021', '%d/%m/%Y')
         tr, _, _ = Transaction.from_string(string)
-        self.assertEqual(tr, Transaction(date=date_obj, amount=Decimal(-150.60), payee='Me', memo='Memo'))
+        self.assertEqual(tr, Transaction(date=date_obj, amount=Decimal('-150.60'), payee='Me', memo='Memo'))
 
         string = 'D01/06/2021_T-150.60_PMe_MMemo'
         date_obj = datetime.strptime('01/06/2021', '%d/%m/%Y')
         tr, _, _ = Transaction.from_string(string, separator='_')
-        self.assertEqual(tr, Transaction(date=date_obj, amount=Decimal(-150.60), payee='Me', memo='Memo'))
+        self.assertEqual(tr, Transaction(date=date_obj, amount=Decimal('-150.60'), payee='Me', memo='Memo'))
 
     def test_multiple_categories(self):
         lst = ['D01/06/2021', 'T-150.60', 'PMe', 'MMemo', 'LReptile', 'LLizard']
