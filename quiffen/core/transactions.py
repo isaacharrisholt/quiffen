@@ -1185,13 +1185,13 @@ class Investment:
             elif line_code == 'Y':
                 kwargs['security'] = field_info
             elif line_code == 'I':
-                kwargs['price'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['price'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'Q':
-                kwargs['quantity'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['quantity'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'C':
                 kwargs['cleared'] = field_info
             elif line_code == 'T' or line_code == 'U':
-                kwargs['amount'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['amount'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'M':
                 kwargs['memo'] = field_info
             elif line_code == 'P':
@@ -1199,9 +1199,9 @@ class Investment:
             elif line_code == 'L':
                 kwargs['to_account'] = field_info
             elif line_code == '$':
-                kwargs['transfer_amount'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['transfer_amount'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'O':
-                kwargs['commission'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['commission'] = Decimal(field_info.replace(',', ''))
 
         if line_number is not None:
             kwargs['line_number'] = line_number
