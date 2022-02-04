@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.2.1'
+VERSION = '1.2.2'
 DESCRIPTION = 'Quiffen'
 with open('README.rst', 'r') as f:
     LONG_DESCRIPTION = f.read()
@@ -25,5 +25,5 @@ setup(
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: Microsoft :: Windows"
     ],
-    python_requires='>=3'
+    python_requires='>=3.6'
 )
