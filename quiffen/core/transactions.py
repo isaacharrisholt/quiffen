@@ -125,7 +125,7 @@ class Transaction:
                  loan_length: Decimal = None,
                  num_payments: int = None,
                  periods_per_annum: int = None,
-                 interest_rate: float = None,
+                 interest_rate: float = None,            # should probably be Decimal
                  current_loan_balance: float = None,
                  original_loan_amount: float = None,
                  line_number: int = None,
@@ -489,11 +489,11 @@ class Transaction:
                     continue
                 current_split.memo = field_info
             elif line_code == '$' or line_code == '£':
-                current_split.amount = Decimal(round(float(field_info.replace(',', '')), 2))
+                current_split.amount = Decimal(field_info.replace(',', ''))
             elif line_code == '%':
                 current_split.percent = Decimal(field_info.split(' ')[0].replace('%', ''))
             elif line_code == 'T' or line_code == 'U':
-                amount = round(float(field_info.replace(',', '')), 2)
+                amount = Decimal(field_info.replace(',', ''))
                 if not splits:
                     kwargs['amount'] = Decimal(amount)
                 else:
@@ -564,17 +564,17 @@ class Transaction:
             elif line_code == '1':
                 kwargs['first_payment_date'] = parse_date(field_info, day_first)
             elif line_code == '2':
-                kwargs['loan_length'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['loan_length'] = Decimal(field_info.replace(',', ''))
             elif line_code == '3':
                 kwargs['num_payments'] = int(field_info.replace(',', ''))
             elif line_code == '4':
                 kwargs['periods_per_annum'] = int(field_info.replace(',', ''))
             elif line_code == '5':
-                kwargs['interest_rate'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['interest_rate'] = Decimal(field_info.replace(',', ''))
             elif line_code == '6':
-                kwargs['current_loan_balance'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['current_loan_balance'] = Decimal(field_info.replace(',', ''))
             elif line_code == '7':
-                kwargs['original_loan_amount'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['original_loan_amount'] = Decimal(field_info.replace(',', ''))
 
         if line_number is not None:
             kwargs['line_number'] = line_number
@@ -1185,13 +1185,13 @@ class Investment:
             elif line_code == 'Y':
                 kwargs['security'] = field_info
             elif line_code == 'I':
-                kwargs['price'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['price'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'Q':
-                kwargs['quantity'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['quantity'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'C':
                 kwargs['cleared'] = field_info
             elif line_code == 'T' or line_code == 'U':
-                kwargs['amount'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['amount'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'M':
                 kwargs['memo'] = field_info
             elif line_code == 'P':
@@ -1199,9 +1199,9 @@ class Investment:
             elif line_code == 'L':
                 kwargs['to_account'] = field_info
             elif line_code == '$':
-                kwargs['transfer_amount'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['transfer_amount'] = Decimal(field_info.replace(',', ''))
             elif line_code == 'O':
-                kwargs['commission'] = Decimal(round(float(field_info.replace(',', '')), 2))
+                kwargs['commission'] = Decimal(field_info.replace(',', ''))
 
         if line_number is not None:
             kwargs['line_number'] = line_number
