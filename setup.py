@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.2.2'
+VERSION = '1.2.4'
 DESCRIPTION = 'Quiffen'
 with open('README.rst', 'r') as f:
     LONG_DESCRIPTION = f.read()
