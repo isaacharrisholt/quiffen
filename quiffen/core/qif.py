@@ -196,12 +196,12 @@ QIF:
                 new_investment = Investment.from_string(section, separator=separator, day_first=day_first,
                                                         line_number=line_number)
                 accounts[last_account].add_transaction(new_investment, 'Invst')
-            elif header_line.lower() in VALID_TRANSACTION_ACCOUNT_TYPES:
+            elif header_line.lower().replace(' ', '') in VALID_TRANSACTION_ACCOUNT_TYPES:
                 # Other transaction type
                 new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
                                                                                        day_first=day_first,
                                                                                        line_number=line_number)
-                accounts[last_account].add_transaction(new_transaction, header_line)
+                accounts[last_account].add_transaction(new_transaction, header_line.replace(' ', ''))
                 categories.update(new_categories)
                 classes.update(new_classes)
 
