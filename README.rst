@@ -31,7 +31,7 @@ Here's an example parsing of a QIF file:
 
 >>> from quiffen import Qif
 >>> import decimal
->>> qif = Qif.parse('test.qif')
+>>> qif = Qif.parse('test.qif', day_first=False)
 >>> qif.accounts
 {'Quiffen Default Account': Account(name='Quiffen Default Account', desc='The default account created by Quiffen when no
 other accounts were present')}
