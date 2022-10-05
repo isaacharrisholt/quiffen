@@ -191,6 +191,17 @@ QIF:
                                                'present')
                 accounts[default_account.name] = default_account
                 last_account = default_account.name
+
+                # if there is a transaction in this section, parse it (often seen at head of qifs)
+
+                if len(section.split('\n')) > 2: # !Type:... and ^ 
+                    new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
+                                                                                       day_first=day_first,
+                                                                                       line_number=line_number)
+                    accounts[last_account].add_transaction(new_transaction, header_line.replace(' ', ''))
+                    categories.update(new_categories)
+                    classes.update(new_classes)
+
             elif '!Type:Invst' in header_line:
                 # Investment
                 new_investment = Investment.from_string(section, separator=separator, day_first=day_first,

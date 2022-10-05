@@ -41,10 +41,19 @@ def parse_date(date_string, day_first=True):
                             '%b0%d0%Y',
                             '%b0%d0%y']
 
+    year_first_patterns = ['%Y/%m/%d',
+                          '%Y-%m-%d',
+                          '%y/%m/%d',
+                          '%y-%m-%d',
+                          '%Y0%B0%d', 
+                          '%y0%B0%d',
+                          '%Y0%b0%d',
+                          '%y0%b0%d']
+
     if day_first:
-        date_patterns = day_first_patterns + month_first_patterns
+        date_patterns = day_first_patterns + month_first_patterns + year_first_patterns
     else:
-        date_patterns = month_first_patterns + day_first_patterns
+        date_patterns = month_first_patterns + day_first_patterns + year_first_patterns
 
     # QIF files sometimes use ' ' instead of a 0 or a ' instead of a /
     date_string = date_string.replace(' ', '0')
