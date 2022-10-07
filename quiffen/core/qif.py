@@ -184,7 +184,12 @@ QIF:
                 new_account = Account.from_string(section)
                 accounts[new_account.name] = new_account
                 last_account = new_account.name
-            elif '!Type' in header_line and not accounts:
+            elif '!Type:Invst' in header_line:
+                # Investment
+                new_investment = Investment.from_string(section, separator=separator, day_first=day_first,
+                                                        line_number=line_number)
+                accounts[last_account].add_transaction(new_investment, 'Invst')
+            elif not accounts and str.lower(header_line) in VALID_TRANSACTION_ACCOUNT_TYPES:
                 # Accounts is empty and there's a transaction, so create default account to put transactions in
                 default_account = Account(name='Quiffen Default Account',
                                           desc='The default account created by Quiffen when no other accounts were '
@@ -192,21 +197,13 @@ QIF:
                 accounts[default_account.name] = default_account
                 last_account = default_account.name
 
-                # if there is a transaction in this section, parse it (often seen at head of qifs)
+                new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
+                                                                                    day_first=day_first,
+                                                                                    line_number=line_number)
+                accounts[last_account].add_transaction(new_transaction, header_line.replace(' ', ''))
+                categories.update(new_categories)
+                classes.update(new_classes)
 
-                if len(section.split('\n')) > 2: # !Type:... and ^ 
-                    new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
-                                                                                       day_first=day_first,
-                                                                                       line_number=line_number)
-                    accounts[last_account].add_transaction(new_transaction, header_line.replace(' ', ''))
-                    categories.update(new_categories)
-                    classes.update(new_classes)
-
-            elif '!Type:Invst' in header_line:
-                # Investment
-                new_investment = Investment.from_string(section, separator=separator, day_first=day_first,
-                                                        line_number=line_number)
-                accounts[last_account].add_transaction(new_investment, 'Invst')
             elif header_line.lower().replace(' ', '') in VALID_TRANSACTION_ACCOUNT_TYPES:
                 # Other transaction type
                 new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
