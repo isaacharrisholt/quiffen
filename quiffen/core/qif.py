@@ -189,7 +189,7 @@ QIF:
                 new_investment = Investment.from_string(section, separator=separator, day_first=day_first,
                                                         line_number=line_number)
                 accounts[last_account].add_transaction(new_investment, 'Invst')
-            elif not accounts and str.lower(header_line) in VALID_TRANSACTION_ACCOUNT_TYPES:
+            elif not accounts and header_line.lower().replace(' ', '') in VALID_TRANSACTION_ACCOUNT_TYPES:
                 # Accounts is empty and there's a transaction, so create default account to put transactions in
                 default_account = Account(name='Quiffen Default Account',
                                           desc='The default account created by Quiffen when no other accounts were '
@@ -197,12 +197,23 @@ QIF:
                 accounts[default_account.name] = default_account
                 last_account = default_account.name
 
-                new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
-                                                                                    day_first=day_first,
-                                                                                    line_number=line_number)
-                accounts[last_account].add_transaction(new_transaction, header_line.replace(' ', ''))
-                categories.update(new_categories)
-                classes.update(new_classes)
+                # two cases: the header line is the only thing in this section, or it is not
+                # first case: no transaction to process, so don't process
+                # second case: there are transaction details to process, so process them
+
+                # in the first case, the section looks like:
+                # an element of VALID_TRANSACTION_ACCOUNT_TYPES
+                # ^
+                # which will, after splitting by ^ and then \n, have length 2
+                # and we cannot be in this branch if it has length 0 or 1
+
+                if not len(section.split('\n')) == 2:
+                    new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
+                                                                                        day_first=day_first,
+                                                                                        line_number=line_number)
+                    accounts[last_account].add_transaction(new_transaction, header_line.replace(' ', ''))
+                    categories.update(new_categories)
+                    classes.update(new_classes)
 
             elif header_line.lower().replace(' ', '') in VALID_TRANSACTION_ACCOUNT_TYPES:
                 # Other transaction type
