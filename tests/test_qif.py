@@ -7,7 +7,6 @@ from quiffen.core.categories_classes import Category, Class
 from quiffen.core.qif import Qif
 from quiffen.core.transactions import Transaction
 
-
 class TestQif(TestCase):
 
     def test_read_qif(self):

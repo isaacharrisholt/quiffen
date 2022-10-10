@@ -2,6 +2,7 @@ from quiffen import utils
 from quiffen.core.accounts import Account
 from quiffen.core.categories_classes import Category, Class
 from quiffen.core.transactions import Transaction, Investment
+from quiffen.core.security import Security
 
 try:
     import pandas as pd
@@ -35,7 +36,8 @@ class Qif:
     def __init__(self,
                  accounts: dict = None,
                  categories: dict = None,
-                 classes: dict = None
+                 classes: dict = None,
+                 securities: dict = None
                  ):
         """Initialise an instance of the Qif class.
 
@@ -47,6 +49,8 @@ class Qif:
             A dict of categories in the form {'Category Name': category_object}.
         classes : dict, default=None
             A dict of classes in the form {'Class Name': class_object}.
+        securities : dict, default=None
+            A dict of securities in the form {'Security Name': security_object}.
 
         Raises
         ------
@@ -68,9 +72,15 @@ class Qif:
         else:
             classes = {}
 
+        if securities:
+            self._assert_type(securities, Security)
+        else:
+            securities = {}
+
         self._accounts = accounts
         self._categories = categories
         self._classes = classes
+        self._securities = securities
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
@@ -78,19 +88,23 @@ class Qif:
     def __str__(self):
         accounts = {name: repr(account) for (name, account) in self._accounts.items()}
         categories = {name: repr(cat) for (name, cat) in self._categories.items()}
+        securities = {name: repr(security) for (name, security) in self._securities.items()}
         return f"""
 QIF:
     Accounts: {accounts}
     Categories: {categories}
     Classes: {[repr(klass) for klass in self._classes]}
+    Securities: {securities}
 """
 
     def __repr__(self):
         accounts = {name: repr(account) for (name, account) in self._accounts.items()}
         categories = {name: repr(cat) for (name, cat) in self._categories.items()}
+        securities = {name: repr(security) for (name, security) in self._securities.items()}
         return f'Qif(accounts={accounts}, ' \
                f'categories={categories}, ' \
-               f'classes={[repr(klass) for klass in self._classes]})'
+               f'classes={[repr(klass) for klass in self._classes]}, ' \
+               f'securities={securities})'
 
     @property
     def accounts(self):
@@ -119,6 +133,15 @@ QIF:
         self._assert_type(new_classes, Class)
         self._classes = new_classes
 
+    @property
+    def securities(self):
+        return self._securities
+
+    @securities.setter
+    def classes(self, new_securities):
+        self._assert_type(new_securities, Security)
+        self._securities = new_securities
+
     @classmethod
     def parse(cls, filepath, separator='\n', day_first=True):
         """Return a class instance from a QIF file.
@@ -143,6 +166,7 @@ QIF:
         last_account = None
         categories = {}
         classes = {}
+        securities = {}
 
         sections = data.split('^\n')
         last_header = None
@@ -180,6 +204,9 @@ QIF:
             elif '!Type:Class' in header_line:
                 new_class = Class.from_string(section)
                 classes[new_class.name] = new_class
+            elif '!Type:Security' in header_line:
+                new_security = Security.from_string(section)
+                securities[new_security.name] = new_security
             elif '!Account' in header_line:
                 new_account = Account.from_string(section)
                 accounts[new_account.name] = new_account
@@ -208,7 +235,7 @@ QIF:
             last_header = header_line
             line_number += len(section.split('\n'))
 
-        return cls(accounts=accounts, categories=categories, classes=classes)
+        return cls(accounts=accounts, categories=categories, classes=classes, securities=securities)
 
     @staticmethod
     def _assert_type(iterable, types):
@@ -358,6 +385,37 @@ QIF:
         """
         return self._classes.pop(class_name)
 
+    def add_security(self, new_security):
+        """Add a new Security to the object.
+
+        Parameters
+        ----------
+        new_security : Security
+            The Security to be added to the Qif.
+
+        Raises
+        ------
+        TypeError
+            If ``new_security`` is not a Security object.
+        """
+        self._assert_type([new_security], Security)
+        self._securities[new_security.name] = new_security
+
+    def remove_security(self, security_name):
+        """Remove a Security from the Qif object.
+
+        Parameters
+        ----------
+        security_name : str
+            The name of the Security to be removed.
+
+        Returns
+        -------
+        Security
+            The Security removed.
+        """
+        return self._securities.pop(security_name)
+
     def to_qif(self, path=None, date_format='%d/%m/%Y'):
         """Write the Qif object to a QIF file and return the string.
 
@@ -381,6 +439,24 @@ QIF:
                 qif_data += f'N{klass.name}\n'
                 if klass.desc:
                     qif_data += f'D{klass.desc}\n'
+                qif_data += '^\n'
+
+        if self._securities:
+            securities_to_visit = list(self._securities.values())
+            qif_data += '!Type:Security\n'
+            for security in securities_to_visit:
+
+                qif_data += f'N{security.name}\n' # must exist to get in .values()
+
+                if security.symbol:
+                    qif_data += f'S{security.symbol}\n'
+
+                if security.type:
+                    qif_data += f'T{security.type}\n'
+
+                if security.goal:
+                    qif_data += f'G{security.goal}\n'
+
                 qif_data += '^\n'
 
         if self._categories:
@@ -557,7 +633,7 @@ QIF:
 
         Parameters
         ----------
-        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes'}
+        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes', 'securities'}
             The data type to be converted to dicts.
         ignore : list of str, default=None
              A list of strings of parameters that should be excluded from the dict.
@@ -576,7 +652,7 @@ QIF:
             ignore = []
 
         data = data.lower()
-        options = ['transactions', 'investments', 'splits', 'accounts', 'categories', 'classes']
+        options = ['transactions', 'investments', 'splits', 'accounts', 'categories', 'classes', 'securities']
 
         if data not in options:
             raise RuntimeError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
@@ -624,6 +700,11 @@ QIF:
             for klass in self._classes:
                 classes.append(klass.to_dict(ignore=ignore))
             return classes
+        elif data == 'securities':
+            securities = []
+            for security in self._securities.values():
+                securities.append(security.to_dict(ignore=ignore))
+            return securities
 
     def to_csv(self, path=None, data='transactions', ignore=None, separator=',', sub_separator=';',
                date_format='%d/%m/%Y'):
@@ -633,7 +714,7 @@ QIF:
         ----------
         path : str, default=None
             The path of the CSV file to be created, if desired.
-        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes'}
+        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes', 'securities'}
             The data type to be input into the CSV file.
         ignore : list of str, default=None
             A list of strings of parameters that should be excluded from the dict.
@@ -660,7 +741,7 @@ QIF:
             ignore = []
 
         data = data.lower()
-        options = ['transactions', 'splits', 'investments', 'accounts', 'categories', 'classes']
+        options = ['transactions', 'splits', 'investments', 'accounts', 'categories', 'classes', 'securities']
 
         if data not in options:
             raise RuntimeError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
@@ -834,6 +915,26 @@ QIF:
                 this_line = this_line.strip(separator) + '\n'
                 csv_data += this_line
 
+        elif data == 'securities':
+            headers = [header for header in ['name','symbol','type','goal'] if header not in ignore]
+
+            csv_data += separator.join(headers) + '\n'
+
+            for security in self._securities:
+                this_line = ''
+                security_dict = security.to_dict()
+                for header in headers:
+                    security_data = security_dict.get(header)
+
+                    if security_data is not None:
+                        this_line += str(security_data).replace(separator, sub_separator)
+
+                    this_line += separator
+
+                this_line = this_line.strip(separator) + '\n'
+
+                csv_data += this_line
+
         if path is not None:
             with open(path, 'w') as f:
                 f.write(csv_data)
@@ -845,7 +946,7 @@ QIF:
 
         Parameters
         ----------
-        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes'}
+        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes', 'securities'}
             The data type to be input into the CSV file.
         ignore : list of str, default=None
             A list of strings of parameters that should be excluded from the dict.

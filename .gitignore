@@ -4,3 +4,4 @@
 .venv
 .idea
 **/__pycache__
+tests/testqifs/example-security-list.write.qif
