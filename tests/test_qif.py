@@ -1,6 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
-from unittest import TestCase
+from pathlib import Path
+
+import pytest
 
 from quiffen.core.accounts import Account
 from quiffen.core.categories_classes import Category, Class
@@ -8,79 +10,90 @@ from quiffen.core.qif import Qif
 from quiffen.core.transactions import Transaction
 
 
-class TestQif(TestCase):
+@pytest.fixture
+def qif_file():
+    return Path(__file__).parent / 'test.qif'
 
-    def test_read_qif(self):
-        data = Qif._read_qif('../test.qif')
 
-        with open('../test.qif', 'r') as f:
-            data2 = f.read()
+def test_read_qif(qif_file):
+    data = Qif._read_qif(qif_file)
 
-        self.assertEqual(data, data2)
+    with open(qif_file, 'r') as f:
+        data2 = f.read()
 
-    def test_add_remove_account(self):
-        qif = Qif()
-        acc = Account(name='Test Account')
-        qif.add_account(acc)
+    assert data == data2
 
-        self.assertEqual(qif, Qif(accounts={'Test Account': Account(name='Test Account')}))
 
-        qif.remove_account('Test Account')
+def test_add_remove_account():
+    qif = Qif()
+    acc = Account(name='Test Account')
+    qif.add_account(acc)
 
-        self.assertEqual(qif, Qif())
+    assert qif == Qif(accounts={'Test Account': Account(name='Test Account')})
 
-    def test_add_remove_category(self):
-        qif = Qif()
-        cat = Category(name='Test')
-        cat2 = Category(name='Test2', hierarchy='Test:Test2')
-        cat.add_child(cat2)
+    qif.remove_account('Test Account')
 
-        qif.add_category(cat)
+    assert qif == Qif()
 
-        self.assertEqual(qif, Qif(categories={'Test': Category(name='Test')}))
 
-        qif.remove_category('Test')
-        self.assertEqual(qif, Qif(categories={'Test2': Category(name='Test2')}))
+def test_add_remove_category():
+    qif = Qif()
+    cat = Category(name='Test')
+    cat2 = Category(name='Test2', hierarchy='Test:Test2')
+    cat.add_child(cat2)
 
-        qif.remove_category('Test2')
-        self.assertEqual(qif, Qif())
+    qif.add_category(cat)
+    assert qif == Qif(categories={'Test': Category(name='Test')})
 
-        cat.add_child(cat2)
-        qif.add_category(cat)
-        qif.remove_category(cat.name, keep_children=False)
-        self.assertEqual(qif, Qif())
+    qif.remove_category('Test')
+    assert qif == Qif(categories={'Test2': Category(name='Test2')})
 
-    def test_add_remove_class(self):
-        qif = Qif()
-        klass = Class(name='Test')
+    qif.remove_category('Test2')
+    assert qif == Qif()
 
-        qif.add_class(klass)
-        self.assertEqual(qif, Qif(classes={'Test': Class(name='Test')}))
+    cat.add_child(cat2)
+    qif.add_category(cat)
+    qif.remove_category(cat.name, keep_children=False)
+    assert qif == Qif()
 
-        qif.remove_class('Test')
-        self.assertEqual(qif, Qif())
 
-    def test_from_to_qif(self):
-        qif = Qif.parse('../test.qif')
-        qif.to_qif('../test2.qif')
+def test_add_remove_class():
+    qif = Qif()
+    klass = Class(name='Test')
 
-        qif2 = Qif.parse('../test2.qif')
-        self.assertEqual(qif, qif2)
+    qif.add_class(klass)
+    assert qif == Qif(classes={'Test': Class(name='Test')})
 
-    def test_to_dicts(self):
-        qif = Qif()
-        acc = Account(name='Test Account')
-        qif.add_account(acc)
-        date_now = datetime.now()
+    qif.remove_class('Test')
+    assert qif == Qif()
 
-        tr = Transaction(date=date_now, amount=Decimal(150))
-        acc.last_header = 'Bank'
-        acc.add_transaction(tr)
 
-        tr_dicts = qif.to_dicts(data='transactions')
-        self.assertEqual(tr_dicts, [{'date': date_now, 'amount': 150}])
+def test_from_to_qif(qif_file):
+    qif = Qif.parse(qif_file)
+    test_file = qif_file.parent / 'test_output.qif'
+    qif.to_qif(test_file)
 
-        acc_dicts = qif.to_dicts(data='accounts')
-        self.assertEqual(acc_dicts, [
-            {'name': 'Test Account', 'transactions': {'Bank': [{'date': date_now, 'amount': 150}]},
-             'last_header': 'Bank'}])
+    qif2 = Qif.parse(test_file)
+    assert qif == qif2
+
+
+def test_to_dicts():
+    qif = Qif()
+    acc = Account(name='Test Account')
+    qif.add_account(acc)
+    date_now = datetime.now()
+
+    tr = Transaction(date=date_now, amount=Decimal(150))
+    acc.last_header = 'Bank'
+    acc.add_transaction(tr)
+
+    tr_dicts = qif.to_dicts(data='transactions')
+    assert tr_dicts == [{'date': date_now, 'amount': 150}]
+
+    acc_dicts = qif.to_dicts(data='accounts')
+    assert acc_dicts == [
+        {
+            'name': 'Test Account',
+            'transactions': {'Bank': [{'date': date_now, 'amount': 150}]},
+        },
+    ]
