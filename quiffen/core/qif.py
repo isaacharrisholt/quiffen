@@ -170,10 +170,15 @@ class Qif(BaseModel):
                     )
                 header_line = last_header
 
+            last_header = header_line
+
             sanitised_section_lines = [
                 line for line in section_lines
                 if line.strip() and line.strip()[0] != '!'
             ]
+
+            if not sanitised_section_lines:
+                continue
 
             # Check for new categories and accounts first, otherwise it's a
             # transaction so a default account is created
@@ -255,7 +260,6 @@ class Qif(BaseModel):
                     else:
                         classes[class_name] = new_class
 
-            last_header = header_line
             line_number += len(section.split('\n'))
 
         return cls(

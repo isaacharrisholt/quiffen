@@ -1039,3 +1039,36 @@ def test_to_dataframe_transactions_multiple():
     assert df['payee'][1] == 'Test Payee'
     assert df['memo'][1] == 'Test Memo'
     assert df['category'][1]['name'] == 'Test Category'
+
+
+def test_transaction_before_account_definition_1(qif_file):
+    """Tests that a transaction can be parsed before the account
+    definition.
+
+    Relates to pull #32.
+    https://github.com/isaacharrisholt/quiffen/pull/32
+    """
+    test_file = (
+        qif_file.parent / 'test_transaction_before_account_definition_1.qif'
+    )
+    qif = Qif.parse(test_file)
+    acc = qif.accounts['Quiffen Default Account']
+
+    assert len(acc.transactions) == 1
+    assert len(acc.transactions['Bank']) == 2
+
+
+def test_transaction_before_account_definition_2(qif_file):
+    """Tests that a transaction can be parsed before the account
+    definition.
+
+    Relates to pull #32.
+    """
+    test_file = (
+        qif_file.parent / 'test_transaction_before_account_definition_2.qif'
+    )
+    qif = Qif.parse(test_file)
+    acc = qif.accounts['Quiffen Default Account']
+
+    assert len(acc.transactions) == 1
+    assert len(acc.transactions['Bank']) == 2

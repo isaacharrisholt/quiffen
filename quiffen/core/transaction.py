@@ -171,7 +171,7 @@ class Transaction(BaseModel):
             raise ValueError(
                 'Split percentages cannot exceeed 100% of the transaction'
             )
-        if abs(total_amount) > abs(values['amount']):
+        if abs(total_amount) > abs(values.get('amount', 0)):
             raise ValueError(
                 'Split amounts cannot exceed the amount of the transaction'
             )
