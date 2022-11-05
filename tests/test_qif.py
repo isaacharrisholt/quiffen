@@ -1,4 +1,5 @@
 # pylint: disable=redefined-outer-name
+import csv
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
@@ -455,6 +456,7 @@ def test_to_qif(qif_file):
     test_file.unlink()
 
 
+# pylint: disable=protected-access
 def test_get_data_dicts_transactions():
     """Test the get_data_dicts method with transactions"""
     qif = Qif()
@@ -561,3 +563,364 @@ def test_get_data_dicts_investments():
     expected = investment.to_dict()
     expected['date'] = '2019-01-01'  # Dates are converted to strings
     assert data_dicts[0] == expected
+# pylint: enable=protected-access
+
+
+def test_to_csv_transactions():
+    """Test the to_csv method with transactions"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    transaction = Transaction(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+        payee='Test Payee',
+        memo='Test Memo',
+        category=Category(name='Test Category'),
+    )
+    account.set_header('Bank')
+    account.add_transaction(transaction)
+    qif.add_account(account)
+
+    csv_file = Path(__file__).parent / 'test_files' / 'test_output.csv'
+    qif.to_csv(path=csv_file, data_type=QifDataType.TRANSACTIONS)
+
+    assert csv_file.exists()
+    with csv_file.open() as f:
+        reader = csv.DictReader(f)
+        assert len(reader.fieldnames) == 20
+
+        results = list(reader)
+        assert len(results) == 1
+        assert results[0]['date'] == '2019-01-01'
+        assert results[0]['amount'] == '100'
+        assert results[0]['payee'] == 'Test Payee'
+        assert results[0]['memo'] == 'Test Memo'
+        assert 'Test Category' in results[0]['category']
+    csv_file.unlink()
+
+
+def test_to_csv_categories():
+    """Test the to_csv method with categories"""
+    qif = Qif()
+    category = Category(name='Test Category')
+    qif.add_category(category)
+
+    csv_file = Path(__file__).parent / 'test_files' / 'test_output.csv'
+    qif.to_csv(path=csv_file, data_type=QifDataType.CATEGORIES)
+
+    assert csv_file.exists()
+    with csv_file.open() as f:
+        reader = csv.DictReader(f)
+        assert len(reader.fieldnames) == 9
+
+        results = list(reader)
+        assert len(results) == 1
+        assert results[0]['name'] == 'Test Category'
+    csv_file.unlink()
+
+
+def test_to_csv_classes():
+    """Test the to_csv method with classes"""
+    qif = Qif()
+    cls = Class(name='Test Class', desc='Test Description')
+    qif.add_class(cls)
+
+    csv_file = Path(__file__).parent / 'test_files' / 'test_output.csv'
+    qif.to_csv(path=csv_file, data_type=QifDataType.CLASSES)
+
+    assert csv_file.exists()
+    with csv_file.open() as f:
+        reader = csv.DictReader(f)
+        assert len(reader.fieldnames) == 3
+
+        results = list(reader)
+        assert len(results) == 1
+        assert results[0]['name'] == 'Test Class'
+        assert results[0]['desc'] == 'Test Description'
+    csv_file.unlink()
+
+
+def test_to_csv_accounts():
+    """Test the to_csv method with accounts"""
+    qif = Qif()
+    account = Account(name='Test Account', account_type='Bank')
+    account.set_header('Bank')
+    qif.add_account(account)
+
+    csv_file = Path(__file__).parent / 'test_files' / 'test_output.csv'
+    qif.to_csv(path=csv_file, data_type=QifDataType.ACCOUNTS)
+
+    assert csv_file.exists()
+    with csv_file.open() as f:
+        reader = csv.DictReader(f)
+        assert len(reader.fieldnames) == 7
+
+        results = list(reader)
+        assert len(results) == 1
+        assert results[0]['name'] == 'Test Account'
+        assert results[0]['account_type'] == 'Bank'
+    csv_file.unlink()
+
+
+def test_to_csv_investments():
+    """Test the to_csv method with investments"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    investment = Investment(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+        security='Test Security',
+        price=Decimal('10'),
+    )
+    account.set_header('Invst')
+    account.add_transaction(investment)
+    qif.add_account(account)
+
+    csv_file = Path(__file__).parent / 'test_files' / 'test_output.csv'
+    qif.to_csv(path=csv_file, data_type=QifDataType.INVESTMENTS)
+
+    assert csv_file.exists()
+    with csv_file.open() as f:
+        reader = csv.DictReader(f)
+        assert len(reader.fieldnames) == 13
+
+        results = list(reader)
+        assert len(results) == 1
+        assert results[0]['date'] == '2019-01-01'
+        assert results[0]['amount'] == '100'
+        assert results[0]['security'] == 'Test Security'
+        assert results[0]['price'] == '10'
+    csv_file.unlink()
+
+
+def test_to_csv_transactions_with_date_format_and_ignore_list():
+    """Test the to_csv method with transactions with date format and ignore"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    transaction = Transaction(
+        date=datetime(2019, 2, 1),
+        amount=Decimal('100'),
+        payee='Test Payee',
+        memo='Test Memo',
+        category=Category(name='Test Category'),
+    )
+    account.set_header('Bank')
+    account.add_transaction(transaction)
+    qif.add_account(account)
+
+    csv_file = Path(__file__).parent / 'test_files' / 'test_output.csv'
+    qif.to_csv(
+        path=csv_file,
+        data_type=QifDataType.TRANSACTIONS,
+        date_format='%m/%d/%Y',
+        ignore=['payee'],
+    )
+
+    assert csv_file.exists()
+    with csv_file.open() as f:
+        reader = csv.DictReader(f)
+        assert len(reader.fieldnames) == 19
+
+        results = list(reader)
+        assert len(results) == 1
+        assert results[0]['date'] == '02/01/2019'
+        assert results[0]['amount'] == '100'
+        assert 'payee' not in results[0]
+        assert results[0]['memo'] == 'Test Memo'
+        assert 'Test Category' in results[0]['category']
+    csv_file.unlink()
+
+
+def test_to_csv_transactions_multiple():
+    """Test the to_csv method with multiple transactions"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    transaction = Transaction(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+        payee='Test Payee',
+        memo='Test Memo',
+        category=Category(name='Test Category'),
+    )
+    account.set_header('Bank')
+    account.add_transaction(transaction)
+
+    transaction2 = transaction.copy()
+    transaction2.amount = Decimal('200')
+
+    account.add_transaction(transaction2)
+    qif.add_account(account)
+
+    csv_file = Path(__file__).parent / 'test_files' / 'test_output.csv'
+    qif.to_csv(path=csv_file, data_type=QifDataType.TRANSACTIONS)
+
+    assert csv_file.exists()
+    with csv_file.open() as f:
+        reader = csv.DictReader(f)
+        assert len(reader.fieldnames) == 20
+
+        results = list(reader)
+        assert len(results) == 2
+        assert results[0]['date'] == '2019-01-01'
+        assert results[0]['amount'] == '100'
+        assert results[0]['payee'] == 'Test Payee'
+        assert results[0]['memo'] == 'Test Memo'
+        assert 'Test Category' in results[0]['category']
+        assert results[1]['date'] == '2019-01-01'
+        assert results[1]['amount'] == '200'
+        assert results[1]['payee'] == 'Test Payee'
+        assert results[1]['memo'] == 'Test Memo'
+        assert 'Test Category' in results[1]['category']
+    csv_file.unlink()
+
+
+def test_to_dataframe_transactions():
+    """Test the to_dataframe method with transactions"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    transaction = Transaction(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+        payee='Test Payee',
+        memo='Test Memo',
+        category=Category(name='Test Category'),
+    )
+    account.set_header('Bank')
+    account.add_transaction(transaction)
+    qif.add_account(account)
+
+    df = qif.to_dataframe(data_type=QifDataType.TRANSACTIONS)
+
+    assert df.shape == (1, 20)
+    assert df['date'][0] == '2019-01-01'
+    assert df['amount'][0] == 100
+    assert df['payee'][0] == 'Test Payee'
+    assert df['memo'][0] == 'Test Memo'
+    assert df['category'][0]['name'] == 'Test Category'
+
+
+def test_to_dataframe_categories():
+    """Test the to_dataframe method with categories"""
+    qif = Qif()
+    category = Category(name='Test Category')
+    qif.add_category(category)
+
+    df = qif.to_dataframe(data_type=QifDataType.CATEGORIES)
+
+    assert df.shape == (1, 9)
+    assert df['name'][0] == 'Test Category'
+    assert df['parent'][0] is None
+
+
+def test_to_dataframe_classes():
+    """Test the to_dataframe method with classes"""
+    qif = Qif()
+    cls = Class(name='Test Class', desc='Test Description')
+    qif.add_class(cls)
+
+    df = qif.to_dataframe(data_type=QifDataType.CLASSES)
+
+    assert df.shape == (1, 3)
+    assert df['name'][0] == 'Test Class'
+    assert df['desc'][0] == 'Test Description'
+
+
+def test_to_dataframe_accounts():
+    """Test the to_dataframe method with accounts"""
+    qif = Qif()
+    account = Account(name='Test Account', account_type='Bank')
+    qif.add_account(account)
+
+    df = qif.to_dataframe(data_type=QifDataType.ACCOUNTS)
+
+    assert df.shape == (1, 7)
+    assert df['name'][0] == 'Test Account'
+    assert df['account_type'][0] == 'Bank'
+
+
+def test_to_dataframe_investments():
+    """Test the to_dataframe method with investments"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    investment = Investment(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+        security='Test Security',
+        price=Decimal('10'),
+    )
+    account.set_header('Invst')
+    account.add_transaction(investment)
+    qif.add_account(account)
+
+    df = qif.to_dataframe(data_type=QifDataType.INVESTMENTS)
+
+    assert df.shape == (1, 13)
+    assert df['date'][0] == '2019-01-01'
+    assert df['amount'][0] == 100
+    assert df['security'][0] == 'Test Security'
+    assert df['price'][0] == 10
+
+
+def test_to_dataframe_transactions_with_date_format_and_ignore_list():
+    """Test the to_dataframe method with transactions and date_format and
+    ignore"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    transaction = Transaction(
+        date=datetime(2019, 2, 1),
+        amount=Decimal('100'),
+        payee='Test Payee',
+        memo='Test Memo',
+        category=Category(name='Test Category'),
+    )
+    account.set_header('Bank')
+    account.add_transaction(transaction)
+    qif.add_account(account)
+
+    df = qif.to_dataframe(
+        data_type=QifDataType.TRANSACTIONS,
+        date_format='%m/%d/%Y',
+        ignore=['payee'],
+    )
+
+    assert df.shape == (1, 19)
+    assert df['date'][0] == '02/01/2019'
+    assert df['amount'][0] == 100
+    assert 'payee' not in df.columns
+    assert df['memo'][0] == 'Test Memo'
+    assert df['category'][0]['name'] == 'Test Category'
+
+
+def test_to_dataframe_transactions_multiple():
+    """Test the to_dataframe method with multiple transactions"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    transaction = Transaction(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+        payee='Test Payee',
+        memo='Test Memo',
+        category=Category(name='Test Category'),
+    )
+    account.set_header('Bank')
+    account.add_transaction(transaction)
+
+    transaction2 = transaction.copy()
+    transaction2.amount = Decimal('200')
+
+    account.add_transaction(transaction2)
+    qif.add_account(account)
+
+    df = qif.to_dataframe(data_type=QifDataType.TRANSACTIONS)
+
+    assert df.shape == (2, 20)
+    assert df['date'][0] == '2019-01-01'
+    assert df['amount'][0] == 100
+    assert df['payee'][0] == 'Test Payee'
+    assert df['memo'][0] == 'Test Memo'
+    assert df['category'][0]['name'] == 'Test Category'
+    assert df['date'][1] == '2019-01-01'
+    assert df['amount'][1] == 200
+    assert df['payee'][1] == 'Test Payee'
+    assert df['memo'][1] == 'Test Memo'
+    assert df['category'][1]['name'] == 'Test Category'

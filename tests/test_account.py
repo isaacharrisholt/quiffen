@@ -100,12 +100,14 @@ def test_str_method():
     )
 
 
+# pylint: disable=protected-access
 def test_set_header():
     """Test setting the header for an account"""
     account = Account(name='Test Account')
     assert account._last_header is None
     account.set_header('Bank')
     assert account._last_header == 'Bank'
+# pylint: enable=protected-access
 
 
 def test_add_transaction():
