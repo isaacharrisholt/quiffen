@@ -82,6 +82,8 @@ class Account(BaseModel):
                         len(value[header]) for header in value
                     )
                     properties += f'\n\tTransactions: {num_transactions}'
+                elif object_property == 'account_type':
+                    properties += f'\n\tAccount Type: {value.value}'
                 else:
                     properties += (
                         f'\n\t'
@@ -164,7 +166,7 @@ class Account(BaseModel):
         if self.desc:
             qif += f'D{self.desc}\n'
         if self.account_type:
-            qif += f'T{self.account_type}\n'
+            qif += f'T{self.account_type.value}\n'
         if self.credit_limit:
             qif += f'L{self.credit_limit}\n'
         if self.balance:
