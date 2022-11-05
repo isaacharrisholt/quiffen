@@ -92,6 +92,16 @@ class Account(BaseModel):
                     )
         return 'Account:' + properties
 
+    def set_header(self, header: AccountType):
+        """Set the last header used.
+
+        Parameters
+        ----------
+        header : AccountType
+            The last header used.
+        """
+        self._last_header = header
+
     def add_transaction(
         self,
         transaction: TransactionLike,

@@ -1,12 +1,15 @@
 # pylint: disable=redefined-outer-name
+from datetime import datetime
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
 
+from quiffen import Investment, Transaction
 from quiffen.core.account import Account, AccountType
 from quiffen.core.category import Category
 from quiffen.core.class_type import Class
-from quiffen.core.qif import ParserException, Qif
+from quiffen.core.qif import ParserException, Qif, QifDataType
 
 
 @pytest.fixture
@@ -452,24 +455,109 @@ def test_to_qif(qif_file):
     test_file.unlink()
 
 
+def test_get_data_dicts_transactions():
+    """Test the get_data_dicts method with transactions"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    transaction = Transaction(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+        payee='Test Payee',
+        memo='Test Memo',
+        category=Category(name='Test Category'),
+    )
+    account.set_header('Bank')
+    account.add_transaction(transaction)
+    qif.add_account(account)
+    data_dicts = qif._get_data_dicts(data_type=QifDataType.TRANSACTIONS)
 
-# def test_to_dicts():
-#     qif = Qif()
-#     acc = Account(name='Test Account')
-#     qif.add_account(acc)
-#     date_now = datetime.now()
-#
-#     tr = Transaction(date=date_now, amount=Decimal(150))
-#     acc.last_header = 'Bank'
-#     acc.add_transaction(tr)
-#
-#     tr_dicts = qif.to_dicts(data='transactions')
-#     assert tr_dicts == [{'date': date_now, 'amount': 150}]
-#
-#     acc_dicts = qif.to_dicts(data='accounts')
-#     assert acc_dicts == [
-#         {
-#             'name': 'Test Account',
-#             'transactions': {'Bank': [{'date': date_now, 'amount': 150}]},
-#         },
-#     ]
+    assert len(data_dicts) == 1
+    expected = transaction.to_dict()
+    expected['date'] = '2019-01-01'  # Dates are converted to strings
+    assert data_dicts[0] == expected
+
+
+def test_get_data_dicts_transactions_with_date_format_and_ignore():
+    """Test the get_data_dicts method with transactions and date format and
+    ignore"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    transaction = Transaction(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+        payee='Test Payee',
+        memo='Test Memo',
+        category=Category(name='Test Category'),
+    )
+    account.set_header('Bank')
+    account.add_transaction(transaction)
+    qif.add_account(account)
+    data_dicts = qif._get_data_dicts(
+        data_type=QifDataType.TRANSACTIONS,
+        date_format='%d/%m/%Y',
+        ignore=['payee', 'memo'],
+    )
+
+    assert len(data_dicts) == 1
+    expected = transaction.to_dict()
+    expected['date'] = '01/01/2019'  # Dates are converted to strings
+    del expected['payee']
+    del expected['memo']
+    assert data_dicts[0] == expected
+
+
+def test_get_data_dicts_categories():
+    """Test the get_data_dicts method with categories"""
+    qif = Qif()
+    category = Category(name='Test Category')
+    qif.add_category(category)
+    data_dicts = qif._get_data_dicts(data_type=QifDataType.CATEGORIES)
+
+    assert len(data_dicts) == 1
+    assert data_dicts[0] == category.to_dict()
+
+
+def test_get_data_dicts_classes():
+    """Test the get_data_dicts method with classes"""
+    qif = Qif()
+    cls = Class(name='Test Class')
+    qif.add_class(cls)
+    data_dicts = qif._get_data_dicts(data_type=QifDataType.CLASSES)
+
+    assert len(data_dicts) == 1
+    assert data_dicts[0] == cls.to_dict()
+
+
+def test_get_data_dicts_accounts():
+    """Test the get_data_dicts method with accounts"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    account.set_header('Bank')
+    qif.add_account(account)
+    data_dicts = qif._get_data_dicts(data_type=QifDataType.ACCOUNTS)
+
+    assert len(data_dicts) == 1
+    expected = account.to_dict()
+    del expected['_last_header']
+    assert data_dicts[0] == expected
+
+
+def test_get_data_dicts_investments():
+    """Test the get_data_dicts method with investments"""
+    qif = Qif()
+    account = Account(name='Test Account')
+    investment = Investment(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+        security='Test Security',
+        price=Decimal('10'),
+    )
+    account.set_header('Invst')
+    account.add_transaction(investment)
+    qif.add_account(account)
+    data_dicts = qif._get_data_dicts(data_type=QifDataType.INVESTMENTS)
+
+    assert len(data_dicts) == 1
+    expected = investment.to_dict()
+    expected['date'] = '2019-01-01'  # Dates are converted to strings
+    assert data_dicts[0] == expected

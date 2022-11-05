@@ -65,16 +65,6 @@ def test_eq_failure():
     assert account3 != account4
 
 
-def test_add_transaction():
-    """Test adding a transaction to an account"""
-    account = Account(name='Test Account')
-    transaction = Transaction(date=datetime(2022, 2, 1), amount=0)
-    account.add_transaction(transaction, header='Bank')
-    assert account.transactions == {
-        'Bank': [Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))],
-    }
-
-
 def test_str_method():
     """Test the string representation of an account"""
     account = Account(
@@ -108,6 +98,24 @@ def test_str_method():
         'Account:\n\tName: Test Account\n\tDesc: Test Description\n\t'
         'Account Type: Bank\n\tBalance: 100\n\tTransactions: 3'
     )
+
+
+def test_set_header():
+    """Test setting the header for an account"""
+    account = Account(name='Test Account')
+    assert account._last_header is None
+    account.set_header('Bank')
+    assert account._last_header == 'Bank'
+
+
+def test_add_transaction():
+    """Test adding a transaction to an account"""
+    account = Account(name='Test Account')
+    transaction = Transaction(date=datetime(2022, 2, 1), amount=0)
+    account.add_transaction(transaction, header='Bank')
+    assert account.transactions == {
+        'Bank': [Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))],
+    }
 
 
 def test_add_transaction_invalid_header():
