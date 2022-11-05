@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Dict, List, Optional, Tuple, Union
 
-from pydantic import conint, root_validator, validator
+from pydantic import root_validator, validator
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -108,7 +108,7 @@ class Transaction(BaseModel):
     payee: str = None
     payee_address: str = None
     category: Category = None
-    check_number: conint(ge=1) = None
+    check_number: Union[int, str] = None
     reimbursable_expense: bool = None
     small_business_expense: bool = None
     to_account: str = None
@@ -467,14 +467,15 @@ class Transaction(BaseModel):
             kwargs['line_number'] = line_number
 
         # Set splits percentage if they don't already have one
-        if splits and (total := Decimal(kwargs.get('amount', 0))):
+        total = Decimal(kwargs.get('amount', 0))
+        if splits and total:
             for split in splits:
-                if not split.percent:
+                if split.percent is None:
                     split.percent = Decimal(
                         round(split.amount / total * 100, 2)
                     )
                 # Check if the split percentage is correct
-                elif not (
+                elif split.amount is not None and not (
                     Decimal(round(split.percent, 2))
                     == Decimal(
                         round(
@@ -488,6 +489,9 @@ class Transaction(BaseModel):
                         f"the split amount ({split.amount}) for transaction "
                         f"on line {line_number}."
                     )
+        elif splits and not total:
+            for split in splits:
+                split.percent = None
 
         kwargs['splits'] = splits
         return cls(**kwargs), classes

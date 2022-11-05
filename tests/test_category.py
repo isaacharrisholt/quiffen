@@ -1,9 +1,11 @@
 # pylint: disable=redefined-outer-name,protected-access
 from datetime import datetime
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 
+from quiffen.core.qif import Qif
 from quiffen.core.category import (
     Category,
     CategoryType, add_categories_to_container,
@@ -874,3 +876,36 @@ def test_add_categories_to_container_complex_hierarchy_dict():
         '   └─ Birch\n'
         '      └─ Birch Leaf'
     )
+
+
+def test_categories_do_not_override_each_other():
+    """Test that categories do not override each other
+
+    Related to issue #23.
+    https://github.com/isaacharrisholt/quiffen/issues/23
+    """
+    test_file = (
+        Path(__file__).parent / 'test_files' / 'test_category_override.qif'
+    )
+
+    qif = Qif.parse(test_file)
+
+    assert len(qif.categories) == 2
+
+    assert sorted(qif.categories.keys()) == ['Everyday Expenses', 'Income']
+
+    income = qif.categories['Income']
+    assert income.name == 'Income'
+    assert len(income.children) == 2
+    assert sorted(c.name for c in income.children) == [
+        'Available next month',
+        'Available this month',
+    ]
+
+    everyday_expenses = qif.categories['Everyday Expenses']
+    assert everyday_expenses.name == 'Everyday Expenses'
+    assert len(everyday_expenses.children) == 2
+    assert sorted(c.name for c in everyday_expenses.children) == [
+        'Food Budget',
+        'Gousto',
+    ]

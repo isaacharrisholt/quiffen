@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Dict, List
-
-from pydantic import conint
+from typing import Dict, List, Union
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -50,7 +48,7 @@ class Split(BaseModel):
     cleared: str = None
     category: Category = None
     to_account: str = None
-    check_number: conint(ge=1) = None
+    check_number: Union[int, str] = None
     percent: Decimal = None
     payee_address: str = None
 

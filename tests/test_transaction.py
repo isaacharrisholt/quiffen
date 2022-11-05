@@ -484,7 +484,7 @@ def test_to_qif_with_splits_with_classes():
 
 
 def test_from_list_no_splits_no_classes():
-    """Test creating a category from a list of QIF strings"""
+    """Test creating a transaction from a list of QIF strings"""
     qif_list = [
         'D2022-02-01',
         'T1000',
@@ -525,7 +525,7 @@ def test_from_list_no_splits_no_classes():
 
 
 def test_from_list_no_split_with_class():
-    """Test creating a category from a list of QIF strings with no splits but
+    """Test creating a transaction from a list of QIF strings with no splits but
     that does define a QIF class"""
     qif_list = [
         'D2022-02-01',
@@ -548,7 +548,7 @@ def test_from_list_no_split_with_class():
 
 
 def test_from_list_with_splits_no_classes():
-    """Test creating a category from a list of QIF strings with splits"""
+    """Test creating a transaction from a list of QIF strings with splits"""
     qif_list = [
         'D2022-02-01',
         'T1000',
@@ -585,7 +585,7 @@ def test_from_list_with_splits_no_classes():
 
 
 def test_from_list_with_splits_with_classes():
-    """Test creating a category from a list of QIF strings with splits and
+    """Test creating a transaction from a list of QIF strings with splits and
     classes"""
     qif_list = [
         'D2022-02-01',
@@ -633,7 +633,7 @@ def test_from_list_with_splits_with_classes():
 
 
 def test_from_list_multiple_categories():
-    """Test creating a category from a list of QIF strings with multiple
+    """Test creating a transaction from a list of QIF strings with multiple
     categories"""
     qif_list = [
         'D2022-02-01',
@@ -651,7 +651,7 @@ def test_from_list_multiple_categories():
 
 
 def test_from_string_default_separator():
-    """Test creating a category from a string with the default separator"""
+    """Test creating a transaction from a string with the default separator"""
     qif_string = (
         'D2022-02-01\n'
         'T1000\n'
@@ -666,7 +666,7 @@ def test_from_string_default_separator():
 
 
 def test_from_string_custom_separator():
-    """Test creating a category from a string with a custom separator"""
+    """Test creating a transaction from a string with a custom separator"""
     qif_string = (
         'D2022-02-01---'
         'T1000---'
@@ -761,3 +761,60 @@ def test_to_dict_with_ignore():
         'line_number': None,
         'splits': [],
     }
+
+
+def test_from_list_zero_value_with_splits():
+    """Test creating a zero-value transaction from a list of QIF strings with
+    splits
+
+    Relates to issue #31.
+    https://github.com/isaacharrisholt/quiffen/issues/31
+    """
+    qif_list = [
+        'D2022-02-01',
+        'T0',
+        'L[Test To Account]',  # Brackets denote to account
+        'LTest Category',  # No brackets denote category
+        'STest Split Category 1',
+        'ETest Split Memo',
+        'T0',
+        'STest Split Category 2',
+        'EMemo',
+        '$0',
+    ]
+    transaction, _ = Transaction.from_list(qif_list)
+    assert transaction.date == datetime(2022, 2, 1)
+    assert transaction.amount == 0
+    assert transaction.to_account == 'Test To Account'
+    assert transaction.category == Category(name='Test Category')
+    assert transaction.is_split
+    assert transaction.splits == [
+        Split(
+            category=Category(name='Test Split Category 1'),
+            memo='Test Split Memo',
+            amount=0,
+            percent=None,
+        ),
+        Split(
+            category=Category(name='Test Split Category 2'),
+            memo='Memo',
+            amount=0,
+            percent=None,
+        ),
+    ]
+
+
+def test_check_number_allows_strings():
+    """Test that the check number field allows strings
+
+    Relates to issue #28.
+    https://github.com/isaacharrisholt/quiffen/issues/28
+    """
+    transaction = Transaction(
+        date=datetime(2022, 2, 1),
+        amount=1000,
+        to_account='Test To Account',
+        category=Category(name='Test Category'),
+        check_number='Transfer',
+    )
+    assert transaction.check_number == 'Transfer'
