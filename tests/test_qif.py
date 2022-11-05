@@ -1,15 +1,12 @@
 # pylint: disable=redefined-outer-name
-from datetime import datetime
-from decimal import Decimal
 from pathlib import Path
 
 import pytest
 
 from quiffen.core.account import Account, AccountType
-from quiffen.core.class_type import Class
 from quiffen.core.category import Category
-from quiffen.core.qif import Qif, ParserException
-from quiffen.core.transaction import Transaction
+from quiffen.core.class_type import Class
+from quiffen.core.qif import ParserException, Qif
 
 
 @pytest.fixture
@@ -19,7 +16,7 @@ def qif_file():
 
 @pytest.fixture
 def empty_file():
-    return Path(__file__).parent / 'test_files' / 'empty.qif'   
+    return Path(__file__).parent / 'test_files' / 'empty.qif'
 
 
 @pytest.fixture
