@@ -1,11 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
-from pathlib import Path
 
 import pytest
 
 from quiffen.core.security import Security
-from quiffen.core.qif import Qif
 
 
 def test_create_security():
