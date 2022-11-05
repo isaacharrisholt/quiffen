@@ -20,3 +20,4 @@ from quiffen.core.category import (
     add_categories_to_container,
 )
 from quiffen.core.split import Split
+from quiffen.core.security import Security

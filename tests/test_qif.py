@@ -11,6 +11,7 @@ from quiffen.core.account import Account, AccountType
 from quiffen.core.category import Category
 from quiffen.core.class_type import Class
 from quiffen.core.qif import ParserException, Qif, QifDataType
+from quiffen.core.security import Security
 
 
 @pytest.fixture
@@ -312,6 +313,37 @@ def test_parsed_classes(qif_file):
     assert len(test_class_2.categories) == 0
 
 
+def test_parsed_securities(qif_file):
+    """Test that the securities are parsed correctly
+
+    Relates to issue #30
+    https://github.com/isaacharrisholt/quiffen/issues/30
+    """
+    qif = Qif.parse(qif_file)
+
+    assert len(qif.securities) == 3
+    assert sorted(qif.securities.keys()) == [
+        'G002864',
+        'M039728',
+        'USD0000',
+    ]
+
+    assert qif.securities['G002864'].name == ''
+    assert qif.securities['G002864'].symbol == 'G002864'
+    assert qif.securities['G002864'].type == 'Stock'
+    assert qif.securities['G002864'].goal == 'Growth'
+
+    assert qif.securities['M039728'].name == ''
+    assert qif.securities['M039728'].symbol == 'M039728'
+    assert qif.securities['M039728'].type == 'Stock'
+    assert qif.securities['M039728'].goal == 'Growth'
+
+    assert qif.securities['USD0000'].name == ''
+    assert qif.securities['USD0000'].symbol == 'USD0000'
+    assert qif.securities['USD0000'].type == 'Stock'
+    assert qif.securities['USD0000'].goal == 'Growth'
+
+
 def test_add_account():
     """Test adding an account"""
     qif = Qif()
@@ -434,6 +466,43 @@ def test_remove_nonexistent_class():
     qif = Qif()
     with pytest.raises(KeyError):
         qif.remove_class('Test Class')
+
+
+def test_add_security():
+    """Test adding a security"""
+    qif = Qif()
+    security = Security(symbol='TEST')
+    qif.add_security(security)
+    assert len(qif.securities) == 1
+    assert qif.securities['TEST'] == security
+
+
+def test_add_existing_security():
+    """Test adding a security that already exists"""
+    qif = Qif()
+    security = Security(symbol='TEST')
+    security2 = Security(symbol='TEST')
+    qif.add_security(security)
+    qif.add_security(security2)
+    assert len(qif.securities) == 1
+    assert 'TEST' in qif.securities
+
+
+def test_remove_security():
+    """Test removing a security"""
+    qif = Qif()
+    security = Security(symbol='TEST')
+    qif.add_security(security)
+    removed = qif.remove_security('TEST')
+    assert len(qif.securities) == 0
+    assert removed == security
+
+
+def test_remove_nonexistent_security():
+    """Test removing a security that does not exist"""
+    qif = Qif()
+    with pytest.raises(KeyError):
+        qif.remove_security('TEST')
 
 
 def test_to_qif(qif_file):
@@ -563,6 +632,17 @@ def test_get_data_dicts_investments():
     expected = investment.to_dict()
     expected['date'] = '2019-01-01'  # Dates are converted to strings
     assert data_dicts[0] == expected
+
+
+def test_get_data_dicts_securities():
+    """Test the get_data_dicts method with securities"""
+    qif = Qif()
+    security = Security(symbol='TEST')
+    qif.add_security(security)
+    data_dicts = qif._get_data_dicts(data_type=QifDataType.SECURITIES)
+
+    assert len(data_dicts) == 1
+    assert data_dicts[0] == security.to_dict()
 # pylint: enable=protected-access
 
 
@@ -690,6 +770,26 @@ def test_to_csv_investments():
         assert results[0]['amount'] == '100'
         assert results[0]['security'] == 'Test Security'
         assert results[0]['price'] == '10'
+    csv_file.unlink()
+
+
+def test_to_csv_securities():
+    """Test the to_csv method with securities"""
+    qif = Qif()
+    security = Security(symbol='TEST')
+    qif.add_security(security)
+
+    csv_file = Path(__file__).parent / 'test_files' / 'test_output.csv'
+    qif.to_csv(path=csv_file, data_type=QifDataType.SECURITIES)
+
+    assert csv_file.exists()
+    with csv_file.open() as f:
+        reader = csv.DictReader(f)
+        assert len(reader.fieldnames) == 5
+
+        results = list(reader)
+        assert len(results) == 1
+        assert results[0]['symbol'] == 'TEST'
     csv_file.unlink()
 
 
@@ -823,6 +923,21 @@ def test_to_dataframe_classes():
     assert df.shape == (1, 3)
     assert df['name'][0] == 'Test Class'
     assert df['desc'][0] == 'Test Description'
+
+
+def test_to_dataframe_securities():
+    """Test the to_dataframe method with securities"""
+    qif = Qif()
+    security = Security(symbol='TEST')
+    qif.add_security(security)
+
+    df = qif.to_dataframe(data_type=QifDataType.SECURITIES)
+
+    assert df.shape == (1, 5)
+    assert df['symbol'][0] == 'TEST'
+    assert df['name'][0] is None
+    assert df['type'][0] is None
+    assert df['goal'][0] is None
 
 
 def test_to_dataframe_accounts():

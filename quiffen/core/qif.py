@@ -15,6 +15,7 @@ from quiffen.core.category import Category, add_categories_to_container
 from quiffen.core.class_type import Class
 from quiffen.core.investment import Investment
 from quiffen.core.transaction import Transaction
+from quiffen.core.security import Security
 
 try:
     import pandas as pd
@@ -38,6 +39,7 @@ class QifDataType(str, Enum):
     CLASSES = 'classes'
     CATEGORIES = 'categories'
     ACCOUNTS = 'accounts'
+    SECURITIES = 'securities'
 
 
 class ParserException(Exception):
@@ -62,6 +64,7 @@ class Qif(BaseModel):
     accounts: Dict[str, Account] = {}
     categories: Dict[str, Category] = {}
     classes: Dict[str, Class] = {}
+    securities: Dict[str, Security] = {}
 
     __CUSTOM_FIELDS: List[Field] = []
 
@@ -69,6 +72,7 @@ class Qif(BaseModel):
         accounts_str = '\n'.join(str(acc) for acc in self.accounts.values())
         categories_str = '\n'.join(str(cat) for cat in self.categories.values())
         classes_str = '\n'.join(str(cls) for cls in self.classes.values())
+        securities_str = '\n'.join(str(sec) for sec in self.securities.values())
 
         if not (accounts_str or categories_str or classes_str):
             return 'Empty Qif object'
@@ -81,6 +85,8 @@ class Qif(BaseModel):
             return_str += f'Categories\n----------\n\n{categories_str}\n\n'
         if classes_str:
             return_str += f'Classes\n-------\n\n{classes_str}\n\n'
+        if securities_str:
+            return_str += f'Securities\n----------\n\n{securities_str}\n\n'
 
         return return_str
 
@@ -131,6 +137,7 @@ class Qif(BaseModel):
         last_account = None
         categories = {}
         classes = {}
+        securities = {}
 
         sections = data.split('^')
         last_header = None
@@ -201,6 +208,13 @@ class Qif(BaseModel):
                     new_investment,
                     AccountType('Invst'),
                 )
+            elif '!Type:Security' in header_line:
+                # Security
+                new_security = Security.from_list(
+                    sanitised_section_lines,
+                    line_number=line_number,
+                )
+                securities[new_security.symbol] = new_security
             elif '!Type' in header_line and not accounts:
                 # Accounts is empty and there's a transaction, so create default
                 # account to put transactions in
@@ -244,7 +258,12 @@ class Qif(BaseModel):
             last_header = header_line
             line_number += len(section.split('\n'))
 
-        return cls(accounts=accounts, categories=categories, classes=classes)
+        return cls(
+            accounts=accounts,
+            categories=categories,
+            classes=classes,
+            securities=securities,
+        )
 
     def add_account(self, new_account: Account):
         """Add a new account to the Qif object"""
@@ -304,6 +323,23 @@ class Qif(BaseModel):
         except KeyError as e:
             raise KeyError(
                 f'Class "{class_name}" does not exist in this Qif object.'
+            ) from e
+
+    def add_security(self, new_security: Security):
+        """Add a new security to the Qif object"""
+        if new_security.symbol in self.securities:
+            self.securities[new_security.symbol].merge(new_security)
+        else:
+            self.securities[new_security.symbol] = new_security
+
+    def remove_security(self, security_symbol: str) -> Security:
+        """Remove a security from this Qif object"""
+        try:
+            return self.securities.pop(security_symbol)
+        except KeyError as e:
+            raise KeyError(
+                f'Security "{security_symbol}" does not exist in this Qif '
+                f'object.'
             ) from e
 
     def to_qif(
@@ -376,6 +412,11 @@ class Qif(BaseModel):
             data_dicts = [
                 class_.to_dict(ignore=ignore)
                 for class_ in self.classes.values()
+            ]
+        elif data_type == QifDataType.SECURITIES:
+            data_dicts = [
+                security.to_dict(ignore=ignore)
+                for security in self.securities.values()
             ]
         else:
             raise ValueError(
