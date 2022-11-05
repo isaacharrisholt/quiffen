@@ -59,7 +59,7 @@ class Investment(BaseModel):
     commission: Decimal = None
     line_number: int = None
 
-    __CUSTOM_FIELDS: list[Field] = []
+    __CUSTOM_FIELDS: List[Field] = []
 
     def __str__(self):
         properties = ''
