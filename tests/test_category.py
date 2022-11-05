@@ -6,7 +6,7 @@ import pytest
 
 from quiffen.core.category import (
     Category,
-    add_categories_to_container,
+    CategoryType, add_categories_to_container,
     create_categories_from_hierarchy,
 )
 
@@ -69,6 +69,20 @@ def test_eq_failure():
     child = Category(name='Child')
     parent1.add_child(child)
     assert parent1 != parent2
+
+
+def test_str_method():
+    """Test the string method"""
+    category = Category(
+        name='Test',
+        category_type=CategoryType.INCOME,
+        desc='Test',
+        children=[Category(name='Child 1'), Category(name='Child 2')],
+    )
+    assert str(category) == (
+        'Category:\n\tName: Test\n\tDesc: Test\n\t'
+        'Category Type: income\n\tHierarchy: Test\n\tChildren: 2'
+    )
 
 
 def test_refresh_hierarchy():
@@ -487,7 +501,10 @@ def test_to_qif():
     root = Category(name='Root')
     child = Category(name='Child')
     root.add_child(child)
-    assert root.to_qif() == '!Type:Cat\nNRoot\nE\n'
+    assert root.to_qif() == (  # Should show both root and child
+        '!Type:Cat\nNRoot\nE\n^\n'
+        '!Type:Cat\nNRoot:Child\nE\n'
+    )
     assert child.to_qif() == '!Type:Cat\nNRoot:Child\nE\n'
 
 
@@ -522,9 +539,16 @@ def test_to_qif_with_custom_fields():
     child.custom_field_2 = Decimal('9238479')
     child.custom_field_3 = datetime(2022, 1, 1, 0, 0, 0, 1)
 
-    assert root.to_qif() == (
+    assert root.to_qif() == (  # Should show both root and child
         '!Type:Cat\n'
         'NRoot\n'
+        'E\n'
+        'DT2022-01-01 00:00:00.000001\n'
+        'Y9238479\n'
+        'XCustom field 1\n'
+        '^\n'
+        '!Type:Cat\n'
+        'NRoot:Child\n'
         'E\n'
         'DT2022-01-01 00:00:00.000001\n'
         'Y9238479\n'
