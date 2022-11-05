@@ -70,6 +70,9 @@ class Qif(BaseModel):
         categories_str = '\n'.join(str(cat) for cat in self.categories.values())
         classes_str = '\n'.join(str(cls) for cls in self.classes.values())
 
+        if not (accounts_str or categories_str or classes_str):
+            return 'Empty Qif object'
+
         return_str = 'QIF\n===\n\n'
 
         if accounts_str:
@@ -91,7 +94,7 @@ class Qif(BaseModel):
     @classmethod
     def parse(
         cls,
-        path: Union[FilePath, str, None],
+        path: Union[FilePath, str],
         separator: str = '\n',
         day_first: bool = False
     ) -> Qif:
@@ -99,7 +102,7 @@ class Qif(BaseModel):
 
         Parameters
         ----------
-        path : Union[FilePath, str, None]
+        path : Union[FilePath, str]
             The path to the QIF file.
         separator : str, default='\n'
              The line separator for the QIF file. This probably won't need
@@ -115,6 +118,9 @@ class Qif(BaseModel):
         path = Path(path)
         if path.suffix.lower() != '.qif':
             raise ParserException('The file must be a QIF file.')
+
+        if not path.exists():
+            raise ParserException('The file does not exist.')
 
         data = path.read_text(encoding='utf-8').strip().strip('\n')
 
@@ -249,7 +255,12 @@ class Qif(BaseModel):
 
     def remove_account(self, account_name: str) -> Account:
         """Remove an account from this Qif object"""
-        return self.accounts.pop(account_name)
+        try:
+            return self.accounts.pop(account_name)
+        except KeyError as e:
+            raise KeyError(
+                f'Account "{account_name}" does not exist in this Qif object.'
+            ) from e
 
     def add_category(self, new_category: Category):
         """Add a new category to the Qif object"""
@@ -264,7 +275,13 @@ class Qif(BaseModel):
         keep_children: bool = True,
     ) -> Category:
         """Remove a category from this Qif object"""
-        category = self.categories.pop(category_name)
+        try:
+            category = self.categories.pop(category_name)
+        except KeyError as e:
+            raise KeyError(
+                f'Category "{category_name}" does not exist in this Qif object.'
+            ) from e
+
         if keep_children:
             print('Keeping children')
             for child in category.children:
@@ -282,7 +299,12 @@ class Qif(BaseModel):
 
     def remove_class(self, class_name: str) -> Class:
         """Remove a class from this Qif object"""
-        return self.classes.pop(class_name)
+        try:
+            return self.classes.pop(class_name)
+        except KeyError as e:
+            raise KeyError(
+                f'Class "{class_name}" does not exist in this Qif object.'
+            ) from e
 
     def to_qif(
         self,
