@@ -449,6 +449,7 @@ def test_to_qif(qif_file):
     assert qif.accounts == resulting_qif.accounts
     assert sorted(qif.categories) == sorted(resulting_qif.categories)
     assert qif.classes == resulting_qif.classes
+    test_file.unlink()
 
 
 
