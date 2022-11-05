@@ -1,27 +1,20 @@
+# pylint: disable=redefined-outer-name
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
 import pytest
 
-from quiffen.core.accounts import Account
-from quiffen.core.categories_classes import Category, Class
+from quiffen.core.account import Account
+from quiffen.core.class_type import Class
+from quiffen.core.category import Category
 from quiffen.core.qif import Qif
-from quiffen.core.transactions import Transaction
+from quiffen.core.transaction import Transaction
 
 
 @pytest.fixture
 def qif_file():
-    return Path(__file__).parent / 'test.qif'
-
-
-def test_read_qif(qif_file):
-    data = Qif._read_qif(qif_file)
-
-    with open(qif_file, 'r') as f:
-        data2 = f.read()
-
-    assert data == data2
+    return Path(__file__).parent / 'test_files' / 'test.qif'
 
 
 def test_add_remove_account():
@@ -43,10 +36,10 @@ def test_add_remove_category():
     cat.add_child(cat2)
 
     qif.add_category(cat)
-    assert qif == Qif(categories={'Test': Category(name='Test')})
+    assert qif == Qif(categories={'Test': cat})
 
     qif.remove_category('Test')
-    assert qif == Qif(categories={'Test2': Category(name='Test2')})
+    assert qif == Qif(categories={'Test2': cat2})
 
     qif.remove_category('Test2')
     assert qif == Qif()
@@ -74,7 +67,9 @@ def test_from_to_qif(qif_file):
     qif.to_qif(test_file)
 
     qif2 = Qif.parse(test_file)
-    assert qif == qif2
+    assert qif.accounts == qif2.accounts
+    assert sorted(qif.categories) == sorted(qif2.categories)
+    assert qif.classes == qif2.classes
 
 
 def test_to_dicts():

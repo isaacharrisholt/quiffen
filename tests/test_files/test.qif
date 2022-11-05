@@ -35,11 +35,11 @@ L[TestExport]
 D2/14'2020
 T67.50
 PT-Mobile
-LBills:Cell Phone
-SBills:Cell Phone
+LBills:Cell Phone/Test class
+SBills:Cell Phone/Test class
 Esign up credit
 $-15.00
-SBills:Cell Phone
+SBills:Cell Phone/Test class
 Enew account
 $82.50
 ^
@@ -76,6 +76,7 @@ T-100.00
 PAmazon.com
 LFood:Groceries
 SFood:Groceries
+D1/10'2020
 E50%
 $-50.00
 STransportation:Automobile

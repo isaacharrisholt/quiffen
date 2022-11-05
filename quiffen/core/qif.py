@@ -1,11 +1,23 @@
+from __future__ import annotations
+
+import csv
+import io
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Union
+
+from pydantic.types import FilePath
+
 from quiffen import utils
-from quiffen.core.accounts import Account
-from quiffen.core.categories_classes import Category, Class
-from quiffen.core.transactions import Transaction, Investment
+from quiffen.core.account import Account, AccountType
+from quiffen.core.base import BaseModel, Field
+from quiffen.core.category import Category, add_categories_to_container
+from quiffen.core.class_type import Class
+from quiffen.core.investment import Investment
+from quiffen.core.transaction import Transaction
 
 try:
     import pandas as pd
-
     PANDAS_INSTALLED = True
 except ModuleNotFoundError:
     PANDAS_INSTALLED = False
@@ -20,115 +32,78 @@ VALID_TRANSACTION_ACCOUNT_TYPES = [
 ]
 
 
+class QifDataType(str, Enum):
+    TRANSACTIONS = 'transactions'
+    INVESTMENTS = 'investments'
+    CLASSES = 'classes'
+    CATEGORIES = 'categories'
+    ACCOUNTS = 'accounts'
+
+
 class ParserException(Exception):
     pass
 
 
-class Qif:
+class Qif(BaseModel):
     """
     The main class of the package. For parsing QIF files.
 
     See the readme for usage examples.
 
+    Parameters
+    ----------
+    accounts : dict, default=None
+        A dict of accounts in the form {'Account Name': account_object}.
+    categories : dict, default=None
+        A dict of categories in the form {'Category Name': category_object}.
+    classes : dict, default=None
+        A dict of classes in the form {'Class Name': class_object}.
     """
+    accounts: Dict[str, Account] = {}
+    categories: Dict[str, Category] = {}
+    classes: Dict[str, Class] = {}
 
-    def __init__(self,
-                 accounts: dict = None,
-                 categories: dict = None,
-                 classes: dict = None
-                 ):
-        """Initialise an instance of the Qif class.
-
-        Parameters
-        ----------
-        accounts : dict, default=None
-            A dict of accounts in the form {'Account Name': account_object}.
-        categories : dict, default=None
-            A dict of categories in the form {'Category Name': category_object}.
-        classes : dict, default=None
-            A dict of classes in the form {'Class Name': class_object}.
-
-        Raises
-        ------
-        TypeError
-            If any provided arguments are the wrong type.
-        """
-        if accounts:
-            self._assert_type(accounts, Account)
-        else:
-            accounts = {}
-
-        if categories:
-            self._assert_type(categories, Category)
-        else:
-            categories = {}
-
-        if classes:
-            self._assert_type(classes, Class)
-        else:
-            classes = {}
-
-        self._accounts = accounts
-        self._categories = categories
-        self._classes = classes
-
-    def __eq__(self, other):
-        return self.__dict__ == other.__dict__
+    __CUSTOM_FIELDS: List[Field] = []
 
     def __str__(self):
-        accounts = {name: repr(account) for (name, account) in self._accounts.items()}
-        categories = {name: repr(cat) for (name, cat) in self._categories.items()}
-        return f"""
-QIF:
-    Accounts: {accounts}
-    Categories: {categories}
-    Classes: {[repr(klass) for klass in self._classes]}
-"""
+        accounts_str = '\n'.join(str(acc) for acc in self.accounts.values())
+        categories_str = '\n'.join(str(cat) for cat in self.categories.values())
+        classes_str = '\n'.join(str(cls) for cls in self.classes.values())
 
-    def __repr__(self):
-        accounts = {name: repr(account) for (name, account) in self._accounts.items()}
-        categories = {name: repr(cat) for (name, cat) in self._categories.items()}
-        return f'Qif(accounts={accounts}, ' \
-               f'categories={categories}, ' \
-               f'classes={[repr(klass) for klass in self._classes]})'
+        return_str = 'QIF\n===\n\n'
 
-    @property
-    def accounts(self):
-        return self._accounts
+        if accounts_str:
+            return_str += f'Accounts\n--------\n\n{accounts_str}\n\n'
+        if categories_str:
+            return_str += f'Categories\n----------\n\n{categories_str}\n\n'
+        if classes_str:
+            return_str += f'Classes\n-------\n\n{classes_str}\n\n'
 
-    @accounts.setter
-    def accounts(self, new_accounts):
-        self._assert_type(new_accounts, Account)
-        self._accounts = new_accounts
-
-    @property
-    def categories(self):
-        return self._categories
-
-    @categories.setter
-    def categories(self, new_categories):
-        self._assert_type(new_categories, Category)
-        self._categories = new_categories
-
-    @property
-    def classes(self):
-        return self._classes
-
-    @classes.setter
-    def classes(self, new_classes):
-        self._assert_type(new_classes, Class)
-        self._classes = new_classes
+        return return_str
 
     @classmethod
-    def parse(cls, filepath, separator='\n', day_first=True):
+    def from_list(cls, lst: List[str]) -> Qif:
+        raise NotImplementedError(
+            'This method is not implemented for Qif objects. Use Qif.parse to '
+            'parse a QIF file.'
+        )
+
+    @classmethod
+    def parse(
+        cls,
+        path: Union[FilePath, str, None],
+        separator: str = '\n',
+        day_first: bool = False
+    ) -> Qif:
         """Return a class instance from a QIF file.
 
         Parameters
         ----------
-        filepath : str
+        path : Union[FilePath, str, None]
             The path to the QIF file.
         separator : str, default='\n'
-             The line separator for the QIF file. This probably won't need changing.
+             The line separator for the QIF file. This probably won't need
+             changing.
         day_first : bool, default=True
              Whether the day or month comes first in the date.
 
@@ -137,14 +112,21 @@ QIF:
         Qif
             A Qif object containing all the data in the QIF file.
         """
-        data = cls._read_qif(filepath)
+        path = Path(path)
+        if path.suffix.lower() != '.qif':
+            raise ParserException('The file must be a QIF file.')
+
+        data = path.read_text(encoding='utf-8').strip().strip('\n')
+
+        if not data:
+            raise ParserException('The file is empty.')
 
         accounts = {}
         last_account = None
         categories = {}
         classes = {}
 
-        sections = data.split('^\n')
+        sections = data.split('^')
         last_header = None
         line_number = 1
 
@@ -152,718 +134,351 @@ QIF:
             if not section:
                 continue
 
-            header_line = section.split('\n')[0]
-            if header_line is None:
+            section_lines = section.split(separator)
+            if not section_lines:
                 continue
 
             # Allow for comments and blank lines at the top of sections
-            i = 0
-            while True:
-                if header_line.strip() != '':
-                    if header_line[0] != '#':
-                        break
-                i += 1
-                print(i, section.split('\n'))
-                header_line = section.split('\n')[i]
+            for i, line in enumerate(section_lines):
+                header_line = line
+                if line.strip() and line[0] != '#':
+                    line_number += i
+                    section_lines = section_lines[i:]
+                    break
+            else:
+                # Empty section
+                continue
 
-            # Check for new categories and accounts first, as then we can be sure it's a transaction in case a default
-            # account needs to be added
             if header_line[0] != '!':
-                if last_header is None:
-                    raise ParserException(f'Header \'{header_line}\' not recognised and no previous header supplied')
+                if not last_header:
+                    raise ParserException(
+                        f'Line {line_number}: '
+                        f'No header found before transactions.'
+                    )
                 header_line = last_header
 
+            sanitised_section_lines = [
+                line for line in section_lines
+                if line.strip() and line.strip()[0] != '!'
+            ]
+
+            # Check for new categories and accounts first, otherwise it's a
+            # transaction so a default account is created
             if '!Type:Cat' in header_line:
                 # Section contains category information
-                new_category = Category.from_string(section)
-                categories = utils.create_categories(new_category, categories)
+                new_category = Category.from_list(sanitised_section_lines)
+                categories = add_categories_to_container(
+                    new_category,
+                    categories,
+                )
             elif '!Type:Class' in header_line:
-                new_class = Class.from_string(section)
-                classes[new_class.name] = new_class
+                new_class = Class.from_list(sanitised_section_lines)
+                if new_class.name in classes:
+                    classes[new_class.name].merge(new_class)
+                else:
+                    classes[new_class.name] = new_class
             elif '!Account' in header_line:
-                new_account = Account.from_string(section)
-                accounts[new_account.name] = new_account
+                new_account = Account.from_list(sanitised_section_lines)
+                if new_account.name in accounts:
+                    accounts[new_account.name].merge(new_account)
+                else:
+                    accounts[new_account.name] = new_account
                 last_account = new_account.name
-            elif '!Type' in header_line and not accounts:
-                # Accounts is empty and there's a transaction, so create default account to put transactions in
-                default_account = Account(name='Quiffen Default Account',
-                                          desc='The default account created by Quiffen when no other accounts were '
-                                               'present')
-                accounts[default_account.name] = default_account
-                last_account = default_account.name
             elif '!Type:Invst' in header_line:
                 # Investment
-                new_investment = Investment.from_string(section, separator=separator, day_first=day_first,
-                                                        line_number=line_number)
-                accounts[last_account].add_transaction(new_investment, 'Invst')
-            elif header_line.lower().replace(' ', '') in VALID_TRANSACTION_ACCOUNT_TYPES:
+                new_investment = Investment.from_list(
+                    sanitised_section_lines,
+                    day_first=day_first,
+                    line_number=line_number,
+                )
+                accounts[last_account].add_transaction(
+                    new_investment,
+                    AccountType('Invst'),
+                )
+            elif '!Type' in header_line and not accounts:
+                # Accounts is empty and there's a transaction, so create default
+                # account to put transactions in
+                default_account = Account(
+                    name='Quiffen Default Account',
+                    desc=(
+                        'The default account created by Quiffen when no other '
+                        'accounts were present'
+                    )
+                )
+                accounts[default_account.name] = default_account
+                last_account = default_account.name
+
+            if header_line.lower().replace(' ', '') in (
+                VALID_TRANSACTION_ACCOUNT_TYPES
+            ):
                 # Other transaction type
-                new_transaction, new_categories, new_classes = Transaction.from_string(section, separator=separator,
-                                                                                       day_first=day_first,
-                                                                                       line_number=line_number)
-                accounts[last_account].add_transaction(new_transaction, header_line.replace(' ', ''))
-                categories.update(new_categories)
-                classes.update(new_classes)
+                new_transaction, new_classes = Transaction.from_list(
+                    sanitised_section_lines,
+                    day_first=day_first,
+                    line_number=line_number,
+                )
+                accounts[last_account].add_transaction(
+                    new_transaction,
+                    AccountType(header_line.replace(' ', '').split(':')[1]),
+                )
+
+                if new_transaction.category:
+                    root = new_transaction.category.traverse_up()[-1]
+                    if root.name in categories:
+                        categories[root.name].merge(root)
+                    else:
+                        categories[root.name] = root
+
+                for class_name, new_class in new_classes.items():
+                    if class_name in classes:
+                        classes[class_name].merge(new_class)
+                    else:
+                        classes[class_name] = new_class
 
             last_header = header_line
             line_number += len(section.split('\n'))
 
         return cls(accounts=accounts, categories=categories, classes=classes)
 
-    @staticmethod
-    def _assert_type(iterable, types):
-        # Assert that all items in an iterable are of specific types.
-        if isinstance(iterable, dict):
-            for item in iterable.values():
-                if not isinstance(item, types):
-                    raise TypeError(f'\'{repr(item)} is not of type {types}')
+    def add_account(self, new_account: Account):
+        """Add a new account to the Qif object"""
+        if new_account.name in self.accounts:
+            self.accounts[new_account.name].merge(new_account)
         else:
-            for item in iterable:
-                if not isinstance(item, types):
-                    raise TypeError(f'\'{repr(item)} is not of type {types}')
+            self.accounts[new_account.name] = new_account
 
-    @staticmethod
-    def _read_qif(path):
-        # Validate QIF file provided and return data.
-        if path[-3:].lower() != 'qif':
-            raise FileNotFoundError(f'\'{path}\' does not point to a valid QIF file. Only .QIF file types are allowed')
+    def remove_account(self, account_name: str) -> Account:
+        """Remove an account from this Qif object"""
+        return self.accounts.pop(account_name)
 
-        with open(path, 'r') as f:
-            data = f.read().strip().strip('\n')
-            if not data:
-                raise ParserException('File is empty')
+    def add_category(self, new_category: Category):
+        """Add a new category to the Qif object"""
+        self.categories = add_categories_to_container(
+            new_category,
+            self.categories,
+        )
 
-        return data
+    def remove_category(
+        self,
+        category_name: str,
+        keep_children: bool = True,
+    ) -> Category:
+        """Remove a category from this Qif object"""
+        category = self.categories.pop(category_name)
+        if keep_children:
+            print('Keeping children')
+            for child in category.children:
+                child.set_parent(None)
+                self.add_category(child)
 
-    def add_account(self, new_account):
-        """Add a new account to the Qif object.
+        return category
 
-        Parameters
-        ----------
-        new_account : Account
-            The Account to be added to the Qif.
+    def add_class(self, new_class: Class):
+        """Add a new class to the Qif object"""
+        if new_class.name in self.classes:
+            self.classes[new_class.name].merge(new_class)
+        else:
+            self.classes[new_class.name] = new_class
 
-        Raises
-        ------
-        TypeError
-            If ``new_account`` is not an Account object.
-        """
-        self._assert_type([new_account], Account)
-        self._accounts[new_account.name] = new_account
+    def remove_class(self, class_name: str) -> Class:
+        """Remove a class from this Qif object"""
+        return self.classes.pop(class_name)
 
-    def remove_account(self, account_name):
-        """Remove an account from this Qif object.
+    def to_qif(
+        self,
+        path: Union[FilePath, str, None] = None,
+        date_format: str = '%Y-%m-%d',
+    ) -> str:
+        """Convert the Qif object to a QIF file"""
+        qif = ''
 
-        Parameters
-        ----------
-        account_name : str
-            The name of the account.
+        qif += '^\n'.join(
+            category.to_qif()
+            for category in self.categories.values()
+        ) + '^\n'
 
-        Returns
-        -------
-        Account
-            The Account removed.
-        """
-        return self._accounts.pop(account_name)
+        qif += '^\n'.join(
+            class_.to_qif()
+            for class_ in self.classes.values()
+        ) + '^\n'
 
-    def add_category(self, new_category):
-        """Add a new category to the object.
+        qif += '^\n'.join(
+            account.to_qif(date_format=date_format, classes=self.classes)
+            for account in self.accounts.values()
+        ) + '^\n'
 
-        Parameters
-        ----------
-        new_category : Category
-            The Category to be added to the Qif.
+        if path:
+            Path(path).write_text(qif, encoding='utf-8')
 
-        Raises
-        ------
-        TypeError
-            If ``new_category`` is not a Category object.
-        """
-        self._assert_type([new_category], Category)
-        self._categories[new_category.name] = new_category
+        return qif
 
-    def remove_category(self, category_name, keep_children=True):
-        """Remove a category from the Qif object.
+    def _get_data_dicts(
+        self,
+        data_type: QifDataType = QifDataType.TRANSACTIONS,
+        date_format: str = '%Y-%m-%d',
+        ignore: List[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """Converts specified data from the Qif object to a list of dicts"""
+        if ignore is None:
+            ignore = []
 
-        Parameters
-        ----------
-        category_name : str
-            The name of the category to be removed.
-        keep_children : bool, default=True
-            Whether or not the children of the category will be kept (grandparent node will become the parent node).
+        if data_type == QifDataType.TRANSACTIONS:
+            data_dicts = []
+            for account in self.accounts.values():
+                for transaction_list in account.transactions.values():
+                    data_dicts += [
+                        transaction.to_dict(ignore=ignore)
+                        for transaction in transaction_list
+                        if not isinstance(transaction, Investment)
+                    ]
+        elif data_type == QifDataType.INVESTMENTS:
+            data_dicts = []
+            for account in self.accounts.values():
+                for transaction_list in account.transactions.values():
+                    data_dicts += [
+                        transaction.to_dict(ignore=ignore)
+                        for transaction in transaction_list
+                        if isinstance(transaction, Investment)
+                    ]
+        elif data_type == QifDataType.ACCOUNTS:
+            data_dicts = [
+                account.to_dict(ignore=ignore)
+                for account in self.accounts.values()
+            ]
+        elif data_type == QifDataType.CATEGORIES:
+            data_dicts = [
+                category.to_dict(ignore=ignore)
+                for category in self.categories.values()
+            ]
+        elif data_type == QifDataType.CLASSES:
+            data_dicts = [
+                class_.to_dict(ignore=ignore)
+                for class_ in self.classes.values()
+            ]
+        else:
+            raise ValueError(
+                f'Invalid data_type: {data_type}. Must be one of '
+                f'{list(QifDataType)}'
+            )
 
-        Returns
-        -------
-        Category
-            The Category removed.
-        """
-        if category_name in self._categories:
-            if keep_children:
-                self._categories.update({category.name: category for category in
-                                         self._categories[category_name].children})
-            return self._categories.pop(category_name)
+        # Format and hide private fields
+        return [
+            utils.apply_csv_formatting_to_container(
+                {
+                    k: v for k, v in data_dict.items()
+                    if not k.startswith('_') and k not in ignore
+                },
+                date_format=date_format,
+            )
+            for data_dict in data_dicts
+        ]
 
-        categories_to_visit = list(self._categories.values())
-
-        for category in categories_to_visit:
-            if category.children:
-                categories_to_visit.extend(category.children)
-            if category.name == category_name:
-
-                # Change children hierarchies
-                children_to_visit = category.children
-                for child in children_to_visit:
-                    if child.children:
-                        children_to_visit.extend(child)
-                    if child.hierarchy:
-                        child.hierarchy = child.hierarchy.replace(f'{category.name}:', '')
-                    child.parent = category.parent
-
-                parent = category.parent
-                if parent is not None:
-                    category_idx = parent.children.index(category)
-                    parent.children.pop(category_idx)
-                    parent.children.extend(category.children)
-                    category.parent = None
-                return category
-
-    def add_class(self, new_class):
-        """Add a new class to the object.
-
-        Parameters
-        ----------
-        new_class : Class
-            The Class to be added to the Qif.
-
-        Raises
-        ------
-        TypeError
-            If ``new_class`` is not a Class object.
-        """
-        self._assert_type([new_class], Class)
-        self._classes[new_class.name] = new_class
-
-    def remove_class(self, class_name):
-        """Remove a class from the Qif object.
-
-        Parameters
-        ----------
-        class_name : str
-            The name of the Class to be removed.
-
-        Returns
-        -------
-        Class
-            The Class removed.
-        """
-        return self._classes.pop(class_name)
-
-    def to_qif(self, path=None, date_format='%d/%m/%Y'):
-        """Write the Qif object to a QIF file and return the string.
+    def to_csv(
+        self,
+        path: Union[FilePath, str, None] = None,
+        data_type: QifDataType = QifDataType.TRANSACTIONS,
+        date_format: str = '%Y-%m-%d',
+        ignore: List[str] = None,
+        delimiter: str = ',',
+        quote_character: str = '"',
+    ) -> str:
+        """Convert part of the Qif object to a CSV file. The data_type
+        parameter can be used to specify which part of the Qif object to
+        convert to CSV. The default is to convert transactions.
 
         Parameters
         ----------
-        path : str, default=None
-            The path of the QIF file to be generated, if desired.
-        date_format : str, default='%d/%m/%Y'
-            The format of the date (using ``datetime`` verbs) to be input into the QIF file.
-
-        Returns
-        -------
-        qif_data : str
-            The string of QIF data.
-        """
-        qif_data = ''
-
-        if self._classes:
-            qif_data += '!Type:Class\n'
-            for klass in self._classes.values():
-                qif_data += f'N{klass.name}\n'
-                if klass.desc:
-                    qif_data += f'D{klass.desc}\n'
-                qif_data += '^\n'
-
-        if self._categories:
-            categories_to_visit = list(self._categories.values())
-            qif_data += '!Type:Cat\n'
-            for category in categories_to_visit:
-                if category.children:
-                    categories_to_visit.extend(category.children)
-
-                qif_data += f'N{category.hierarchy}\n'
-
-                if category.desc:
-                    qif_data += f'D{category.desc}\n'
-
-                if category.tax_related is not None:
-                    qif_data += f'T{category.tax_related}\n'
-
-                if category.expense is not None:
-                    qif_data += f'E{category.expense}\n'
-
-                if category.income is not None:
-                    qif_data += f'I{category.income}\n'
-
-                if category.budget_amount is not None:
-                    qif_data += f'B{category.budget_amount}\n'
-
-                if category.tax_schedule_info:
-                    qif_data += f'R{category.tax_schedule_info}\n'
-
-                qif_data += '^\n'
-
-        if self._accounts:
-            for account in self._accounts.values():
-                qif_data += '!Account\n'
-
-                qif_data += f'N{account.name}\n'
-
-                if account.desc:
-                    qif_data += f'D{account.desc}\n'
-
-                if account.account_type:
-                    qif_data += f'T{account.account_type}\n'
-
-                if account.credit_limit is not None:
-                    qif_data += f'L{account.credit_limit}\n'
-
-                if account.balance is not None:
-                    qif_data += f'${account.balance}\n'
-
-                if account.date_at_balance:
-                    qif_data += f'/{account.date_at_balance.strftime(date_format)}\n'
-
-                qif_data += '^\n'
-
-                for (header, transaction_list) in account.transactions.items():
-                    qif_data += f'!Type:{header}\n'
-
-                    for transaction in transaction_list:
-                        qif_data += f'D{transaction.date.strftime(date_format)}\n'
-
-                        if transaction.amount is not None:
-                            qif_data += f'T{transaction.amount}\n'
-
-                        if transaction.memo:
-                            qif_data += f'M{transaction.memo}\n'
-
-                        if transaction.cleared:
-                            qif_data += f'C{transaction.cleared}\n'
-
-                        if 'Invst' not in header:
-                            if transaction.payee:
-                                qif_data += f'P{transaction.payee}\n'
-
-                            if transaction.payee_address:
-                                qif_data += f'A{transaction.payee_address}\n'
-
-                            if transaction.category:
-                                qif_data += f'L{transaction.category.hierarchy}\n'
-
-                            if transaction.to_account:
-                                qif_data += f'L[{transaction.to_account}]\n'
-
-                            if transaction.check_number is not None:
-                                qif_data += f'N{transaction.check_number}\n'
-
-                            if transaction.reimbursable_expense is not None:
-                                qif_data += f'F{transaction.reimbursable_expense}\n'
-
-                            if transaction.first_payment_date:
-                                qif_data += f'1{transaction.first_payment_date.strftime(date_format)}\n'
-
-                            if transaction.loan_length is not None:
-                                qif_data += f'2{transaction.loan_length}\n'
-
-                            if transaction.num_payments is not None:
-                                qif_data += f'3{transaction.num_payments}\n'
-
-                            if transaction.periods_per_annum is not None:
-                                qif_data += f'4{transaction.periods_per_annum}\n'
-
-                            if transaction.interest_rate is not None:
-                                qif_data += f'5{transaction.interest_rate}\n'
-
-                            if transaction.current_loan_balance is not None:
-                                qif_data += f'6{transaction.current_loan_balance}\n'
-
-                            if transaction.original_loan_amount is not None:
-                                qif_data += f'7{transaction.original_loan_amount}\n'
-
-                            if transaction.is_split:
-                                for split in transaction.splits:
-                                    if split.category:
-                                        qif_data += f'S{split.category.hierarchy}\n'
-
-                                    if split.date:
-                                        qif_data += f'D{split.date.strftime(date_format)}\n'
-
-                                    if split.amount is not None:
-                                        qif_data += f'${split.amount}\n'
-
-                                    if split.percent is not None:
-                                        qif_data += f'%{split.percent}\n'
-
-                                    if split.memo:
-                                        qif_data += f'E{split.memo}\n'
-
-                                    if split.cleared:
-                                        qif_data += f'C{split.cleared}\n'
-
-                                    if split.payee_address:
-                                        qif_data += f'A{split.payee_address}\n'
-
-                                    if split.to_account:
-                                        qif_data += f'L[{split.to_account}]\n'
-
-                                    if split.check_number is not None:
-                                        qif_data += f'N{split.check_number}\n'
-
-                        else:
-                            if transaction.action:
-                                qif_data += f'N{transaction.action}\n'
-
-                            if transaction.security:
-                                qif_data += f'Y{transaction.security}\n'
-
-                            if transaction.price is not None:
-                                qif_data += f'I{transaction.price}\n'
-
-                            if transaction.quantity is not None:
-                                qif_data += f'Q{transaction.quantity}\n'
-
-                            if transaction.first_line:
-                                qif_data += f'P{transaction.first_line}\n'
-
-                            if transaction.to_account:
-                                qif_data += f'L{transaction.to_account}\n'
-
-                            if transaction.transfer_amount is not None:
-                                qif_data += f'${transaction.transfer_amount}\n'
-
-                            if transaction.commission is not None:
-                                qif_data += f'O{transaction.commission}\n'
-
-                        qif_data += '^\n'
-
-        if path is not None:
-            with open(path, 'w') as f:
-                f.write(qif_data)
-
-        return qif_data
-
-    def to_dicts(self, data='transactions', ignore=None):
-        """Return a list of dict representations of desired data.
-
-        Parameters
-        ----------
-        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes'}
-            The data type to be converted to dicts.
-        ignore : list of str, default=None
-             A list of strings of parameters that should be excluded from the dict.
-
-        Returns
-        -------
-        list of dict
-            A list of dict objects containing ``data`` specified.
-
-        Raises
-        ------
-        RuntimeError
-            If ``data`` is not a valid option.
+        path : Union[FilePath, str, None], optional
+            The path to write the CSV file to, by default None
+        data_type : QifDataType, optional
+            The type of data to convert to CSV, by default
+            QifDataType.TRANSACTIONS
+        date_format : str, optional
+            The date format to use when converting dates to strings, by
+            default '%Y-%m-%d'
+        ignore : List[str], optional
+            A list of fields to ignore when converting to CSV, by default
+            None
+        delimiter : str, optional
+            The delimiter to use when writing the CSV file, by default ','
+        quote_character : str, optional
+            The quote character to use when writing the CSV file, by
+            default '"'
         """
         if ignore is None:
             ignore = []
 
-        data = data.lower()
-        options = ['transactions', 'investments', 'splits', 'accounts', 'categories', 'classes']
+        data_dicts = self._get_data_dicts(
+            data_type=data_type,
+            date_format=date_format,
+            ignore=ignore,
+        )
 
-        if data not in options:
-            raise RuntimeError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
+        headers = set()
+        for data_dict in data_dicts:
+            headers.update(k for k in data_dict.keys())
 
-        if data == 'transactions':
-            transactions = []
-            for account in self._accounts.values():
-                for transaction_list in account.transactions.values():
-                    for transaction in transaction_list:
-                        if isinstance(transaction, Transaction):
-                            transactions.append(transaction.to_dict(ignore=ignore))
-            return transactions
-        elif data == 'investments':
-            investments = []
-            for account in self._accounts.values():
-                for transaction_list in account.transactions.values():
-                    for transaction in transaction_list:
-                        if isinstance(transaction, Investment):
-                            investments.append(transaction.to_dict(ignore=ignore))
-            return investments
-        elif data == 'splits':
-            splits = []
-            for account in self._accounts.values():
-                for transaction_list in account.transactions.values():
-                    for transaction in transaction_list:
-                        for split in transaction.splits:
-                            splits.append(split.to_dict(ignore=ignore))
-            return splits
-        elif data == 'accounts':
-            accounts = []
-            for account in self._accounts.values():
-                accounts.append(account.to_dict(ignore=ignore))
-            return accounts
-        elif data == 'categories':
-            categories = []
-            categories_to_visit = list(self._categories.values())
+        output = io.StringIO()
 
-            for category in categories_to_visit:
-                if category.children is not None:
-                    categories_to_visit.extend(category.children)
-                categories.append(category.to_dict(ignore=ignore))
-            return categories
-        elif data == 'classes':
-            classes = []
-            for klass in self._classes:
-                classes.append(klass.to_dict(ignore=ignore))
-            return classes
+        writer = csv.DictWriter(
+            output,
+            fieldnames=headers,
+            extrasaction='ignore',  # Ignore extra fields (e.g. private fields)
+            dialect='unix',  # Use Unix line endings
+            delimiter=delimiter,
+            quotechar=quote_character,
+        )
+        writer.writeheader()
+        for data_dict in data_dicts:
+            writer.writerow(data_dict)
 
-    def to_csv(self, path=None, data='transactions', ignore=None, separator=',', sub_separator=';',
-               date_format='%d/%m/%Y'):
-        """Write a CSV file containing desired data and return the string.
+        return_value = output.getvalue()
+
+        if path:
+            Path(path).write_text(return_value, encoding='utf-8')
+
+        return return_value
+
+    def to_dataframe(
+        self,
+        data_type: QifDataType = QifDataType.TRANSACTIONS,
+        date_format: str = '%Y-%m-%d',
+        ignore: List[str] = None,
+    ) -> pd.DataFrame:
+        """Convert part of the Qif object to a Pandas DataFrame. The
+        data_type parameter can be used to specify which part of the Qif
+        object to convert to a DataFrame. The default is to convert
+        transactions.
 
         Parameters
         ----------
-        path : str, default=None
-            The path of the CSV file to be created, if desired.
-        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes'}
-            The data type to be input into the CSV file.
-        ignore : list of str, default=None
-            A list of strings of parameters that should be excluded from the dict.
-        separator : str, default=','
-            The separator for the CSV file.
-        sub_separator : str, default=';'
-            The character to be used to replace ``separator`` if it appears in any strings.
-        date_format : str, default='%d/%m/%Y'
-            The format of the date (using ``datetime`` verbs) to be input into the QIF file.
+        data_type : QifDataType, optional
+            The type of data to convert to a DataFrame, by default
+            QifDataType.TRANSACTIONS
+        date_format : str, optional
+            The date format to use when converting dates to strings, by
+            default '%Y-%m-%d'
+        ignore : List[str], optional
+            A list of fields to ignore when converting to a DataFrame, by
+            default None
 
         Returns
         -------
-        csv_data : str
-            A string containing the CSV data.
-
-        Raises
-        ------
-        RuntimeError
-            If ``data`` is not a valid option.
-        ValueError
-            If ``separator`` and ``sub_separator`` are present within each other.
+        pd.DataFrame
+            The data as a Pandas DataFrame
         """
-        if ignore is None:
-            ignore = []
-
-        data = data.lower()
-        options = ['transactions', 'splits', 'investments', 'accounts', 'categories', 'classes']
-
-        if data not in options:
-            raise RuntimeError(f'Can\'t get data for {data}. Valid options are:\n{", ".join(options)}')
-
-        if separator in sub_separator or sub_separator in separator:
-            raise ValueError('Separator and sub-separator cannot be equal or contain each other')
-
-        csv_data = ''
-
-        if data == 'transactions':
-            headers = ['date', 'amount', 'memo', 'cleared', 'payee', 'payee_address', 'category', 'check_number',
-                       'reimbursable_expense', 'small_business_expense', 'to_account', 'first_payment_date',
-                       'loan_length', 'num_payments', 'periods_per_annum', 'interest_rate', 'current_loan_balance',
-                       'original_loan_amount', 'is_split', 'splits']
-
-            headers = [header for header in headers if header not in ignore]
-
-            csv_data += separator.join(headers) + '\n'
-
-            for account in self._accounts.values():
-                for transaction_list in account.transactions.values():
-                    for transaction in transaction_list:
-                        if not isinstance(transaction, Transaction):
-                            continue
-
-                        this_line = ''
-                        transaction_dict = transaction.to_dict()
-                        for header in headers:
-                            transaction_data = transaction_dict.get(header)
-
-                            if transaction_data is not None:
-                                if 'date' in header:
-                                    this_line += transaction_data.strftime(date_format)
-                                elif header == 'category':
-                                    this_line += transaction_data['name']
-                                elif header == 'splits':
-                                    this_line += str(len(transaction_data))
-                                else:
-                                    this_line += str(transaction_data).replace(separator, sub_separator)
-
-                            this_line += separator
-                        this_line = this_line.strip(separator) + '\n'
-                        csv_data += this_line
-        elif data == 'splits':
-            headers = ['date', 'amount', 'memo', 'cleared', 'payee_address', 'category', 'to_account', 'check_number',
-                       'percent']
-
-            headers = [header for header in headers if header not in ignore]
-
-            csv_data += separator.join(headers) + '\n'
-
-            for account in self._accounts.values():
-                for transaction_list in account.transactions.values():
-                    for transaction in transaction_list:
-                        for split in transaction.splits:
-                            this_line = ''
-                            split_dict = split.to_dict()
-
-                            for header in headers:
-                                split_data = split_dict.get(header)
-
-                                if split_data is not None:
-                                    if 'date' in header:
-                                        this_line += split_data.strftime(date_format)
-                                    elif header == 'category':
-                                        this_line += split_data['name']
-                                    else:
-                                        this_line += str(split_data).replace(separator, sub_separator)
-
-                                this_line += separator
-                            this_line = this_line.strip(separator) + '\n'
-                            csv_data += this_line
-        elif data == 'investments':
-            headers = ['date', 'action', 'security', 'price', 'quantity', 'cleared', 'amount', 'memo', 'first_line',
-                       'to_account', 'transfer_amount', 'commission']
-
-            headers = [header for header in headers if header not in ignore]
-
-            csv_data += separator.join(headers) + '\n'
-
-            for account in self._accounts.values():
-                for transaction_list in account.transactions.values():
-                    for investment in transaction_list:
-                        if not isinstance(investment, Investment):
-                            continue
-
-                        this_line = ''
-                        investment_dict = investment.to_dict()
-                        for header in headers:
-                            investment_data = investment_dict.get(header)
-
-                            if investment_data is not None:
-                                if 'date' in header:
-                                    this_line += investment_data.strftime(date_format)
-                                elif header == 'category':
-                                    this_line += investment_data['name']
-                                elif header == 'splits':
-                                    this_line += str(len(investment_data))
-                                else:
-                                    this_line += str(investment_data).replace(separator, sub_separator)
-
-                            this_line += separator
-                        this_line = this_line.strip(separator) + '\n'
-                        csv_data += this_line
-        elif data == 'accounts':
-            headers = ['name', 'desc', 'account_type', 'credit_limit', 'balance', 'date_at_balance', 'transactions']
-
-            headers = [header for header in headers if header not in ignore]
-
-            csv_data += separator.join(headers) + '\n'
-
-            for account in self._accounts.values():
-                this_line = ''
-                account_dict = account.to_dict()
-                for header in headers:
-                    account_data = account_dict.get(header)
-
-                    if account_data is not None:
-                        if header == 'date_at_balance':
-                            this_line += account_data.strftime(date_format)
-                        elif header == 'transactions':
-                            this_line += str(len(account_data))
-                        else:
-                            this_line += str(account_data).replace(separator, sub_separator)
-
-                    this_line += separator
-                this_line = this_line.strip(separator) + '\n'
-                csv_data += this_line
-        elif data == 'categories':
-            headers = ['name', 'desc', 'tax_related', 'expense', 'income', 'budget_amount', 'tax_schedule_info',
-                       'parent', 'children']
-
-            headers = [header for header in headers if header not in ignore]
-
-            csv_data += separator.join(headers) + '\n'
-
-            categories_to_visit = list(self._categories.values())
-            for category in categories_to_visit:
-                if category.children is not None:
-                    categories_to_visit.extend(category.children)
-
-                this_line = ''
-                category_dict = category.to_dict()
-                for header in headers:
-                    category_data = category_dict.get(header)
-
-                    if category_data is not None:
-                        if header == 'children':
-                            this_line += str(len(category_data))
-                        else:
-                            this_line += str(category_data).replace(separator, sub_separator)
-
-                    this_line += separator
-                this_line = this_line.strip(separator) + '\n'
-                csv_data += this_line
-        elif data == 'classes':
-            headers = [header for header in ['name', 'desc'] if header not in ignore]
-
-            csv_data += separator.join(headers) + '\n'
-
-            for klass in self._classes:
-                this_line = ''
-                class_dict = klass.to_dict()
-                for header in headers:
-                    class_data = class_dict.get(header)
-
-                    if class_data is not None:
-                        this_line += str(class_data).replace(separator, sub_separator)
-
-                    this_line += separator
-                this_line = this_line.strip(separator) + '\n'
-                csv_data += this_line
-
-        if path is not None:
-            with open(path, 'w') as f:
-                f.write(csv_data)
-
-        return csv_data
-
-    def to_dataframe(self, data='transactions', ignore=None):
-        """Return a pandas DataFrame containing desired data.
-
-        Parameters
-        ----------
-        data : {'transactions', 'investments', 'splits', 'accounts', 'categories', 'classes'}
-            The data type to be input into the CSV file.
-        ignore : list of str, default=None
-            A list of strings of parameters that should be excluded from the dict.
-
-        Returns
-        -------
-        DataFrame
-            A DataFrame containing he desired data.
-
-        Raises
-        ------
-        ModuleNotFoundError
-            If the pandas module is not installed.
-        """
-        if ignore is None:
-            ignore = []
-
         if not PANDAS_INSTALLED:
-            raise ModuleNotFoundError('The pandas module must be installed to use this method')
+            raise ModuleNotFoundError(
+                'The pandas module must be installed to use this method'
+            )
 
-        return pd.DataFrame(self.to_dicts(data=data, ignore=ignore))
+        if ignore is None:
+            ignore = []
+
+        data_dicts = self._get_data_dicts(
+            data_type=data_type,
+            date_format=date_format,
+            ignore=ignore,
+        )
+
+        return pd.DataFrame(data_dicts)

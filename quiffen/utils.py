@@ -1,9 +1,20 @@
-from datetime import datetime
+import re
+from datetime import date, datetime
+from decimal import Decimal
+from enum import Enum
+from typing import Any, Dict, List, Tuple, Union
 
-from quiffen.core.categories_classes import Category
+from dateutil import parser
+from pydantic import ValidationError, parse_obj_as
+
+from quiffen.core.base import Field
+
+ZERO_SEPARATED_DATE = re.compile(
+    r'^(\d{2}|\d{4}|[a-zA-Z]+)0(\d{2}|[a-zA-Z]+)0(\d{2}|\d{4})$',
+)
 
 
-def parse_date(date_string, day_first=True):
+def parse_date(date_string: str, day_first: bool = False) -> datetime:
     """Parse a string date of an unknown format and return a datetime object.
 
     Parameters
@@ -11,7 +22,8 @@ def parse_date(date_string, day_first=True):
     date_string : str
         String containing date found in QIF file
     day_first : bool, default=True
-        Whether or not the day comes first in the date (e.g. UK date) or after the month (e.g. US date)
+        Whether the day comes first in the date (e.g. UK date) or after the
+        month (e.g. US date)
 
     Returns
     -------
@@ -23,106 +35,117 @@ def parse_date(date_string, day_first=True):
     ValueError
         If the date cannot be parsed.
     """
-    day_first_patterns = ['%d/%m/%Y',
-                          '%d-%m-%Y',
-                          '%d/%m/%y',
-                          '%d-%m-%y',
-                          '%d0%B0%Y',  # 0 values instead of spaces for reasons explained below
-                          '%d0%B0%y',
-                          '%d0%b0%Y',
-                          '%d0%b0%y']
-
-    month_first_patterns = ['%m/%d/%Y',
-                            '%m-%d-%Y',
-                            '%m/%d/%y',
-                            '%m-%d-%y',
-                            '%B0%d0%Y',
-                            '%B0%d0%y',
-                            '%b0%d0%Y',
-                            '%b0%d0%y']
-
-    if day_first:
-        date_patterns = day_first_patterns + month_first_patterns
-    else:
-        date_patterns = month_first_patterns + day_first_patterns
 
     # QIF files sometimes use ' ' instead of a 0 or a ' instead of a /
     date_string = date_string.replace(' ', '0')
     date_string = date_string.replace('\'', '/')
 
-    for pattern in date_patterns:
-        try:
-            return datetime.strptime(date_string, pattern)
-        except ValueError:
-            pass
+    try:
+        # QIF files allow some really strange date formats, such as
+        # %d0%B0%Y (e.g. 0100202022 for 2022-02-01)
+        # This extends also to month-first dates. The following regex  checks
+        # for this and converts it to a date string that can be parsed by
+        # dateutil.parser
+        date_parts = ZERO_SEPARATED_DATE.search(date_string).groups()
+        date_string = ' '.join(date_parts)
+    except AttributeError:
+        pass
 
-    raise ValueError(f'Date string \'{date_string}\' is not in a recognised format.')
+    return parser.parse(date_string, dayfirst=day_first)
 
 
-def create_categories(new_category, categories):
-    """Add ``new_category`` to ``categories`` after first creating necessary hierarchy.
+def parse_line_code_and_field_info(field: str) -> Tuple[str, str]:
+    """Parse a QIF field into a line code and field info."""
+    field = field.replace('\n', '')
 
-    If ``new_category`` fits under a category already in ``categories``, then it will just be added as a child.
+    if not field:
+        return '', ''
+    line_code = field[0]
 
-    Parameters
-    ----------
-    new_category : Category
-        The new category to be added to the iterable of categories.
-    categories : iterable
-        Iterable containing categories. If in a dict, Category objects are the values.
+    if len(field) > 1:
+        field_info = field[1:]
+    else:
+        field_info = ''
+
+    return line_code, field_info
+
+
+def add_custom_field_to_object_dict(
+    field: str,  # Takes in the whole field to allow multi-character line codes
+    custom_fields: List[Field],
+    object_dict: Dict[str, Any],
+) -> Tuple[Dict[str, Any], bool]:
+    """Add custom QIF fields to a dict representing a Quiffen object based on
+    the QIF file line.
 
     Returns
     -------
-    iterable : categories
-        The new iterable, now containing ``new_category``
+    object_dict : dict
+        The object dict with the custom field added.
+    found : bool
+        Whether the custom field was found.
     """
-    # Add categories in hierarchy
-    categories_is_dict = isinstance(categories, dict)
-    if new_category.hierarchy is not None:
-        current_category = new_category
-        hierarchy = new_category.hierarchy.split(':')
+    for custom_field in custom_fields:
+        if field.startswith(custom_field.line_code):
+            try:
+                object_dict[custom_field.attr] = parse_obj_as(
+                    custom_field.type,
+                    field[len(custom_field.line_code):],
+                )
+                return object_dict, True
+            except ValidationError:
+                return object_dict, False
 
-        for i in range(2, len(hierarchy) + 1):
-            # Check if category exists
-            category_to_find = hierarchy[-i]
-            found = False
-            if categories_is_dict:
-                for root_category in categories.values():
-                    try:
-                        parent = root_category.find_category(category_to_find)
-                        found = True
-                        break
-                    except KeyError:
-                        pass
-            else:
-                for root_category in categories:
-                    try:
-                        parent = root_category.find_category(category_to_find)
-                        found = True
-                        break
-                    except KeyError:
-                        pass
+    return object_dict, False
 
-            if found:
-                if current_category not in parent.children:
-                    parent.add_child(current_category)
-                break
 
-            parent = Category(category_to_find)
-            parent.hierarchy = ':'.join(hierarchy[:-i + 1])
-            parent.add_child(current_category)
-            current_category = parent
+def convert_custom_fields_to_qif_string(
+    custom_fields: List[Field],
+    obj: Any,
+) -> str:
+    """Convert custom fields to a QIF string."""
+    qif = ''
+    for custom_field in custom_fields:
+        if (attr := getattr(obj, custom_field.attr)) is not None:
+            qif += f'{custom_field.line_code}{attr}\n'
 
-            # If at the top of the hierarchy, add to categories list
-            if i == len(hierarchy):
-                if categories_is_dict:
-                    categories[current_category.name] = current_category
-                else:
-                    categories.append(current_category)
+    return qif
+
+
+def apply_csv_formatting_to_scalar(
+    obj: Any,
+    date_format: str = '%Y-%m-%d',
+    stringify: bool = False,
+) -> Union[str, int, float]:
+    """Apply CSV-friendly formatting to a scalar value"""
+    if isinstance(obj, (datetime, date)):
+        return obj.strftime(date_format)
+    elif isinstance(obj, Enum):
+        return str(obj.value)
+    elif isinstance(obj, Decimal):
+        if obj % 1:
+            return float(obj)
+        return int(obj)
+    elif stringify:
+        return str(obj)
+    return obj
+
+
+def apply_csv_formatting_to_container(
+    obj: Union[List[Any], Dict[Any, Any]],
+    date_format: str = '%Y-%m-%d',
+) -> Union[List[Any], Dict[Any, Any], str]:
+    """Recursively apply CSV-friendly formatting to a container"""
+    if isinstance(obj, list):
+        return [
+            apply_csv_formatting_to_container(item, date_format)
+            for item in obj
+        ]
+    elif isinstance(obj, dict):
+        return {
+            apply_csv_formatting_to_scalar(key, date_format, True):
+                apply_csv_formatting_to_container(value, date_format)
+            for key, value in obj.items()
+        }
     else:
-        if categories_is_dict:
-            categories[new_category.name] = new_category
-        else:
-            categories.append(new_category)
-
-    return categories
+        return apply_csv_formatting_to_scalar(obj, date_format)

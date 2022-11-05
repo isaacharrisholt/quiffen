@@ -3,7 +3,7 @@ PY_BIN = 	python
 
 .PHONY:		test
 test:
-		( cd tests ; python -m unittest )
+		( cd tests ; poetry run pytest )
 
 .PHONY:		wheel
 wheel:
@@ -20,3 +20,6 @@ reinstall:	clean install
 clean:
 		find . -type d -name __pycache__ -prune -exec rm -r {} \;
 		rm -fr build dist *.egg-info test2.qif
+
+
+# TODO: makefile edits
