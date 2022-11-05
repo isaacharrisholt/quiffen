@@ -110,6 +110,8 @@ class Category(BaseModel):
                     properties += f'\n\tParent: {self.parent.name}'
                 elif object_property == 'children':
                     properties += f'\n\tChildren: {len(self.children)}'
+                elif object_property == 'category_type':
+                    properties += f'\n\tCategory Type: {value.value}'
                 else:
                     properties += (
                         f'\n\t'
