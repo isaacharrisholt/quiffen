@@ -1,17 +1,20 @@
 PKG_NAME = 	quiffen
-PY_BIN = 	python
 
 .PHONY:		test
 test:
-		( cd tests ; python -m unittest )
+		( cd tests ; poetry run pytest )
+
+.PHONY:     lint
+lint:
+        ( poetry run pylint $(PKG_NAME); poetry run pylint tests )
 
 .PHONY:		wheel
 wheel:
-		$(PY_BIN) setup.py bdist_wheel --universal
+		poetry build -f wheel
 
 .PHONY:		install
 install:	wheel
-		$(PY_BIN) -m pip install --force-reinstall dist/$(PKG_NAME)-*.whl
+		poetry install
 
 .PHONY:		reinstall
 reinstall:	clean install

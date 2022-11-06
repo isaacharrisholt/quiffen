@@ -18,11 +18,11 @@ sys.path.insert(0, os.path.abspath('../quiffen'))
 # -- Project information -----------------------------------------------------
 
 project = 'Quiffen'
-copyright = '2021, Isaac Harris-Holt'
+copyright = '2022, Isaac Harris-Holt'
 author = 'Isaac Harris-Holt'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.1'
+release = '2.0.0'
 
 
 # -- General configuration ---------------------------------------------------

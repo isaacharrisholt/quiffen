@@ -1,0 +1,32 @@
+!Type:Bank
+D22/12/2017
+T1000.00
+PIncome For January
+M
+N
+LIncome:Available next month
+^
+D01/01/2018
+T1100.00
+PStarting Balance
+M
+N
+Cc
+LIncome:Available this month
+^
+D02/01/2018
+T-12.57
+PFOOD C LONDON VIS
+M
+N
+Cc
+LEveryday Expenses:Food Budget
+^
+D02/01/2018
+T-9.99
+PGOUSTO.CO.UK - A LONDON  W3 VIS
+M
+N
+Cc
+LEveryday Expenses:Gousto
+^
