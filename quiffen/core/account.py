@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -15,6 +15,7 @@ from quiffen.core.transaction import (
 
 
 class AccountType(str, Enum):
+    """An enum representing the different account types allowed by QIF."""
     CASH = 'Cash'
     BANK = 'Bank'
     CREDIT_CARD = 'CCard'
@@ -39,10 +40,10 @@ class Account(BaseModel):
     >>> acc
     Account(name='Example name', desc='Some description')
     >>> tr = quiffen.Transaction(date=datetime.now(), amount=150.0)
-    >>> acc.last_header = 'Bank'
+    >>> acc.set_last_header = quiffen.AccountType.BANK
     >>> acc.add_transaction(tr)
     >>> acc.transactions
-    {'Bank': TransactionList(Transaction(date=datetime.datetime(2021, 7, 2, 18, 31, 47, 817025), amount=150.0))}
+    {'Bank': [Transaction(date=datetime.datetime(2021, 7, 2, 18, 31, 47, 817025), amount=150.0)]}
 
     Creating an account instance from a section list in a QIF file.
 
@@ -50,7 +51,7 @@ class Account(BaseModel):
     >>> string = '!Account\\nNPersonal Bank Account\\nDMy Personal bank account with Barclays.\\n^\\n'
     >>> acc = quiffen.Account.from_string(string)
     >>> acc
-    Account(name='Personal Bank Account', desc='My Personal bank account with Barclays.')
+    Account(name='Personal Bank Account', desc='My Personal bank account with Barclays.', ...)
     """
     # pylint: enable=line-too-long
     name: str
@@ -64,7 +65,7 @@ class Account(BaseModel):
 
     __CUSTOM_FIELDS: List[Field] = []
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, Account):
             return False
         return (
@@ -72,7 +73,7 @@ class Account(BaseModel):
             and self.account_type == other.account_type
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         properties = ''
         ignore = ['_last_header']
         for (object_property, value) in self.__dict__.items():
@@ -92,7 +93,7 @@ class Account(BaseModel):
                     )
         return 'Account:' + properties
 
-    def set_header(self, header: AccountType):
+    def set_header(self, header: AccountType) -> None:
         """Set the last header used.
 
         Parameters
@@ -106,12 +107,12 @@ class Account(BaseModel):
         self,
         transaction: TransactionLike,
         header: AccountType = None,
-    ):
+    ) -> None:
         """Add a transaction to the dict of TransactionList objects.
 
         Parameters
         ----------
-        transaction : Transaction or Investment
+        transaction : TransactionLike
             The Transaction-type object to be added.
         header : AccountType
              The header under which the transaction falls. Will be used as a key
@@ -140,7 +141,7 @@ class Account(BaseModel):
 
         self.transactions[header].append(transaction)
 
-    def merge(self, other: Account):
+    def merge(self, other: Account) -> None:
         """Merge another account into this one.
 
         Parameters
@@ -165,6 +166,14 @@ class Account(BaseModel):
         classes: Dict[str, Class] = None
     ) -> str:
         """Return a QIF-formatted string of this account.
+
+        Parameters
+        ----------
+        date_format : str
+            The date format to use for the date field.
+        classes : Dict[str, Class]
+            A dict of Class objects in the account's transactions, keyed by
+            their name.
 
         Returns
         -------
@@ -207,15 +216,15 @@ class Account(BaseModel):
         ----------
         lst : list of str
             List of strings containing QIF information about the account.
-        day_first : bool, default=True
-             Whether the day or month comes first in the date.
+        day_first : bool, default=False
+             Whether the day comes before the month in the date.
 
         Returns
         -------
         Account
             An Account object created from the QIF strings.
         """
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:

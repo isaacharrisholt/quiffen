@@ -21,7 +21,7 @@ def parse_date(date_string: str, day_first: bool = False) -> datetime:
     ----------
     date_string : str
         String containing date found in QIF file
-    day_first : bool, default=True
+    day_first : bool, default=False
         Whether the day comes first in the date (e.g. UK date) or after the
         month (e.g. US date)
 

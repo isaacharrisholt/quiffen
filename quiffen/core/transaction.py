@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import root_validator, validator
 
@@ -126,7 +126,7 @@ class Transaction(BaseModel):
 
     __CUSTOM_FIELDS: List[Field] = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         properties = ''
         ignore = ['_last_split', '_is_split']
         for (object_property, value) in self.__dict__.items():
@@ -150,7 +150,7 @@ class Transaction(BaseModel):
 
     # pylint: disable=no-self-argument
     @root_validator(pre=True)
-    def create_split_categories(cls, values):
+    def create_split_categories(cls, values: Dict[str, Any]) -> Dict:
         if splits := values.get('splits'):
             for split in splits:
                 if split.category:
@@ -162,7 +162,11 @@ class Transaction(BaseModel):
         return values
 
     @validator('splits')
-    def check_split_percentages_and_amounts(cls, splits, values):
+    def check_split_percentages_and_amounts(
+        cls,
+        splits: List[Split],
+        values: Dict[str, Any],
+    ) -> List[Split]:
         total_percent = sum(
             split.percent for split in splits if split.percent
         )
@@ -179,7 +183,7 @@ class Transaction(BaseModel):
     # pylint: enable=no-self-argument
 
     @property
-    def split_categories(self):
+    def split_categories(self) -> Dict[str, Category]:
         return self._split_categories
 
     @property
@@ -188,7 +192,7 @@ class Transaction(BaseModel):
         otherwise."""
         return len(self.splits) > 0
 
-    def add_split(self, split: Split):
+    def add_split(self, split: Split) -> None:
         """Add a Split to Transaction."""
         if (
             split.percent
@@ -212,15 +216,16 @@ class Transaction(BaseModel):
 
         self.splits.append(split)
 
-    def remove_splits(self, **filters):
+    def remove_splits(self, **filters) -> List[Split]:
         """Remove splits from Transaction if they match a set of filters
 
         Takes filters as kwargs and removes splits that match all filters. If
         no filters are provided, all splits are removed.
         """
         if not filters:
+            current_splits = self.splits.copy()
             self.splits = []
-            return
+            return current_splits
 
         to_remove = []
         for split in self.splits:
@@ -233,6 +238,8 @@ class Transaction(BaseModel):
         self.splits = [
             split for split in self.splits if split not in to_remove
         ]
+
+        return to_remove
 
     @staticmethod
     def _create_class_from_category_string(
@@ -321,7 +328,7 @@ class Transaction(BaseModel):
         ----------
         lst : list of str
             List of strings containing QIF information about the transaction.
-        day_first : bool, default=True
+        day_first : bool, default=False
              Whether the day or month comes first in the date.
         line_number : int, default=None
             The line number of the header line of the transaction in the QIF
@@ -334,9 +341,9 @@ class Transaction(BaseModel):
         Dict[str, Class]
             A dictionary of Class objects created from the QIF strings.
         """
-        kwargs = {}
-        classes = {}
-        splits = []
+        kwargs: Dict[str, Any] = {}
+        classes: Dict[str, Class] = {}
+        splits: List[Split] = []
         current_split = None
 
         for field in lst:
@@ -374,7 +381,8 @@ class Transaction(BaseModel):
                     logger.warning(
                         f"No split yet given for memo '{field_info}', skipping"
                     )
-                current_split.memo = field_info
+                else:
+                    current_split.memo = field_info
             elif line_code in {'$', '£'}:
                 if current_split:
                     current_split.amount = Decimal(field_info.replace(',', ''))
@@ -512,7 +520,7 @@ class Transaction(BaseModel):
             String containing QIF information about the transaction.
         separator : str, default='\n'
             The separator between QIF fields.
-        day_first : bool, default=True
+        day_first : bool, default=False
              Whether the day or month comes first in the date.
         line_number : int, default=None
             The line number of the header line of the transaction in the QIF

@@ -774,7 +774,7 @@ def test_add_categories_to_container_complex_hierarchy_list():
 
     assert len(categories) == 1
     plant_traversal = categories[0].traverse_down()
-    assert plant_traversal == [oak_leaf, oak, birch_leaf, birch, tree, plant]
+    assert plant_traversal == [plant, tree, birch, birch_leaf, oak, oak_leaf]
 
     plant_render = categories[0].render_tree()
     assert plant_render == (
@@ -865,7 +865,7 @@ def test_add_categories_to_container_complex_hierarchy_dict():
 
     assert len(categories) == 1
     plant_traversal = categories[plant.name].traverse_down()
-    assert plant_traversal == [oak_leaf, oak, birch_leaf, birch, tree, plant]
+    assert plant_traversal == [plant, tree, birch, birch_leaf, oak, oak_leaf]
 
     plant_render = categories[plant.name].render_tree()
     assert plant_render == (

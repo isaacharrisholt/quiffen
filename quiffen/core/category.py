@@ -11,6 +11,7 @@ from quiffen.core.base import BaseModel, Field
 
 
 class CategoryType(str, Enum):
+    """Enum representing the different types of categories in a QIF file."""
     EXPENSE = 'expense'
     INCOME = 'income'
 
@@ -35,9 +36,6 @@ class Category(BaseModel):
         The budget amount for this category.
     tax_schedule_info : str, default=None
         Information about the tax schedule for this category.
-
-    Attributes
-    ----------
     children : list of Category
         A list of the category's children objects.
     parent : Category, default=None
@@ -102,7 +100,7 @@ class Category(BaseModel):
 
     __CUSTOM_FIELDS: List[Field] = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         properties = ''
         for (object_property, value) in self.__dict__.items():
             if value:
@@ -120,7 +118,7 @@ class Category(BaseModel):
                     )
         return 'Category:' + properties
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.name < other.name
 
     # pylint: disable=no-self-argument
@@ -146,10 +144,11 @@ class Category(BaseModel):
             # pylint: disable-next=protected-access
             child._refresh_hierarchy()
 
-    # Overwrite pydantic.BaseModel.dict or else it will recurse infinitely when
-    # trying to serialize the parent and children attributes
     def dict(self, exclude: Iterable[str] = None, **_) -> Dict[str, Any]:
         """Return a representation of the Category object as a dict.
+
+        Overwrites pydantic.BaseModel.dict or else it will recurse infinitely
+        when trying to serialize the parent and children attributes.
 
         Parameters
         ----------
@@ -188,19 +187,25 @@ class Category(BaseModel):
 
     def traverse_down(self) -> List[Category]:
         """Return a flat list of all children, grandchildren etc. of the
-        current category."""
+        current category.
+
+        The list is ordered starting with the current category, then its
+        children, then the children's children etc.
+        """
         nodes_to_visit = [self]
         all_children = []
         while nodes_to_visit:
             current_node = nodes_to_visit.pop()
             all_children.append(current_node)
             nodes_to_visit.extend(current_node.children)
-        all_children.reverse()
         return all_children
 
     def traverse_up(self) -> List[Category]:
         """Return a list of all parents, grandparents etc. of the current
-        category."""
+        category.
+
+        The list is ordered from the current category to the root category.
+        """
         current_node = self
         all_parents = [self]
         while current_node.parent:
@@ -229,7 +234,13 @@ class Category(BaseModel):
 
     def set_parent(self, parent: Union[Category, None]) -> None:
         """Sets the parent of the current category. Set to None to make this
-        category a root category."""
+        category a root category.
+
+        Raises
+        ------
+        ValueError
+            If the parent argument is this category.
+        """
         if parent is self:
             raise ValueError("Cannot set parent to self.")
 
@@ -261,7 +272,10 @@ class Category(BaseModel):
         return child
 
     def set_children(self, children: Iterable[Category]) -> None:
-        """Sets the children of the current category."""
+        """Sets the children of the current category.
+
+        Will remove all existing children and replace them with the new ones.
+        """
         self.children = []
         for child in children:
             self.add_child(child)
@@ -286,6 +300,11 @@ class Category(BaseModel):
         -------
         Category
             The removed category.
+
+        Raises
+        ------
+        KeyError
+            If the category cannot be found.
         """
         if isinstance(child, str):
             child_category = self.find_child(child)
@@ -307,7 +326,12 @@ class Category(BaseModel):
         return child_category
 
     def merge(self, other: Category) -> bool:
-        """Merge another category tree into this one.
+        """Recursively merge another category tree into this one.
+
+        Will check through the entire tree for categories with the same name
+        and merge them. If a category with the same name is found, the
+        children of the other category will be added to the current category
+        and the other category will be removed.
 
         Returns
         -------
@@ -331,8 +355,7 @@ class Category(BaseModel):
     def render_tree(self, _level: int = 0) -> str:
         """Renders a tree-like structure for categories.
 
-        Runs recursively, and uses ``_level`` just to keep track of the
-        indentation.
+        Runs recursively, and uses ``_level`` to keep track of the indentation.
         """
         if not self.children:
             return self.name
@@ -383,7 +406,7 @@ class Category(BaseModel):
         """Return a QIF representation of all the categories in the tree."""
         return '^\n'.join(
             # pylint: disable-next=protected-access
-            [c._to_qif_string() for c in reversed(self.traverse_down())]
+            [c._to_qif_string() for c in self.traverse_down()]
         )
 
     @classmethod
@@ -395,7 +418,7 @@ class Category(BaseModel):
         lst : list of str
             List of strings containing QIF information about the category.
         """
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:
@@ -457,8 +480,8 @@ def add_categories_to_container(
     """Add ``new_category`` to ``categories`` after first creating necessary
     hierarchy.
 
-    If ``new_category`` fits under a category already in ``categories``, then it
-    will just be added as a child.
+    If ``new_category`` already exists somewhere in ``categories``, it will
+    be merged with the existing category.
 
     Parameters
     ----------

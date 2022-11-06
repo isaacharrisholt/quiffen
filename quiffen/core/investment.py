@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List
+from typing import Any, Dict, List
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -61,7 +61,7 @@ class Investment(BaseModel):
 
     __CUSTOM_FIELDS: List[Field] = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         properties = ''
         for (object_property, value) in self.__dict__.items():
             if value:
@@ -124,7 +124,7 @@ class Investment(BaseModel):
         ----------
         lst : list of str
             List of strings containing QIF information about the investment.
-        day_first : bool, default=True
+        day_first : bool, default=False
             Whether the day or month comes first in the date.
         line_number : int, default=None
             The line number of the header line of the investment in the QIF
@@ -135,7 +135,7 @@ class Investment(BaseModel):
         Investment
             An Investment object created from the QIF strings.
         """
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:
@@ -201,7 +201,7 @@ class Investment(BaseModel):
             String containing QIF information about the investment.
         separator : str, default='\n'
             The separator between QIF fields.
-        day_first : bool, default=True
+        day_first : bool, default=False
             Whether the day or month comes first in the date.
         line_number : int, default=None
             The line number of the header line of the investment in the QIF

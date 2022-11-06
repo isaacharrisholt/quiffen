@@ -4,7 +4,7 @@ import csv
 import io
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Set, Union
 
 from pydantic.types import FilePath
 
@@ -34,6 +34,8 @@ VALID_TRANSACTION_ACCOUNT_TYPES = [
 
 
 class QifDataType(str, Enum):
+    """An Enum representing the different types of data that can be found in a
+    Qif object."""
     TRANSACTIONS = 'transactions'
     INVESTMENTS = 'investments'
     CLASSES = 'classes'
@@ -68,7 +70,7 @@ class Qif(BaseModel):
 
     __CUSTOM_FIELDS: List[Field] = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         accounts_str = '\n'.join(str(acc) for acc in self.accounts.values())
         categories_str = '\n'.join(str(cat) for cat in self.categories.values())
         classes_str = '\n'.join(str(cls) for cls in self.classes.values())
@@ -113,7 +115,7 @@ class Qif(BaseModel):
         separator : str, default='\n'
              The line separator for the QIF file. This probably won't need
              changing.
-        day_first : bool, default=True
+        day_first : bool, default=False
              Whether the day or month comes first in the date.
 
         Returns
@@ -133,11 +135,11 @@ class Qif(BaseModel):
         if not data:
             raise ParserException('The file is empty.')
 
-        accounts = {}
+        accounts: Dict[str, Account] = {}
         last_account = None
-        categories = {}
-        classes = {}
-        securities = {}
+        categories: Dict[str, Category] = {}
+        classes: Dict[str, Class] = {}
+        securities: Dict[str, Security] = {}
 
         sections = data.split('^')
         last_header = None
@@ -269,7 +271,7 @@ class Qif(BaseModel):
             securities=securities,
         )
 
-    def add_account(self, new_account: Account):
+    def add_account(self, new_account: Account) -> None:
         """Add a new account to the Qif object"""
         if new_account.name in self.accounts:
             self.accounts[new_account.name].merge(new_account)
@@ -285,7 +287,7 @@ class Qif(BaseModel):
                 f'Account "{account_name}" does not exist in this Qif object.'
             ) from e
 
-    def add_category(self, new_category: Category):
+    def add_category(self, new_category: Category) -> None:
         """Add a new category to the Qif object"""
         self.categories = add_categories_to_container(
             new_category,
@@ -313,7 +315,7 @@ class Qif(BaseModel):
 
         return category
 
-    def add_class(self, new_class: Class):
+    def add_class(self, new_class: Class) -> None:
         """Add a new class to the Qif object"""
         if new_class.name in self.classes:
             self.classes[new_class.name].merge(new_class)
@@ -329,7 +331,7 @@ class Qif(BaseModel):
                 f'Class "{class_name}" does not exist in this Qif object.'
             ) from e
 
-    def add_security(self, new_security: Security):
+    def add_security(self, new_security: Security) -> None:
         """Add a new security to the Qif object"""
         if new_security.symbol in self.securities:
             self.securities[new_security.symbol].merge(new_security)
@@ -481,7 +483,7 @@ class Qif(BaseModel):
             ignore=ignore,
         )
 
-        headers = set()
+        headers: Set[str] = set()
         for data_dict in data_dicts:
             headers.update(k for k in data_dict.keys())
 

@@ -54,7 +54,7 @@ class Split(BaseModel):
 
     __CUSTOM_FIELDS: List[Field] = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         properties = ''
         for (object_property, value) in self.dict().items():
             if value:

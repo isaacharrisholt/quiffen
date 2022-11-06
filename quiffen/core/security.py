@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import Any, Dict, List
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -31,7 +31,7 @@ class Security(BaseModel):
     # pylint: disable-next=unused-private-member
     __CUSTOM_FIELDS: List[Field] = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         return_str = 'Security:'
         if self.name:
             return_str += f'\n\tName: {self.name}'
@@ -44,7 +44,7 @@ class Security(BaseModel):
 
         return return_str
 
-    def merge(self, other: Security):
+    def merge(self, other: Security) -> None:
         """Merge another security into this one.
 
         Parameters
@@ -57,7 +57,7 @@ class Security(BaseModel):
         self.type = self.type or other.type
         self.goal = self.goal or other.goal
 
-    def to_qif(self):
+    def to_qif(self) -> str:
         """Converts a Security to a QIF string"""
         qif = '!Type:Security\n'
 
@@ -98,7 +98,7 @@ class Security(BaseModel):
         Security
             A class instance representing the security.
         """
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
 
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)

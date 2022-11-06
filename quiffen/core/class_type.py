@@ -2,7 +2,7 @@
 # reserved word in Python.
 from __future__ import annotations
 
-from typing import List
+from typing import Any, Dict, List
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -27,19 +27,19 @@ class Class(BaseModel):
     # pylint: disable-next=unused-private-member
     __CUSTOM_FIELDS: List[Field] = []
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, Class):
             return False
         return self.name == other.name
 
-    def __str__(self):
+    def __str__(self) -> str:
         res = f'Class:\n\tName: {self.name}'
         if self.desc:
             res += f'\n\tDescription: {self.desc}'
         res += f'\n\tCategories: {len(self.categories)}'
         return res
 
-    def add_category(self, new_category: Category):
+    def add_category(self, new_category: Category) -> None:
         """Add a category to the class."""
         for category in self.categories:
             if category.merge(new_category):
@@ -47,7 +47,7 @@ class Class(BaseModel):
 
         self.categories.append(new_category)
 
-    def merge(self, other: Class):
+    def merge(self, other: Class) -> None:
         """Merge another class' categories into this one. Name is not
         merged, and desc is only merged if this class has no desc.
         """
@@ -56,7 +56,7 @@ class Class(BaseModel):
             self.add_category(category)
 
     def to_qif(self) -> str:
-        """Return a QIF-formatted string of this class"""
+        """Return a QIF-formatted string of this class."""
         qif = '!Type:Class\n'
         qif += f'N{self.name}\n'
         if self.desc:
@@ -70,7 +70,7 @@ class Class(BaseModel):
         return qif
 
     @classmethod
-    def from_list(cls, lst) -> Class:
+    def from_list(cls, lst: List[str]) -> Class:
         """Return a class instance from a list of QIF strings.
 
         Parameters
@@ -78,7 +78,7 @@ class Class(BaseModel):
         lst : list of str
             List of strings containing QIF information about the QIF class.
         """
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:
