@@ -4,7 +4,7 @@ import csv
 import io
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic.types import FilePath
 
@@ -360,8 +360,8 @@ class Qif(BaseModel):
         ) + '^\n'
 
         qif += '^\n'.join(
-            class_.to_qif()
-            for class_ in self.classes.values()
+            cls.to_qif()
+            for cls in self.classes.values()
         ) + '^\n'
 
         qif += '^\n'.join(
@@ -377,7 +377,7 @@ class Qif(BaseModel):
     def _get_data_dicts(
         self,
         data_type: QifDataType = QifDataType.TRANSACTIONS,
-        date_format: str = '%Y-%m-%d',
+        date_format: Optional[str] = '%Y-%m-%d',
         ignore: List[str] = None,
     ) -> List[Dict[str, Any]]:
         """Converts specified data from the Qif object to a list of dicts"""
@@ -509,7 +509,7 @@ class Qif(BaseModel):
     def to_dataframe(
         self,
         data_type: QifDataType = QifDataType.TRANSACTIONS,
-        date_format: str = '%Y-%m-%d',
+        # date_format: str = '%Y-%m-%d',
         ignore: List[str] = None,
     ) -> pd.DataFrame:
         """Convert part of the Qif object to a Pandas DataFrame. The
@@ -544,7 +544,7 @@ class Qif(BaseModel):
 
         data_dicts = self._get_data_dicts(
             data_type=data_type,
-            date_format=date_format,
+            date_format=None,
             ignore=ignore,
         )
 

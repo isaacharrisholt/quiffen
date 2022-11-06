@@ -118,7 +118,7 @@ def apply_csv_formatting_to_scalar(
     stringify: bool = False,
 ) -> Union[str, int, float]:
     """Apply CSV-friendly formatting to a scalar value"""
-    if isinstance(obj, (datetime, date)):
+    if isinstance(obj, (datetime, date)) and date_format:
         return obj.strftime(date_format)
     elif isinstance(obj, Enum):
         return str(obj.value)

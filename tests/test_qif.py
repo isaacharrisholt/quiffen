@@ -892,7 +892,7 @@ def test_to_dataframe_transactions():
     df = qif.to_dataframe(data_type=QifDataType.TRANSACTIONS)
 
     assert df.shape == (1, 20)
-    assert df['date'][0] == '2019-01-01'
+    assert df['date'][0] == datetime(2019, 1, 1)
     assert df['amount'][0] == 100
     assert df['payee'][0] == 'Test Payee'
     assert df['memo'][0] == 'Test Memo'
@@ -970,15 +970,14 @@ def test_to_dataframe_investments():
     df = qif.to_dataframe(data_type=QifDataType.INVESTMENTS)
 
     assert df.shape == (1, 13)
-    assert df['date'][0] == '2019-01-01'
+    assert df['date'][0] == datetime(2019, 1, 1)
     assert df['amount'][0] == 100
     assert df['security'][0] == 'Test Security'
     assert df['price'][0] == 10
 
 
-def test_to_dataframe_transactions_with_date_format_and_ignore_list():
-    """Test the to_dataframe method with transactions and date_format and
-    ignore"""
+def test_to_dataframe_transactions_with_ignore_list():
+    """Test the to_dataframe method with transactions and ignore"""
     qif = Qif()
     account = Account(name='Test Account')
     transaction = Transaction(
@@ -994,12 +993,11 @@ def test_to_dataframe_transactions_with_date_format_and_ignore_list():
 
     df = qif.to_dataframe(
         data_type=QifDataType.TRANSACTIONS,
-        date_format='%m/%d/%Y',
         ignore=['payee'],
     )
 
     assert df.shape == (1, 19)
-    assert df['date'][0] == '02/01/2019'
+    assert df['date'][0] == datetime(2019, 2, 1)
     assert df['amount'][0] == 100
     assert 'payee' not in df.columns
     assert df['memo'][0] == 'Test Memo'
@@ -1029,12 +1027,12 @@ def test_to_dataframe_transactions_multiple():
     df = qif.to_dataframe(data_type=QifDataType.TRANSACTIONS)
 
     assert df.shape == (2, 20)
-    assert df['date'][0] == '2019-01-01'
+    assert df['date'][0] == datetime(2019, 1, 1)
     assert df['amount'][0] == 100
     assert df['payee'][0] == 'Test Payee'
     assert df['memo'][0] == 'Test Memo'
     assert df['category'][0]['name'] == 'Test Category'
-    assert df['date'][1] == '2019-01-01'
+    assert df['date'][1] == datetime(2019, 1, 1)
     assert df['amount'][1] == 200
     assert df['payee'][1] == 'Test Payee'
     assert df['memo'][1] == 'Test Memo'
