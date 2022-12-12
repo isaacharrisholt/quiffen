@@ -419,6 +419,7 @@ class Category(BaseModel):
             List of strings containing QIF information about the category.
         """
         kwargs: Dict[str, Any] = {}
+        new_parent: Union[Category, None] = None
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:
@@ -437,7 +438,9 @@ class Category(BaseModel):
                 temp_cat = create_categories_from_hierarchy(field_info)
                 kwargs['name'] = temp_cat.name
                 kwargs['hierarchy'] = temp_cat.hierarchy
-                kwargs['parent'] = temp_cat.parent
+                new_parent = temp_cat.parent
+                if new_parent:
+                    new_parent.remove_child(temp_cat)
             elif line_code == 'D':
                 kwargs['desc'] = field_info
             elif line_code == 'T':
@@ -453,7 +456,9 @@ class Category(BaseModel):
             else:
                 raise ValueError(f'Unknown line code: {line_code}')
 
-        return cls(**kwargs)
+        new_cat = cls(**kwargs)
+        new_cat.set_parent(new_parent)
+        return new_cat
 
 
 ListOrDictOfCategories = Union[List[Category], Dict[str, Category]]
