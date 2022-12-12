@@ -1,0 +1,14 @@
+!Account
+NMy Bank Account
+D
+TBank
+^
+!Type:Cat
+NRoot
+D
+I
+^
+NRoot:Child
+D
+I
+^

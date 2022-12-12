@@ -909,3 +909,27 @@ def test_categories_do_not_override_each_other():
         'Food Budget',
         'Gousto',
     ]
+
+
+def test_child_categories_inherit_category_type():
+    """Test that child categories inherit the category type of their parent.
+
+    Related to issue #37.
+    https://github.com/isaacharrisholt/quiffen/issues/37
+    """
+    test_file = (
+        Path(__file__).parent / 'test_files' / 'test_category_inherit.qif'
+    )
+
+    qif = Qif.parse(test_file)
+
+    assert len(qif.categories) == 1
+
+    root = qif.categories['Root']
+    assert root.name == 'Root'
+    assert root.category_type == CategoryType.INCOME
+    assert len(root.children) == 1
+
+    child = root.children[0]
+    assert child.name == 'Child'
+    assert child.category_type == CategoryType.INCOME
