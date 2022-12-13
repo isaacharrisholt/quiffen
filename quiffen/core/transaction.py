@@ -171,11 +171,11 @@ class Transaction(BaseModel):
             split.percent for split in splits if split.percent
         )
         total_amount = sum(split.amount for split in splits)
-        if total_percent > 100:
+        if total_percent - 100 > 0.01:
             raise ValueError(
-                'Split percentages cannot exceeed 100% of the transaction'
+                'Split percentages cannot exceed 100% of the transaction'
             )
-        if abs(total_amount) > abs(values.get('amount', 0)):
+        if abs(total_amount) - abs(values.get('amount', 0)) > 0.01:
             raise ValueError(
                 'Split amounts cannot exceed the amount of the transaction'
             )
@@ -196,7 +196,7 @@ class Transaction(BaseModel):
         """Add a Split to Transaction."""
         if (
             split.percent
-            and sum(s.percent for s in self.splits) + split.percent > 100
+            and sum(s.percent for s in self.splits) + split.percent - 100 > 0.01
         ):
             raise ValueError(
                 'The sum of the split percentages cannot be greater than 100.'
@@ -208,7 +208,7 @@ class Transaction(BaseModel):
                     s.amount for s in self.splits
                 ) + split.amount
             )
-            if abs_sum_of_splits > abs(self.amount):
+            if abs_sum_of_splits - abs(self.amount) > 0.01:
                 raise ValueError(
                     'The sum of the split amounts cannot be greater than the '
                     'transaction amount.'
