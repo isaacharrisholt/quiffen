@@ -76,6 +76,31 @@ def test_create_transaction_with_splits_percent_too_high():
         )
 
 
+def test_create_transaction_with_splits_exactly_100_percent():
+    """Test creating a transaction with splits where the percent is exactly 100.
+
+    Relates to issue #39.
+    https://github.com/isaacharrisholt/quiffen/issues/39
+    """
+    transaction_list = [
+        'D12/1/22',
+        'PPayee',
+        'T5,382.39',
+        'NDEP',
+        'LSplit',
+        'SCategory A',
+        '$-120.83',
+        'SCategory B',
+        '$-2,100.96',
+        'SCategory C',
+        '$-729.15',
+        'SCategory D',
+        '$8,333.33',
+    ]
+    # Should not raise an error
+    Transaction.from_list(transaction_list)
+
+
 def test_create_transaction_with_splits_amount_too_high():
     """Test creating a transaction with splits where the amount is too high"""
     with pytest.raises(ValueError):
@@ -279,6 +304,29 @@ def test_add_split_amount_too_high():
     )
     with pytest.raises(ValueError):
         transaction.add_split(Split(amount=950))
+
+
+def test_add_splits_exactly_100_percent():
+    """Test adding splits that add up to 100 percent
+
+    Relates to issue #39.
+    https://github.com/isaacharrisholt/quiffen/issues/39
+    """
+    transaction = Transaction(
+        date=datetime(2022, 2, 1),
+        amount=Decimal('5382.39'),
+    )
+
+    splits = [
+        Split(amount=Decimal('-121.83')),
+        Split(amount=Decimal('-2101.96')),
+        Split(amount=Decimal('-730.15')),
+        Split(amount=Decimal('8332.33')),
+    ]
+
+    for split in splits:
+        # Should not raise an error
+        transaction.add_split(split)
 
 
 def test_remove_splits_one_filter():
