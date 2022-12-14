@@ -1,0 +1,117 @@
+### Most of example qif file is copied from Wikipedia ###
+### https://en.wikipedia.org/wiki/Quicken_Interchange_Format ###
+
+!Type:Class
+NTest class
+DThis is just a class I added here for test purposes
+^
+!Type:Class
+NTest class 2
+DThis is just a class I added here for test purposes
+^
+!Type:Cat
+NInvestments:Stocks
+DThis is just a category I added here for test purposes
+TTrue
+I
+B1000
+RTax schedule here
+^
+!Type:Cat
+NInvestments:Bonds
+DThis is just a category I added here for test purposes
+TFalse
+I
+B500
+RTax schedule here
+^
+!Type:Oth A
+D2/10'2020
+T0.00
+CX
+POpening Balance
+L[TestExport]
+^
+D2/14'2020
+T67.50
+PT-Mobile
+LBills:Cell Phone/Test class
+SBills:Cell Phone/Test class
+Esign up credit
+$-15.00
+SBills:Cell Phone/Test class
+Enew account
+$82.50
+^
+D2/14'2020
+Mmoney back for damaged parcel
+T32.00
+PUS Post Office
+LMiscellaneous
+^
+D2/12'2020
+Mtwo transactions, equal
+T-10.00
+PTarget
+LFood:Groceries
+SFood:Groceries
+E50%
+$-5.00
+SFood:Groceries
+E50% 2
+$-5.00
+^
+D2/11'2020
+CX
+Mnon split transaction
+T-25.00
+N123
+PWalmart
+LFood:Groceries
+^
+D2/10'2020
+C*
+Mtest order 1
+T-100.00
+PAmazon.com
+LFood:Groceries
+SFood:Groceries
+D1/10'2020
+E50%
+$-50.00
+STransportation:Automobile
+E25%
+$-25.00
+SPersonal Care:Haircare
+E10%
+$-10.00
+SHealthcare:Prescriptions
+E15%
+$-15.00
+^
+!Type:Invst
+D2/14'2020
+NBuy
+Y$AAPL
+I32.00
+Q376
+O10
+$100.00
+PTest investment
+^
+!Type:Security
+N
+SUSD0000
+TStock
+GGrowth
+^
+N
+SG002864
+TStock
+GGrowth
+^
+N
+SM039728
+TStock
+GGrowth
+^

@@ -20,6 +20,11 @@ def qif_file():
 
 
 @pytest.fixture
+def qif_file_with_oth_a_account():
+    return Path(__file__).parent / 'test_files' / 'test_oth_a.qif'
+
+
+@pytest.fixture
 def empty_file():
     return Path(__file__).parent / 'test_files' / 'empty.qif'
 
@@ -195,6 +200,11 @@ def test_from_list():
 def test_parse_works(qif_file):
     """Test parsing a QIF file"""
     Qif.parse(qif_file)
+
+
+def test_parse_works_with_oth_a_account(qif_file_with_oth_a_account):
+    """Test parsing a QIF file with an OTH account"""
+    Qif.parse(qif_file_with_oth_a_account)
 
 
 def test_parse_empty_file(empty_file):

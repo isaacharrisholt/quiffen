@@ -27,8 +27,8 @@ VALID_TRANSACTION_ACCOUNT_TYPES = [
     '!type:cash',
     '!type:bank',
     '!type:ccard',
-    '!type:oth a',
-    '!type:oth l',
+    '!type:otha',
+    '!type:othl',
     '!type:invoice'
 ]
 
@@ -246,7 +246,7 @@ class Qif(BaseModel):
                 )
                 accounts[last_account].add_transaction(
                     new_transaction,
-                    AccountType(header_line.replace(' ', '').split(':')[1]),
+                    AccountType(header_line.split(':')[1]),
                 )
 
                 if new_transaction.category:
