@@ -63,7 +63,7 @@ def test_to_qif():
     split = Split(amount=100, memo='Test Memo')
     assert split.to_qif() == (
         'S\n'
-        'T100\n'
+        '$100\n'
         'ETest Memo\n'
     )
 
@@ -83,7 +83,7 @@ def test_to_qif():
     assert split2.to_qif() == (
         'STest Category\n'
         'D2019-01-01\n'
-        'T100\n'
+        '$100\n'
         'ETest Memo\n'
         'CTrue\n'
         'L[Test Account]\n'

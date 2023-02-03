@@ -477,10 +477,10 @@ def test_to_qif_with_splits_no_classes():
         'LTest Category\n'
         'N1\n'
         'STest Split Category\n'
-        'T100\n'
+        '$100\n'
         'ETest Memo\n'
         'S\n'
-        'T200\n'
+        '$200\n'
         'ETest Memo 2\n'
     )
 
@@ -523,10 +523,10 @@ def test_to_qif_with_splits_with_classes():
         'LTest Parent:Test Child/Test Class\n'
         'N1\n'
         'STest Split Category/Test Class\n'
-        'T100\n'
+        '$100\n'
         'ETest Memo\n'
         'S\n'
-        'T200\n'
+        '$200\n'
         'ETest Memo 2\n'
     )
 
@@ -604,7 +604,7 @@ def test_from_list_with_splits_no_classes():
         'LTest Category',  # No brackets denote category
         'STest Split Category 1',
         'ETest Split Memo',
-        'T100',
+        '$100',
         'STest Split Category 2',
         'EMemo',
         '$100',
