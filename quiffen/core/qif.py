@@ -511,7 +511,6 @@ class Qif(BaseModel):
     def to_dataframe(
         self,
         data_type: QifDataType = QifDataType.TRANSACTIONS,
-        # date_format: str = '%Y-%m-%d',
         ignore: List[str] = None,
     ) -> pd.DataFrame:
         """Convert part of the Qif object to a Pandas DataFrame. The
@@ -524,9 +523,6 @@ class Qif(BaseModel):
         data_type : QifDataType, optional
             The type of data to convert to a DataFrame, by default
             QifDataType.TRANSACTIONS
-        date_format : str, optional
-            The date format to use when converting dates to strings, by
-            default '%Y-%m-%d'
         ignore : List[str], optional
             A list of fields to ignore when converting to a DataFrame, by
             default None
