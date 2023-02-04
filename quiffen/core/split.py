@@ -98,7 +98,7 @@ class Split(BaseModel):
         if self.date:
             qif += f'D{self.date.strftime(date_format)}\n'
         if self.amount:
-            qif += f'T{self.amount}\n'
+            qif += f'${self.amount}\n'
         if self.memo:
             qif += f'E{self.memo}\n'
         if self.cleared:
