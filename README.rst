@@ -29,7 +29,7 @@ Usage
 
 Here's an example parsing of a QIF file:
 
->>> from quiffen import Qif
+>>> from quiffen import Qif, QifDataType
 >>> import decimal
 >>> qif = Qif.parse('test.qif', day_first=False)
 >>> qif.accounts
@@ -54,7 +54,7 @@ Transaction:
 >>> print(bills.render_tree())
 Bills (root)
 └─ Cell Phone
->>> df = qif.to_dataframe(data='transactions')
+>>> df = qif.to_dataframe(data_type=QifDataType.TRANSACTIONS)
 >>> df.head()
         date  amount           payee  ...                           memo cleared check_number
 0 2020-02-14    67.5        T-Mobile  ...                            NaN     NaN          NaN
@@ -76,7 +76,7 @@ And here's an example of creating a QIF structure and exporting to a QIF file:
 >>> groceries.add_child(essentials)
 >>> qif.add_category(groceries)
 >>> tr = quiffen.Transaction(date=datetime.now(), amount=150.0)
->>> acc.add_transaction(tr, header='Bank')
+>>> acc.add_transaction(tr, header=quiffen.AccountType.BANK)
 >>> qif.to_qif()  # If a path is provided, this will save the file too!
 '!Type:Cat\nNGroceries\nETrue\nIFalse\n^\nNGroceries:Essentials\nETrue\nIFalse\n^\n!Account\nNPersonal Bank Account\nDMy
 personal bank account with Barclays.\n^\n!Type:Bank\nD02/07/2021\nT150.0\n^\n'
