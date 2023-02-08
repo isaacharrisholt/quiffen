@@ -1080,3 +1080,8 @@ def test_transaction_before_account_definition_2(qif_file):
 
     assert len(acc.transactions) == 1
     assert len(acc.transactions['Bank']) == 2
+
+
+def test_empty_qif():
+    qif = Qif()
+    assert qif.to_qif() == ''
