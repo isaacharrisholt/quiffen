@@ -69,10 +69,10 @@ And here's an example of creating a QIF structure and exporting to a QIF file:
 >>> import quiffen
 >>> from datetime import datetime
 >>> qif = quiffen.Qif()
->>> acc = quiffen.Account('Personal Bank Account', desc='My personal bank account with Barclays.')
+>>> acc = quiffen.Account(name='Personal Bank Account', desc='My personal bank account with Barclays.')
 >>> qif.add_account(acc)
->>> groceries = quiffen.Category('Groceries')
->>> essentials = quiffen.Category('Essentials')
+>>> groceries = quiffen.Category(name='Groceries')
+>>> essentials = quiffen.Category(name='Essentials')
 >>> groceries.add_child(essentials)
 >>> qif.add_category(groceries)
 >>> tr = quiffen.Transaction(date=datetime.now(), amount=150.0)
