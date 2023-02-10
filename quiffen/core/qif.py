@@ -356,20 +356,23 @@ class Qif(BaseModel):
         """Convert the Qif object to a QIF file"""
         qif = ''
 
-        qif += '^\n'.join(
-            category.to_qif()
-            for category in self.categories.values()
-        ) + '^\n'
+        if self.categories:
+            qif += '^\n'.join(
+                category.to_qif()
+                for category in self.categories.values()
+            ) + '^\n'
 
-        qif += '^\n'.join(
-            cls.to_qif()
-            for cls in self.classes.values()
-        ) + '^\n'
+        if self.classes:
+            qif += '^\n'.join(
+                cls.to_qif()
+                for cls in self.classes.values()
+            ) + '^\n'
 
-        qif += '^\n'.join(
-            account.to_qif(date_format=date_format, classes=self.classes)
-            for account in self.accounts.values()
-        ) + '^\n'
+        if self.accounts:
+            qif += '^\n'.join(
+                account.to_qif(date_format=date_format, classes=self.classes)
+                for account in self.accounts.values()
+            ) + '^\n'
 
         if path:
             Path(path).write_text(qif, encoding='utf-8')
