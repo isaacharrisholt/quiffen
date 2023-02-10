@@ -48,16 +48,16 @@ class Category(BaseModel):
     Creating a category tree, then rendering it to console.
 
     >>> import quiffen
-    >>> food = quiffen.Category('Food')
+    >>> food = quiffen.Category(name='Food')
     >>> food
     Category(name='Food', expense=True, hierarchy='Food')
-    >>> essentials = quiffen.Category('Essentials')
+    >>> essentials = quiffen.Category(name='Essentials')
     >>> food.add_child(essentials)
-    >>> pastas = quiffen.Category('Pastas')
+    >>> pastas = quiffen.Category(name='Pastas')
     >>> essentials.add_child(pastas)
     >>> pastas.hierarchy
     'Food:Essentials:Pastas'
-    >>> meat = quiffen.Category('Meat')
+    >>> meat = quiffen.Category(name='Meat')
     >>> food.add_child(meat)
     >>> print(food.render_tree())
     Food (root)
