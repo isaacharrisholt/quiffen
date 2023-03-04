@@ -39,7 +39,7 @@ class Account(BaseModel):
     >>> acc
     Account(name='Example name', desc='Some description')
     >>> tr = quiffen.Transaction(date=datetime.now(), amount=150.0)
-    >>> acc.set_last_header = quiffen.AccountType.BANK
+    >>> acc.set_header(quiffen.AccountType.BANK)
     >>> acc.add_transaction(tr)
     >>> acc.transactions
     {'Bank': [Transaction(date=datetime.datetime(2021, 7, 2, 18, 31, 47, 817025), amount=150.0)]}
@@ -58,7 +58,7 @@ class Account(BaseModel):
     credit_limit: Optional[Decimal] = None
     balance: Optional[Decimal] = None
     date_at_balance: Optional[datetime] = None
-    transactions: Dict[str, TransactionList] = {}
+    transactions: Dict[AccountType, TransactionList] = {}
     _last_header: Optional[AccountType] = None
 
     __CUSTOM_FIELDS: List[Field] = []  # type: ignore
@@ -121,7 +121,6 @@ class Account(BaseModel):
         RuntimeError
             If there is no header provided, and no ``last_header`` set.
         """
-
         if not header and not self._last_header:
             raise RuntimeError('No header provided, and no last header set.')
 
@@ -200,7 +199,7 @@ class Account(BaseModel):
         )
 
         for header, header_transactions in self.transactions.items():
-            qif += f'^\n!Type:{header}\n'
+            qif += f'^\n!Type:{header.value}\n'
             qif += '^\n'.join(
                 transaction.to_qif(
                     date_format=date_format,

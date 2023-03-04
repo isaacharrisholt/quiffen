@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from quiffen import Account, Transaction
+from quiffen import Account, AccountType, Transaction
 
 
 def test_create_account():
@@ -83,7 +83,7 @@ def test_str_method():
 
     account.add_transaction(
         Transaction(date=datetime(2022, 2, 1), amount=0),
-        header='Bank',
+        header=AccountType.BANK,
     )
     assert str(account) == (
         'Account:\n\tName: Test Account\n\tDesc: Test Description\n\t'
@@ -92,7 +92,7 @@ def test_str_method():
 
     account.add_transaction(
         Transaction(date=datetime(2022, 2, 1), amount=0),
-        header='CCard',
+        header=AccountType.CREDIT_CARD,
     )
     assert str(account) == (
         'Account:\n\tName: Test Account\n\tDesc: Test Description\n\t'
@@ -105,7 +105,7 @@ def test_set_header():
     """Test setting the header for an account"""
     account = Account(name='Test Account')
     assert account._last_header is None
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     assert account._last_header == 'Bank'
 # pylint: enable=protected-access
 
