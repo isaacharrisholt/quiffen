@@ -17,7 +17,6 @@ class CategoryType(str, Enum):
 
 
 class Category(BaseModel):
-    # pylint: disable=line-too-long
     """
     A node-like class used to represent a category. Can be built into trees to
     represent category families.
@@ -87,7 +86,6 @@ class Category(BaseModel):
     Food (root)
     └─ Chicken
     """
-    # pylint: enable=line-too-long
     name: str
     desc: Optional[str] = None
     tax_related: Optional[bool] = None
@@ -121,7 +119,6 @@ class Category(BaseModel):
     def __lt__(self, other) -> bool:
         return self.name < other.name
 
-    # pylint: disable=no-self-argument
     @validator('hierarchy', pre=True, always=True)
     def _set_hierarchy(cls, v: str, values) -> str:
         if not v:
@@ -134,14 +131,12 @@ class Category(BaseModel):
             raise ValueError('Hierarchy must end with name.', v, values['name'])
 
         return v
-    # pylint: enable=no-self-argument
 
     def _refresh_hierarchy(self) -> None:
         """Refreshes the hierarchy of the current category and all its children
         recursively."""
         for child in self.children:
             child.hierarchy = self.hierarchy + ':' + child.name
-            # pylint: disable-next=protected-access
             child._refresh_hierarchy()
 
     def dict(self, exclude: Optional[Iterable[str]] = None, **_) -> Dict[str, Any]:
@@ -251,7 +246,6 @@ class Category(BaseModel):
 
         if parent:
             parent.children.append(self)
-            # pylint: disable-next=protected-access
             parent._refresh_hierarchy()
         else:
             self.hierarchy = self.name
@@ -405,7 +399,6 @@ class Category(BaseModel):
     def to_qif(self) -> str:
         """Return a QIF representation of all the categories in the tree."""
         return '^\n'.join(
-            # pylint: disable-next=protected-access
             [c._to_qif_string() for c in self.traverse_down()]
         )
 

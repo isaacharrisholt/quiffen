@@ -24,7 +24,6 @@ class Class(BaseModel):
     desc: Optional[str] = None
     categories: List[Category] = []
 
-    # pylint: disable-next=unused-private-member
     __CUSTOM_FIELDS: List[Field] = []
 
     def __eq__(self, other) -> bool:

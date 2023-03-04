@@ -26,7 +26,6 @@ class AccountType(str, Enum):
 
 
 class Account(BaseModel):
-    # pylint: disable=line-too-long
     """
     A class representing a QIF account.
 
@@ -53,7 +52,6 @@ class Account(BaseModel):
     >>> acc
     Account(name='Personal Bank Account', desc='My Personal bank account with Barclays.', ...)
     """
-    # pylint: enable=line-too-long
     name: str
     desc: Optional[str] = None
     account_type: Optional[AccountType] = None

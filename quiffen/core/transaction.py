@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 class Transaction(BaseModel):
-    # pylint: disable=line-too-long
     """
     A class used to represent a transaction.
 
@@ -100,7 +99,6 @@ class Transaction(BaseModel):
     {'amount': 150.6, 'category': {'name': 'Finances', 'expense': True, 'income': False, 'hierarchy': 'Finances',
     'children': []}}
     """
-    # pylint: enable=line-too-long
     date: datetime
     amount: Decimal
     memo: Optional[str] = None
@@ -148,7 +146,6 @@ class Transaction(BaseModel):
 
         return 'Transaction:' + properties
 
-    # pylint: disable=no-self-argument
     @root_validator(pre=True)
     def create_split_categories(cls, values: Dict[str, Any]) -> Dict:
         if splits := values.get('splits'):
@@ -180,7 +177,6 @@ class Transaction(BaseModel):
                 'Split amounts cannot exceed the amount of the transaction'
             )
         return splits
-    # pylint: enable=no-self-argument
 
     @property
     def split_categories(self) -> Dict[str, Category]:

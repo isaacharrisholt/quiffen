@@ -11,7 +11,6 @@ from quiffen.core.class_type import Class
 
 
 class Split(BaseModel):
-    # pylint: disable=line-too-long
     """
     A class used to represent a split in a transaction.
 
@@ -41,7 +40,6 @@ class Split(BaseModel):
     >>> print(tr.splits)
     [Split(amount=100.6, category=Category(name='Electrical', expense=True, hierarchy='Electrical'))]
     """
-    # pylint: enable=line-too-long
     date: Optional[datetime] = None
     amount: Optional[Decimal] = None
     memo: Optional[str] = None

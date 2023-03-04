@@ -37,7 +37,6 @@ class Field(PydanticBaseModel):
         )
 
 
-# pylint: disable=too-few-public-methods
 class BaseModel(PydanticBaseModel, Generic[T]):
     class Config:
         extra = 'allow'

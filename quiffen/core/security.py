@@ -28,7 +28,6 @@ class Security(BaseModel):
     goal: Optional[str] = None
     line_number: Optional[int] = None
 
-    # pylint: disable-next=unused-private-member
     __CUSTOM_FIELDS: List[Field] = []
 
     def __str__(self) -> str:
