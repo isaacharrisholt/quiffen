@@ -4,3 +4,7 @@
 .venv
 .idea
 **/__pycache__
+.tox/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
