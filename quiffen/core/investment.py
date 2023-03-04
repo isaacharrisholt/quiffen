@@ -45,6 +45,7 @@ class Investment(BaseModel):
     line_number : int, default=None
         The line number of the investment in the QIF file.
     """
+
     date: datetime
     action: Optional[str] = None
     security: Optional[str] = None
@@ -62,47 +63,47 @@ class Investment(BaseModel):
     __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
-        properties = ''
-        for (object_property, value) in self.__dict__.items():
+        properties = ""
+        for object_property, value in self.__dict__.items():
             if value:
                 properties += (
-                    f'\n\t'
+                    f"\n\t"
                     f'{object_property.replace("_", " ").strip().title()}: '
-                    f'{value}'
+                    f"{value}"
                 )
 
-        return 'Investment:' + properties
+        return "Investment:" + properties
 
     def to_qif(
         self,
-        date_format: str = '%Y-%m-%d',
+        date_format: str = "%Y-%m-%d",
         **_,  # To keep the same signature as Transaction.to_qif
     ) -> str:
         """Converts an Investment to a QIF string"""
-        qif = f'D{self.date.strftime(date_format)}\n'
+        qif = f"D{self.date.strftime(date_format)}\n"
 
         if self.action:
-            qif += f'N{self.action}\n'
+            qif += f"N{self.action}\n"
         if self.security:
-            qif += f'Y{self.security}\n'
+            qif += f"Y{self.security}\n"
         if self.price:
-            qif += f'I{self.price}\n'
+            qif += f"I{self.price}\n"
         if self.quantity:
-            qif += f'Q{self.quantity}\n'
+            qif += f"Q{self.quantity}\n"
         if self.cleared:
-            qif += f'C{self.cleared}\n'
+            qif += f"C{self.cleared}\n"
         if self.amount:
-            qif += f'T{self.amount}\n'
+            qif += f"T{self.amount}\n"
         if self.memo:
-            qif += f'M{self.memo}\n'
+            qif += f"M{self.memo}\n"
         if self.first_line:
-            qif += f'P{self.first_line}\n'
+            qif += f"P{self.first_line}\n"
         if self.to_account:
-            qif += f'L{self.to_account}\n'
+            qif += f"L{self.to_account}\n"
         if self.transfer_amount:
-            qif += f'${self.transfer_amount}\n'
+            qif += f"${self.transfer_amount}\n"
         if self.commission:
-            qif += f'O{self.commission}\n'
+            qif += f"O{self.commission}\n"
 
         qif += utils.convert_custom_fields_to_qif_string(
             self._get_custom_fields(),
@@ -152,36 +153,36 @@ class Investment(BaseModel):
 
             # Check the QIF line code for banking-related operations, then
             # append to kwargs.
-            if line_code == 'D':
+            if line_code == "D":
                 transaction_date = utils.parse_date(field_info, day_first)
-                kwargs['date'] = transaction_date
-            elif line_code == 'N':
-                kwargs['action'] = field_info
-            elif line_code == 'Y':
-                kwargs['security'] = field_info
-            elif line_code == 'I':
-                kwargs['price'] = field_info.replace(',', '')
-            elif line_code == 'Q':
-                kwargs['quantity'] = field_info.replace(',', '')
-            elif line_code == 'C':
-                kwargs['cleared'] = field_info
-            elif line_code in {'T', 'U'}:
-                kwargs['amount'] = field_info.replace(',', '')
-            elif line_code == 'M':
-                kwargs['memo'] = field_info
-            elif line_code == 'P':
-                kwargs['first_line'] = field_info
-            elif line_code == 'L':
-                kwargs['to_account'] = field_info
-            elif line_code == '$':
-                kwargs['transfer_amount'] = field_info.replace(',', '')
-            elif line_code == 'O':
-                kwargs['commission'] = field_info.replace(',', '')
+                kwargs["date"] = transaction_date
+            elif line_code == "N":
+                kwargs["action"] = field_info
+            elif line_code == "Y":
+                kwargs["security"] = field_info
+            elif line_code == "I":
+                kwargs["price"] = field_info.replace(",", "")
+            elif line_code == "Q":
+                kwargs["quantity"] = field_info.replace(",", "")
+            elif line_code == "C":
+                kwargs["cleared"] = field_info
+            elif line_code in {"T", "U"}:
+                kwargs["amount"] = field_info.replace(",", "")
+            elif line_code == "M":
+                kwargs["memo"] = field_info
+            elif line_code == "P":
+                kwargs["first_line"] = field_info
+            elif line_code == "L":
+                kwargs["to_account"] = field_info
+            elif line_code == "$":
+                kwargs["transfer_amount"] = field_info.replace(",", "")
+            elif line_code == "O":
+                kwargs["commission"] = field_info.replace(",", "")
             else:
-                raise ValueError(f'Unknown line code: {line_code}')
+                raise ValueError(f"Unknown line code: {line_code}")
 
         if line_number is not None:
-            kwargs['line_number'] = line_number
+            kwargs["line_number"] = line_number
 
         return cls(**kwargs)
 
@@ -189,7 +190,7 @@ class Investment(BaseModel):
     def from_string(
         cls,
         string: str,
-        separator: str = '\n',
+        separator: str = "\n",
         day_first: bool = False,
         line_number: Optional[int] = None,
     ) -> Investment:

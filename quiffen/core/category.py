@@ -12,8 +12,9 @@ from quiffen.core.base import BaseModel, Field
 
 class CategoryType(str, Enum):
     """Enum representing the different types of categories in a QIF file."""
-    EXPENSE = 'expense'
-    INCOME = 'income'
+
+    EXPENSE = "expense"
+    INCOME = "income"
 
 
 class Category(BaseModel):
@@ -74,7 +75,12 @@ class Category(BaseModel):
     └─ Meat
        └─ Chicken
     >>> meat
-    Category(name='Meat', expense=True, parent=Category(name='Food', expense=True, hierarchy='Food'), hierarchy='Food:Meat')
+    Category(
+        name='Meat',
+        expense=True,
+        parent=Category(name='Food', expense=True, hierarchy='Food'),
+        hierarchy='Food:Meat',
+    )
     >>> food.remove_child(meat, keep_children=True)
     >>> print(food.render_tree())
     Food (root)
@@ -86,6 +92,7 @@ class Category(BaseModel):
     Food (root)
     └─ Chicken
     """
+
     name: str
     desc: Optional[str] = None
     tax_related: Optional[bool] = None
@@ -99,38 +106,38 @@ class Category(BaseModel):
     __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
-        properties = ''
-        for (object_property, value) in self.__dict__.items():
+        properties = ""
+        for object_property, value in self.__dict__.items():
             if value:
-                if object_property == 'parent':
+                if object_property == "parent":
                     properties += (
                         f'\n\tParent: {self.parent.name if self.parent else "None"}'
                     )
-                elif object_property == 'children':
-                    properties += f'\n\tChildren: {len(self.children)}'
-                elif object_property == 'category_type':
-                    properties += f'\n\tCategory Type: {value.value}'
+                elif object_property == "children":
+                    properties += f"\n\tChildren: {len(self.children)}"
+                elif object_property == "category_type":
+                    properties += f"\n\tCategory Type: {value.value}"
                 else:
                     properties += (
-                        f'\n\t'
+                        f"\n\t"
                         f'{object_property.replace("_", " ").strip().title()}: '
-                        f'{value}'
+                        f"{value}"
                     )
-        return 'Category:' + properties
+        return "Category:" + properties
 
     def __lt__(self, other) -> bool:
         return self.name < other.name
 
-    @validator('hierarchy', pre=True, always=True)
+    @validator("hierarchy", pre=True, always=True)
     def _set_hierarchy(cls, v: str, values) -> str:
         if not v:
-            return values['name']
+            return values["name"]
 
-        if values.get('parent', None) and v != values['name']:
-            raise ValueError('Hierarchy must match name if no parent is set.')
+        if values.get("parent", None) and v != values["name"]:
+            raise ValueError("Hierarchy must match name if no parent is set.")
 
-        if not v.endswith(values['name']):
-            raise ValueError('Hierarchy must end with name.', v, values['name'])
+        if not v.endswith(values["name"]):
+            raise ValueError("Hierarchy must end with name.", v, values["name"])
 
         return v
 
@@ -138,7 +145,9 @@ class Category(BaseModel):
         """Refreshes the hierarchy of the current category and all its children
         recursively."""
         for child in self.children:
-            child.hierarchy = self.hierarchy + ':' + child.name if self.hierarchy else child.name
+            child.hierarchy = (
+                self.hierarchy + ":" + child.name if self.hierarchy else child.name
+            )
             child._refresh_hierarchy()
 
     def dict(self, exclude: Optional[Iterable[str]] = None, **_) -> Dict[str, Any]:
@@ -157,21 +166,23 @@ class Category(BaseModel):
             exclude = []
 
         res = {
-            key.strip('_'): value
+            key.strip("_"): value
             for (key, value) in self.__dict__.items()
-            if key.strip('_') not in exclude
+            if key.strip("_") not in exclude
         }
 
-        if self.children and 'children' not in exclude:
-            res['children'] = [category.name for category in self.children]
+        if self.children and "children" not in exclude:
+            res["children"] = [category.name for category in self.children]
 
-        if self.parent and 'parent' not in exclude:
-            res['parent'] = self.parent.name
+        if self.parent and "parent" not in exclude:
+            res["parent"] = self.parent.name
 
         return res
 
     # This is kept for backwards compatibility
-    def to_dict(self, ignore: Optional[Iterable[str]] = None, **kwargs) -> Dict[str, Any]:
+    def to_dict(
+        self, ignore: Optional[Iterable[str]] = None, **kwargs
+    ) -> Dict[str, Any]:
         """Return a representation of the Category object as a dict.
 
         Parameters
@@ -362,16 +373,16 @@ class Category(BaseModel):
             return self.name
 
         if self.parent is None:
-            is_root_str = ' (root)'
+            is_root_str = " (root)"
         else:
-            is_root_str = ''
+            is_root_str = ""
 
         return (
             self.name
-            + f'{is_root_str}\n'
-            + '\n'.join(
+            + f"{is_root_str}\n"
+            + "\n".join(
                 [
-                    '   ' * _level + '└─ ' + child.render_tree(_level + 1)
+                    "   " * _level + "└─ " + child.render_tree(_level + 1)
                     for child in self.children
                 ]
             )
@@ -379,22 +390,22 @@ class Category(BaseModel):
 
     def _to_qif_string(self) -> str:
         """Return a QIF representation of the individual Category object."""
-        qif = f'!Type:Cat\nN{self.hierarchy}\n'
+        qif = f"!Type:Cat\nN{self.hierarchy}\n"
 
         if self.desc:
-            qif += f'D{self.desc}\n'
+            qif += f"D{self.desc}\n"
         if self.tax_related is not None:
-            qif += f'T{self.tax_related}\n'
+            qif += f"T{self.tax_related}\n"
 
         if self.category_type == CategoryType.INCOME:
-            qif += 'I\n'
+            qif += "I\n"
         elif self.category_type == CategoryType.EXPENSE:
-            qif += 'E\n'
+            qif += "E\n"
 
         if self.budget_amount:
-            qif += f'B{self.budget_amount}\n'
+            qif += f"B{self.budget_amount}\n"
         if self.tax_schedule_info:
-            qif += f'R{self.tax_schedule_info}\n'
+            qif += f"R{self.tax_schedule_info}\n"
 
         qif += utils.convert_custom_fields_to_qif_string(
             self._get_custom_fields(),
@@ -405,9 +416,7 @@ class Category(BaseModel):
 
     def to_qif(self) -> str:
         """Return a QIF representation of all the categories in the tree."""
-        return '^\n'.join(
-            [c._to_qif_string() for c in self.traverse_down()]
-        )
+        return "^\n".join([c._to_qif_string() for c in self.traverse_down()])
 
     @classmethod
     def from_list(cls, lst: List[str]) -> Category:
@@ -434,27 +443,27 @@ class Category(BaseModel):
             if found:
                 continue
 
-            if line_code == 'N':
+            if line_code == "N":
                 temp_cat = create_categories_from_hierarchy(field_info)
-                kwargs['name'] = temp_cat.name
-                kwargs['hierarchy'] = temp_cat.hierarchy
+                kwargs["name"] = temp_cat.name
+                kwargs["hierarchy"] = temp_cat.hierarchy
                 new_parent = temp_cat.parent
                 if new_parent:
                     new_parent.remove_child(temp_cat)
-            elif line_code == 'D':
-                kwargs['desc'] = field_info
-            elif line_code == 'T':
-                kwargs['tax_related'] = field_info or True
-            elif line_code == 'E':
-                kwargs['category_type'] = CategoryType.EXPENSE
-            elif line_code == 'I':
-                kwargs['category_type'] = CategoryType.INCOME
-            elif line_code == 'B':
-                kwargs['budget_amount'] = field_info.replace(',', '')
-            elif line_code == 'R':
-                kwargs['tax_schedule_info'] = field_info
+            elif line_code == "D":
+                kwargs["desc"] = field_info
+            elif line_code == "T":
+                kwargs["tax_related"] = field_info or True
+            elif line_code == "E":
+                kwargs["category_type"] = CategoryType.EXPENSE
+            elif line_code == "I":
+                kwargs["category_type"] = CategoryType.INCOME
+            elif line_code == "B":
+                kwargs["budget_amount"] = field_info.replace(",", "")
+            elif line_code == "R":
+                kwargs["tax_schedule_info"] = field_info
             else:
-                raise ValueError(f'Unknown line code: {line_code}')
+                raise ValueError(f"Unknown line code: {line_code}")
 
         new_cat = cls(**kwargs)
         new_cat.set_parent(new_parent)
@@ -468,7 +477,7 @@ def create_categories_from_hierarchy(hierarchy: str) -> Category:
     """Create a Category instance from a QIF hierarchy string. Returns the
     lowest category of the hierarchy.
     """
-    categories = hierarchy.split(':')
+    categories = hierarchy.split(":")
     root_category = Category(name=categories[0])
     current_category = root_category
 

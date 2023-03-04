@@ -17,7 +17,8 @@ class Split(BaseModel):
 
     Examples
     --------
-    Adding Splits to a transaction to show that there were two categories that represent the transaction.
+    Adding Splits to a transaction to show that there were two categories that represent
+    the transaction.
 
     >>> import quiffen
     >>> from datetime import datetime
@@ -34,12 +35,27 @@ class Split(BaseModel):
         Amount: 150.6
         Splits: 2 total split(s)
     >>> print(tr.splits)
-    [Split(amount=50, category=Category(name='Beauty', expense=True, hierarchy='Beauty')), Split(amount=100.6,
-    category=Category(name='Electrical', expense=True, hierarchy='Electrical'))]
-    >>> tr.remove_split(amount=50)
+    [
+        Split(
+            amount=50,
+            category=Category(name='Beauty', expense=True, hierarchy='Beauty'),
+        ),
+        Split(
+            amount=100.6,
+            category=Category(name='Electrical', expense=True, hierarchy='Electrical'),
+        ),
+    ]
+    >>> tr.remove_splits(amount=50)
+    [...]
     >>> print(tr.splits)
-    [Split(amount=100.6, category=Category(name='Electrical', expense=True, hierarchy='Electrical'))]
+    [
+        Split(
+            amount=100.6,
+            category=Category(name='Electrical', expense=True, hierarchy='Electrical'),
+        ),
+    ]
     """
+
     date: Optional[datetime] = None
     amount: Optional[Decimal] = None
     memo: Optional[str] = None
@@ -53,30 +69,30 @@ class Split(BaseModel):
     __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
-        properties = ''
-        for (object_property, value) in self.dict().items():
+        properties = ""
+        for object_property, value in self.dict().items():
             if value:
-                if object_property == 'category':
+                if object_property == "category":
                     properties += f'\n\t\tCategory: {value["name"]}'
                 else:
                     properties += (
-                        f'\n\t\t'
+                        f"\n\t\t"
                         f'{object_property.replace("_", " ").strip().title()}'
-                        f': {value}'
+                        f": {value}"
                     )
 
-        return '\n\tSplit:' + properties
+        return "\n\tSplit:" + properties
 
     def to_qif(
         self,
-        date_format: str = '%Y-%m-%d',
+        date_format: str = "%Y-%m-%d",
         classes: Optional[Dict[str, Class]] = None,
     ) -> str:
         """Returns a QIF string representation of the split."""
         if classes is None:
             classes = {}
 
-        qif = 'S'
+        qif = "S"
 
         if self.category:
             parent_class = None
@@ -90,26 +106,26 @@ class Split(BaseModel):
                 qif += self.category.hierarchy
 
             if parent_class:
-                qif += f'/{parent_class.name}'
+                qif += f"/{parent_class.name}"
 
-        qif += '\n'
+        qif += "\n"
 
         if self.date:
-            qif += f'D{self.date.strftime(date_format)}\n'
+            qif += f"D{self.date.strftime(date_format)}\n"
         if self.amount:
-            qif += f'${self.amount}\n'
+            qif += f"${self.amount}\n"
         if self.memo:
-            qif += f'E{self.memo}\n'
+            qif += f"E{self.memo}\n"
         if self.cleared:
-            qif += f'C{self.cleared}\n'
+            qif += f"C{self.cleared}\n"
         if self.to_account:
-            qif += f'L[{self.to_account}]\n'
+            qif += f"L[{self.to_account}]\n"
         if self.check_number:
-            qif += f'N{self.check_number}\n'
+            qif += f"N{self.check_number}\n"
         if self.percent:
-            qif += f'%{self.percent}%\n'
+            qif += f"%{self.percent}%\n"
         if self.payee_address:
-            qif += f'A{self.payee_address}\n'
+            qif += f"A{self.payee_address}\n"
 
         qif += utils.convert_custom_fields_to_qif_string(
             self._get_custom_fields(),
@@ -120,6 +136,4 @@ class Split(BaseModel):
 
     @classmethod
     def from_list(cls, lst: List[str]) -> Split:
-        raise RuntimeError(
-            'Splits can only be created in the context of a transaction'
-        )
+        raise RuntimeError("Splits can only be created in the context of a transaction")

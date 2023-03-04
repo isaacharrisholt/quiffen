@@ -10,7 +10,7 @@ from pydantic import ValidationError, parse_obj_as
 from quiffen.core.base import Field
 
 ZERO_SEPARATED_DATE = re.compile(
-    r'^(\d{2}|\d{4}|[a-zA-Z]+)0(\d{2}|[a-zA-Z]+)0(\d{2}|\d{4})$',
+    r"^(\d{2}|\d{4}|[a-zA-Z]+)0(\d{2}|[a-zA-Z]+)0(\d{2}|\d{4})$",
 )
 
 
@@ -37,8 +37,8 @@ def parse_date(date_string: str, day_first: bool = False) -> datetime:
     """
 
     # QIF files sometimes use ' ' instead of a 0 or a ' instead of a /
-    date_string = date_string.replace(' ', '0')
-    date_string = date_string.replace('\'', '/')
+    date_string = date_string.replace(" ", "0")
+    date_string = date_string.replace("'", "/")
 
     # QIF files allow some really strange date formats, such as
     # %d0%B0%Y (e.g. 0100202022 for 2022-02-01)
@@ -49,23 +49,23 @@ def parse_date(date_string: str, day_first: bool = False) -> datetime:
 
     if date_search:
         date_parts = date_search.groups()
-        date_string = ' '.join(date_parts)
+        date_string = " ".join(date_parts)
 
     return parser.parse(date_string, dayfirst=day_first)
 
 
 def parse_line_code_and_field_info(field: str) -> Tuple[str, str]:
     """Parse a QIF field into a line code and field info."""
-    field = field.replace('\n', '')
+    field = field.replace("\n", "")
 
     if not field:
-        return '', ''
+        return "", ""
     line_code = field[0]
 
     if len(field) > 1:
         field_info = field[1:]
     else:
-        field_info = ''
+        field_info = ""
 
     return line_code, field_info
 
@@ -90,7 +90,7 @@ def add_custom_field_to_object_dict(
             try:
                 object_dict[custom_field.attr] = parse_obj_as(
                     custom_field.type,
-                    field[len(custom_field.line_code):],
+                    field[len(custom_field.line_code) :],
                 )
                 return object_dict, True
             except ValidationError:
@@ -104,17 +104,17 @@ def convert_custom_fields_to_qif_string(
     obj: Any,
 ) -> str:
     """Convert custom fields to a QIF string."""
-    qif = ''
+    qif = ""
     for custom_field in custom_fields:
         if (attr := getattr(obj, custom_field.attr)) is not None:
-            qif += f'{custom_field.line_code}{attr}\n'
+            qif += f"{custom_field.line_code}{attr}\n"
 
     return qif
 
 
 def apply_csv_formatting_to_scalar(
     obj: Any,
-    date_format: Optional[str] = '%Y-%m-%d',
+    date_format: Optional[str] = "%Y-%m-%d",
 ) -> Union[str, int, float]:
     """Apply CSV-friendly formatting to a scalar value"""
     if isinstance(obj, (datetime, date)) and date_format:
@@ -132,18 +132,16 @@ def apply_csv_formatting_to_scalar(
 
 def apply_csv_formatting_to_container(
     obj: Union[List[Any], Dict[Any, Any]],
-    date_format: Optional[str] = '%Y-%m-%d',
+    date_format: Optional[str] = "%Y-%m-%d",
 ) -> Union[List[Any], Dict[Any, Any], str, int, float]:
     """Recursively apply CSV-friendly formatting to a container"""
     if isinstance(obj, list):
-        return [
-            apply_csv_formatting_to_container(item, date_format)
-            for item in obj
-        ]
+        return [apply_csv_formatting_to_container(item, date_format) for item in obj]
     elif isinstance(obj, dict):
         return {
-            apply_csv_formatting_to_scalar(key, date_format):
-                apply_csv_formatting_to_container(value, date_format)
+            apply_csv_formatting_to_scalar(
+                key, date_format
+            ): apply_csv_formatting_to_container(value, date_format)
             for key, value in obj.items()
         }
     else:

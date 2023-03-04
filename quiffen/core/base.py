@@ -3,7 +3,7 @@ from typing import Any, Dict, Generic, Iterable, List, Optional, Type, TypeVar
 
 from pydantic import BaseModel as PydanticBaseModel
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class Field(PydanticBaseModel):
@@ -22,6 +22,7 @@ class Field(PydanticBaseModel):
         The type of the custom field. This is the type that the value of the
         custom field will be converted to.
     """
+
     line_code: str
     attr: str
     type: Type
@@ -39,7 +40,7 @@ class Field(PydanticBaseModel):
 
 class BaseModel(PydanticBaseModel, Generic[T]):
     class Config:
-        extra = 'allow'
+        extra = "allow"
 
     __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
@@ -65,7 +66,7 @@ class BaseModel(PydanticBaseModel, Generic[T]):
             The type of the extra field. This is the type that the value of the
             extra field will be converted to.
         """
-        lst = getattr(cls, '__CUSTOM_FIELDS', []).copy()
+        lst = getattr(cls, "__CUSTOM_FIELDS", []).copy()
 
         new_field = Field(line_code=line_code, attr=attr, type=field_type)
         if new_field in lst:
@@ -74,13 +75,13 @@ class BaseModel(PydanticBaseModel, Generic[T]):
         else:
             lst.append(new_field)
 
-        setattr(cls, '__CUSTOM_FIELDS', lst)
+        setattr(cls, "__CUSTOM_FIELDS", lst)
 
     @classmethod
     def _get_custom_fields(cls) -> List[Field]:
         """Return a list of the custom fields for the class, reverse ordered by
         line code length."""
-        return sorted(getattr(cls, '__CUSTOM_FIELDS', []), reverse=True)
+        return sorted(getattr(cls, "__CUSTOM_FIELDS", []), reverse=True)
 
     @classmethod
     @abstractmethod
@@ -88,7 +89,7 @@ class BaseModel(PydanticBaseModel, Generic[T]):
         pass
 
     @classmethod
-    def from_string(cls, string: str, separator: str = '\n') -> T:
+    def from_string(cls, string: str, separator: str = "\n") -> T:
         """Create a class instance from a string."""
         return cls.from_list(string.split(separator))
 

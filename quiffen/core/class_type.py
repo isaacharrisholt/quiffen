@@ -20,6 +20,7 @@ class Class(BaseModel):
     desc : str, default=None
         The description of the class.
     """
+
     name: str
     desc: Optional[str] = None
     categories: List[Category] = []
@@ -32,10 +33,10 @@ class Class(BaseModel):
         return self.name == other.name
 
     def __str__(self) -> str:
-        res = f'Class:\n\tName: {self.name}'
+        res = f"Class:\n\tName: {self.name}"
         if self.desc:
-            res += f'\n\tDescription: {self.desc}'
-        res += f'\n\tCategories: {len(self.categories)}'
+            res += f"\n\tDescription: {self.desc}"
+        res += f"\n\tCategories: {len(self.categories)}"
         return res
 
     def add_category(self, new_category: Category) -> None:
@@ -56,10 +57,10 @@ class Class(BaseModel):
 
     def to_qif(self) -> str:
         """Return a QIF-formatted string of this class."""
-        qif = '!Type:Class\n'
-        qif += f'N{self.name}\n'
+        qif = "!Type:Class\n"
+        qif += f"N{self.name}\n"
         if self.desc:
-            qif += f'D{self.desc}\n'
+            qif += f"D{self.desc}\n"
 
         qif += utils.convert_custom_fields_to_qif_string(
             self._get_custom_fields(),
@@ -92,11 +93,11 @@ class Class(BaseModel):
             if found:
                 continue
 
-            if line_code == 'N':
-                kwargs['name'] = field_info
-            elif line_code == 'D':
-                kwargs['desc'] = field_info
+            if line_code == "N":
+                kwargs["name"] = field_info
+            elif line_code == "D":
+                kwargs["desc"] = field_info
             else:
-                raise ValueError(f'Unknown line code: {line_code}')
+                raise ValueError(f"Unknown line code: {line_code}")
 
         return cls(**kwargs)

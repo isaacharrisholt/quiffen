@@ -86,19 +86,35 @@ class Transaction(BaseModel):
     >>> import decimal
     >>> from datetime import datetime
     >>> cat = quiffen.Category('Finances')
-    >>> tr = quiffen.Transaction(date=datetime.now(), amount=decimal.Decimal(150.60), category=cat)
+    >>> tr = quiffen.Transaction(
+    ...     date=datetime.now(),
+    ...     amount=decimal.Decimal(150.60),
+    ...     category=cat,
+    ... )
     >>> tr
-    Transaction(date=datetime.datetime(2021, 7, 5, 10, 45, 40, 48195), amount=150.6, category=Category(name='Finances',
-    expense=True, hierarchy='Finances'))
+    Transaction(
+        date=datetime.datetime(2021, 7, 5, 10, 45, 40, 48195),
+        amount=150.6,
+        category=Category(name='Finances',expense=True, hierarchy='Finances'),
+    )
     >>> print(tr)
     Transaction:
         Date: 2021-07-05 10:45:40.048195
         Amount: 150.6
         Category: Finances
     >>> tr.to_dict(ignore=['date'], dictify_category=True)
-    {'amount': 150.6, 'category': {'name': 'Finances', 'expense': True, 'income': False, 'hierarchy': 'Finances',
-    'children': []}}
+    {
+        'amount': 150.6,
+        'category': {
+            'name': 'Finances',
+            'expense': True,
+            'income': False,
+            'hierarchy': 'Finances',
+            'children': [],
+        },
+    }
     """
+
     date: datetime
     amount: Decimal
     memo: Optional[str] = None
@@ -125,56 +141,50 @@ class Transaction(BaseModel):
     __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
-        properties = ''
-        ignore = ['_last_split', '_is_split']
-        for (object_property, value) in self.__dict__.items():
+        properties = ""
+        ignore = ["_last_split", "_is_split"]
+        for object_property, value in self.__dict__.items():
             if value and object_property not in ignore:
-                if object_property == 'category':
-                    properties += f'\n\tCategory: {value.name}'
-                elif object_property == '_split_categories':
-                    properties += (
-                        f'\n\tSplit Categories: {list(value.keys())}'
-                    )
-                elif object_property == 'splits':
-                    properties += f'\n\tSplits: {len(value)}'
+                if object_property == "category":
+                    properties += f"\n\tCategory: {value.name}"
+                elif object_property == "_split_categories":
+                    properties += f"\n\tSplit Categories: {list(value.keys())}"
+                elif object_property == "splits":
+                    properties += f"\n\tSplits: {len(value)}"
                 else:
                     properties += (
-                        f'\n\t'
+                        f"\n\t"
                         f'{object_property.replace("_", " ").strip().title()}: '
-                        f'{value}'
+                        f"{value}"
                     )
 
-        return 'Transaction:' + properties
+        return "Transaction:" + properties
 
     @root_validator(pre=True)
     def create_split_categories(cls, values: Dict[str, Any]) -> Dict:
-        if splits := values.get('splits'):
+        if splits := values.get("splits"):
             for split in splits:
                 if split.category:
-                    values['_split_categories'] = add_categories_to_container(
+                    values["_split_categories"] = add_categories_to_container(
                         split.category,
-                        values.get('_split_categories', {}),
+                        values.get("_split_categories", {}),
                     )
-            values['_last_split'] = splits[-1]
+            values["_last_split"] = splits[-1]
         return values
 
-    @validator('splits')
+    @validator("splits")
     def check_split_percentages_and_amounts(
         cls,
         splits: List[Split],
         values: Dict[str, Any],
     ) -> List[Split]:
-        total_percent = sum(
-            split.percent for split in splits if split.percent
-        )
+        total_percent = sum(split.percent for split in splits if split.percent)
         total_amount = sum(split.amount for split in splits if split.amount is not None)
         if total_percent - 100 > 0.01:
+            raise ValueError("Split percentages cannot exceed 100% of the transaction")
+        if abs(total_amount) - abs(values.get("amount", 0)) > 0.01:
             raise ValueError(
-                'Split percentages cannot exceed 100% of the transaction'
-            )
-        if abs(total_amount) - abs(values.get('amount', 0)) > 0.01:
-            raise ValueError(
-                'Split amounts cannot exceed the amount of the transaction'
+                "Split amounts cannot exceed the amount of the transaction"
             )
         return splits
 
@@ -192,22 +202,24 @@ class Transaction(BaseModel):
         """Add a Split to Transaction."""
         if (
             split.percent
-            and sum(s.percent for s in self.splits if s.percent is not None) + split.percent - 100 > 0.01
+            and sum(s.percent for s in self.splits if s.percent is not None)
+            + split.percent
+            - 100
+            > 0.01
         ):
             raise ValueError(
-                'The sum of the split percentages cannot be greater than 100.'
+                "The sum of the split percentages cannot be greater than 100."
             )
 
         if split.amount:
             abs_sum_of_splits = abs(
-                sum(
-                    s.amount for s in self.splits if s.amount is not None
-                ) + split.amount
+                sum(s.amount for s in self.splits if s.amount is not None)
+                + split.amount
             )
             if abs_sum_of_splits - abs(self.amount) > 0.01:
                 raise ValueError(
-                    'The sum of the split amounts cannot be greater than the '
-                    'transaction amount.'
+                    "The sum of the split amounts cannot be greater than the "
+                    "transaction amount."
                 )
 
         self.splits.append(split)
@@ -225,15 +237,10 @@ class Transaction(BaseModel):
 
         to_remove = []
         for split in self.splits:
-            if all(
-                getattr(split, attr) == value
-                for attr, value in filters.items()
-            ):
+            if all(getattr(split, attr) == value for attr, value in filters.items()):
                 to_remove.append(split)
 
-        self.splits = [
-            split for split in self.splits if split not in to_remove
-        ]
+        self.splits = [split for split in self.splits if split not in to_remove]
 
         return to_remove
 
@@ -242,8 +249,8 @@ class Transaction(BaseModel):
         category_string: str,
         classes: Dict[str, Class],
     ) -> Tuple[Optional[str], str, Dict[str, Class]]:
-        if '/' in category_string:
-            field_info, class_name = category_string.split('/')
+        if "/" in category_string:
+            field_info, class_name = category_string.split("/")
             if class_name not in classes:
                 classes[class_name] = Class(name=class_name)
             return class_name, field_info, classes
@@ -251,23 +258,23 @@ class Transaction(BaseModel):
 
     def to_qif(
         self,
-        date_format: str = '%Y-%m-%d',
+        date_format: str = "%Y-%m-%d",
         classes: Optional[Dict[str, Class]] = None,
     ) -> str:
         """Converts a Transaction to a QIF string"""
         if classes is None:
             classes = {}
 
-        qif = f'D{self.date.strftime(date_format)}\n'
-        qif += f'T{self.amount}\n'
+        qif = f"D{self.date.strftime(date_format)}\n"
+        qif += f"T{self.amount}\n"
         if self.memo:
-            qif += f'M{self.memo}\n'
+            qif += f"M{self.memo}\n"
         if self.cleared:
-            qif += f'C{self.cleared}\n'
+            qif += f"C{self.cleared}\n"
         if self.payee:
-            qif += f'P{self.payee}\n'
+            qif += f"P{self.payee}\n"
         if self.payee_address:
-            qif += f'A{self.payee_address}\n'
+            qif += f"A{self.payee_address}\n"
         if self.category:
             parent_class = None
             for cls in classes.values():
@@ -276,30 +283,30 @@ class Transaction(BaseModel):
                         parent_class = cls
                         break
 
-            qif += f'L{self.category.hierarchy}'
+            qif += f"L{self.category.hierarchy}"
             if parent_class:
-                qif += f'/{parent_class.name}'
-            qif += '\n'
+                qif += f"/{parent_class.name}"
+            qif += "\n"
         if self.check_number:
-            qif += f'N{self.check_number}\n'
+            qif += f"N{self.check_number}\n"
         if self.reimbursable_expense:
-            qif += f'F{self.reimbursable_expense}\n'
+            qif += f"F{self.reimbursable_expense}\n"
         if self.to_account:
-            qif += f'L[{self.to_account}]\n'
+            qif += f"L[{self.to_account}]\n"
         if self.first_payment_date:
-            qif += f'1{self.first_payment_date.strftime(date_format)}\n'
+            qif += f"1{self.first_payment_date.strftime(date_format)}\n"
         if self.loan_length:
-            qif += f'2{self.loan_length}\n'
+            qif += f"2{self.loan_length}\n"
         if self.num_payments:
-            qif += f'3{self.num_payments}\n'
+            qif += f"3{self.num_payments}\n"
         if self.periods_per_annum:
-            qif += f'4{self.periods_per_annum}\n'
+            qif += f"4{self.periods_per_annum}\n"
         if self.interest_rate:
-            qif += f'5{self.interest_rate}\n'
+            qif += f"5{self.interest_rate}\n"
         if self.current_loan_balance:
-            qif += f'6{self.current_loan_balance}\n'
+            qif += f"6{self.current_loan_balance}\n"
         if self.original_loan_amount:
-            qif += f'7{self.original_loan_amount}\n'
+            qif += f"7{self.original_loan_amount}\n"
         if self.splits:
             for split in self.splits:
                 qif += split.to_qif(date_format=date_format, classes=classes)
@@ -356,7 +363,7 @@ class Transaction(BaseModel):
             if found:
                 continue
 
-            if line_code == 'S':
+            if line_code == "S":
                 _, field_info, classes = cls._create_class_from_category_string(
                     field_info,
                     classes,
@@ -366,63 +373,65 @@ class Transaction(BaseModel):
                 new_split = Split(category=split_category)
                 splits.append(new_split)
                 current_split = new_split
-            elif line_code == 'D':
+            elif line_code == "D":
                 transaction_date = utils.parse_date(field_info, day_first)
                 if not splits:
-                    kwargs['date'] = transaction_date
+                    kwargs["date"] = transaction_date
                 elif current_split:
                     current_split.date = transaction_date
-            elif line_code == 'E':
+            elif line_code == "E":
                 if current_split is None:
                     logger.warning(
                         f"No split yet given for memo '{field_info}', skipping"
                     )
                 else:
                     current_split.memo = field_info
-            elif line_code in {'$', '£'}:
+            elif line_code in {"$", "£"}:
                 if current_split:
-                    current_split.amount = Decimal(field_info.replace(',', ''))
-            elif line_code == '%':
+                    current_split.amount = Decimal(field_info.replace(",", ""))
+            elif line_code == "%":
                 if current_split:
                     current_split.percent = Decimal(
-                        field_info.split(' ')[0].replace('%', '')
+                        field_info.split(" ")[0].replace("%", "")
                     )
-            elif line_code in {'T', 'U'}:
-                amount = field_info.replace(',', '')
+            elif line_code in {"T", "U"}:
+                amount = field_info.replace(",", "")
                 if not splits:
-                    kwargs['amount'] = amount
+                    kwargs["amount"] = amount
                 elif current_split:
                     current_split.amount = Decimal(amount)
-            elif line_code == 'M':
+            elif line_code == "M":
                 if not splits:
-                    kwargs['memo'] = field_info
+                    kwargs["memo"] = field_info
                 elif current_split:
                     current_split.memo = field_info
-            elif line_code == 'C':
+            elif line_code == "C":
                 if not splits:
-                    kwargs['cleared'] = field_info
+                    kwargs["cleared"] = field_info
                 elif current_split:
                     current_split.cleared = field_info
-            elif line_code == 'P':
-                kwargs['payee'] = field_info
-            elif line_code == 'A':
+            elif line_code == "P":
+                kwargs["payee"] = field_info
+            elif line_code == "A":
                 if not splits:
-                    kwargs['payee_address'] = field_info
+                    kwargs["payee_address"] = field_info
                 elif current_split:
                     current_split.payee_address = field_info
-            elif line_code == 'L':
-                class_name, field_info, classes = (
-                    cls._create_class_from_category_string(
-                        field_info,
-                        classes,
-                    )
+            elif line_code == "L":
+                (
+                    class_name,
+                    field_info,
+                    classes,
+                ) = cls._create_class_from_category_string(
+                    field_info,
+                    classes,
                 )
 
                 # 'L' can represent both categories and the 'to' transfer
                 # account. Transfer accounts are denoted by [ ]
-                if field_info.startswith('['):
+                if field_info.startswith("["):
                     if not splits:
-                        kwargs['to_account'] = field_info[1:-1]
+                        kwargs["to_account"] = field_info[1:-1]
                     elif current_split:
                         current_split.to_account = field_info[1:-1]
                 else:
@@ -431,60 +440,62 @@ class Transaction(BaseModel):
                     if not splits:
                         # If there's already a category, add the new category
                         # as a child
-                        if 'category' in kwargs:
-                            category_root.set_parent(kwargs['category'])
-                        kwargs['category'] = category
+                        if "category" in kwargs:
+                            category_root.set_parent(kwargs["category"])
+                        kwargs["category"] = category
                     elif current_split:
                         category_root.set_parent(current_split.category)
                         current_split.category = category
 
                     if class_name:
                         classes[class_name].add_category(category)
-            elif line_code == 'N':
+            elif line_code == "N":
                 if not splits:
-                    kwargs['check_number'] = field_info
+                    kwargs["check_number"] = field_info
                 elif current_split:
                     current_split.check_number = field_info
-            elif line_code == 'F':
-                kwargs['reimbursable_expense'] = field_info or True
-            elif line_code == '1':
-                kwargs['first_payment_date'] = utils.parse_date(
+            elif line_code == "F":
+                kwargs["reimbursable_expense"] = field_info or True
+            elif line_code == "1":
+                kwargs["first_payment_date"] = utils.parse_date(
                     field_info,
                     day_first,
                 )
-            elif line_code == '2':
-                kwargs['loan_length'] = field_info.replace(',', '')
-            elif line_code == '3':
-                kwargs['num_payments'] = field_info.replace(',', '')
-            elif line_code == '4':
-                kwargs['periods_per_annum'] = field_info.replace(',', '')
-            elif line_code == '5':
-                kwargs['interest_rate'] = field_info.replace(',', '')
-            elif line_code == '6':
-                kwargs['current_loan_balance'] = field_info.replace(',', '')
-            elif line_code == '7':
-                kwargs['original_loan_amount'] = field_info.replace(',', '')
+            elif line_code == "2":
+                kwargs["loan_length"] = field_info.replace(",", "")
+            elif line_code == "3":
+                kwargs["num_payments"] = field_info.replace(",", "")
+            elif line_code == "4":
+                kwargs["periods_per_annum"] = field_info.replace(",", "")
+            elif line_code == "5":
+                kwargs["interest_rate"] = field_info.replace(",", "")
+            elif line_code == "6":
+                kwargs["current_loan_balance"] = field_info.replace(",", "")
+            elif line_code == "7":
+                kwargs["original_loan_amount"] = field_info.replace(",", "")
             else:
-                raise ValueError(f'Unknown line code: {line_code}')
+                raise ValueError(f"Unknown line code: {line_code}")
 
         if line_number is not None:
-            kwargs['line_number'] = line_number
+            kwargs["line_number"] = line_number
 
         # Set splits percentage if they don't already have one
-        total = Decimal(kwargs.get('amount', 0))
+        total = Decimal(kwargs.get("amount", 0))
         if splits and total:
             for split in splits:
                 if split.percent is None and split.amount is not None:
-                    split.percent = Decimal(
-                        round(split.amount / total * 100, 2)
-                    )
+                    split.percent = Decimal(round(split.amount / total * 100, 2))
                 # Check if the split percentage is correct
-                elif split.percent is not None and split.amount is not None and not (
-                    Decimal(round(split.percent, 2))
-                    == Decimal(
-                        round(
-                            split.amount / total * 100,
-                            2,
+                elif (
+                    split.percent is not None
+                    and split.amount is not None
+                    and not (
+                        Decimal(round(split.percent, 2))
+                        == Decimal(
+                            round(
+                                split.amount / total * 100,
+                                2,
+                            )
                         )
                     )
                 ):
@@ -497,14 +508,14 @@ class Transaction(BaseModel):
             for split in splits:
                 split.percent = None
 
-        kwargs['splits'] = splits
+        kwargs["splits"] = splits
         return cls(**kwargs), classes
 
     @classmethod
     def from_string(
         cls,
         string: str,
-        separator: str = '\n',
+        separator: str = "\n",
         day_first: bool = False,
         line_number: Optional[int] = None,
     ) -> Tuple[Transaction, Dict[str, Class]]:
