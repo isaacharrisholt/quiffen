@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, Generic, Iterable, List, Type, TypeVar
+from typing import Any, Dict, Generic, Iterable, List, Optional, Type, TypeVar
 
 from pydantic import BaseModel as PydanticBaseModel
 
@@ -41,7 +41,7 @@ class BaseModel(PydanticBaseModel, Generic[T]):
     class Config:
         extra = 'allow'
 
-    __CUSTOM_FIELDS: List[Field] = []
+    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     @classmethod
     def add_custom_field(

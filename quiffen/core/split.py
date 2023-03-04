@@ -50,7 +50,7 @@ class Split(BaseModel):
     percent: Optional[Decimal] = None
     payee_address: Optional[str] = None
 
-    __CUSTOM_FIELDS: List[Field] = []
+    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         properties = ''
@@ -86,7 +86,8 @@ class Split(BaseModel):
                         parent_class = cls
                         break
 
-            qif += self.category.hierarchy
+            if self.category.hierarchy is not None:
+                qif += self.category.hierarchy
 
             if parent_class:
                 qif += f'/{parent_class.name}'

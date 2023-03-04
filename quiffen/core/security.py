@@ -28,7 +28,7 @@ class Security(BaseModel):
     goal: Optional[str] = None
     line_number: Optional[int] = None
 
-    __CUSTOM_FIELDS: List[Field] = []
+    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         return_str = 'Security:'

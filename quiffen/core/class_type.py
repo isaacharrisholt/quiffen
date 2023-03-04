@@ -2,7 +2,7 @@
 # reserved word in Python.
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -24,7 +24,7 @@ class Class(BaseModel):
     desc: Optional[str] = None
     categories: List[Category] = []
 
-    __CUSTOM_FIELDS: List[Field] = []
+    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Class):

@@ -134,6 +134,9 @@ class Account(BaseModel):
             except ValueError as e:
                 raise ValueError('Header must be a valid AccountType.') from e
 
+        if not header:
+            raise RuntimeError('No header provided, and no last header set.')
+
         if header not in self.transactions:
             self.transactions[header] = []
 

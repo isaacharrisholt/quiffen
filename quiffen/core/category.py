@@ -96,14 +96,16 @@ class Category(BaseModel):
     children: List[Category] = []
     parent: Optional[Category] = None
 
-    __CUSTOM_FIELDS: List[Field] = []
+    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         properties = ''
         for (object_property, value) in self.__dict__.items():
             if value:
                 if object_property == 'parent':
-                    properties += f'\n\tParent: {self.parent.name}'
+                    properties += (
+                        f'\n\tParent: {self.parent.name if self.parent else "None"}'
+                    )
                 elif object_property == 'children':
                     properties += f'\n\tChildren: {len(self.children)}'
                 elif object_property == 'category_type':
@@ -136,7 +138,7 @@ class Category(BaseModel):
         """Refreshes the hierarchy of the current category and all its children
         recursively."""
         for child in self.children:
-            child.hierarchy = self.hierarchy + ':' + child.name
+            child.hierarchy = self.hierarchy + ':' + child.name if self.hierarchy else child.name
             child._refresh_hierarchy()
 
     def dict(self, exclude: Optional[Iterable[str]] = None, **_) -> Dict[str, Any]:
@@ -195,7 +197,7 @@ class Category(BaseModel):
             nodes_to_visit.extend(current_node.children)
         return all_children
 
-    def traverse_up(self) -> List[Category]:
+    def traverse_up(self: Category) -> List[Category]:
         """Return a list of all parents, grandparents etc. of the current
         category.
 
@@ -309,13 +311,18 @@ class Category(BaseModel):
             raise KeyError(f"Category '{child}' not found.")
 
         parent = child_category.parent
-        new_children = [c for c in parent.children if c != child_category]
+
+        if parent:
+            new_children = [c for c in parent.children if c != child_category]
+        else:
+            new_children = []
 
         if keep_children:
             for grandchild in child_category.children:
                 new_children.append(grandchild)
 
-        parent.set_children(new_children)
+        if parent:
+            parent.set_children(new_children)
         child_category.set_parent(None)
         return child_category
 

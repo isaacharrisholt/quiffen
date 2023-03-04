@@ -122,7 +122,7 @@ class Transaction(BaseModel):
     _split_categories: Dict[str, Category] = {}
     _last_split: Optional[Split] = None
 
-    __CUSTOM_FIELDS: List[Field] = []
+    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         properties = ''
@@ -167,7 +167,7 @@ class Transaction(BaseModel):
         total_percent = sum(
             split.percent for split in splits if split.percent
         )
-        total_amount = sum(split.amount for split in splits)
+        total_amount = sum(split.amount for split in splits if split.amount is not None)
         if total_percent - 100 > 0.01:
             raise ValueError(
                 'Split percentages cannot exceed 100% of the transaction'
@@ -192,7 +192,7 @@ class Transaction(BaseModel):
         """Add a Split to Transaction."""
         if (
             split.percent
-            and sum(s.percent for s in self.splits) + split.percent - 100 > 0.01
+            and sum(s.percent for s in self.splits if s.percent is not None) + split.percent - 100 > 0.01
         ):
             raise ValueError(
                 'The sum of the split percentages cannot be greater than 100.'
@@ -201,7 +201,7 @@ class Transaction(BaseModel):
         if split.amount:
             abs_sum_of_splits = abs(
                 sum(
-                    s.amount for s in self.splits
+                    s.amount for s in self.splits if s.amount is not None
                 ) + split.amount
             )
             if abs_sum_of_splits - abs(self.amount) > 0.01:
@@ -340,7 +340,7 @@ class Transaction(BaseModel):
         kwargs: Dict[str, Any] = {}
         classes: Dict[str, Class] = {}
         splits: List[Split] = []
-        current_split = None
+        current_split: Optional[Split] = None
 
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
@@ -370,7 +370,7 @@ class Transaction(BaseModel):
                 transaction_date = utils.parse_date(field_info, day_first)
                 if not splits:
                     kwargs['date'] = transaction_date
-                else:
+                elif current_split:
                     current_split.date = transaction_date
             elif line_code == 'E':
                 if current_split is None:
@@ -391,24 +391,24 @@ class Transaction(BaseModel):
                 amount = field_info.replace(',', '')
                 if not splits:
                     kwargs['amount'] = amount
-                else:
+                elif current_split:
                     current_split.amount = Decimal(amount)
             elif line_code == 'M':
                 if not splits:
                     kwargs['memo'] = field_info
-                else:
+                elif current_split:
                     current_split.memo = field_info
             elif line_code == 'C':
                 if not splits:
                     kwargs['cleared'] = field_info
-                else:
+                elif current_split:
                     current_split.cleared = field_info
             elif line_code == 'P':
                 kwargs['payee'] = field_info
             elif line_code == 'A':
                 if not splits:
                     kwargs['payee_address'] = field_info
-                else:
+                elif current_split:
                     current_split.payee_address = field_info
             elif line_code == 'L':
                 class_name, field_info, classes = (
@@ -423,7 +423,7 @@ class Transaction(BaseModel):
                 if field_info.startswith('['):
                     if not splits:
                         kwargs['to_account'] = field_info[1:-1]
-                    else:
+                    elif current_split:
                         current_split.to_account = field_info[1:-1]
                 else:
                     category = create_categories_from_hierarchy(field_info)
@@ -434,7 +434,7 @@ class Transaction(BaseModel):
                         if 'category' in kwargs:
                             category_root.set_parent(kwargs['category'])
                         kwargs['category'] = category
-                    else:
+                    elif current_split:
                         category_root.set_parent(current_split.category)
                         current_split.category = category
 
@@ -443,7 +443,7 @@ class Transaction(BaseModel):
             elif line_code == 'N':
                 if not splits:
                     kwargs['check_number'] = field_info
-                else:
+                elif current_split:
                     current_split.check_number = field_info
             elif line_code == 'F':
                 kwargs['reimbursable_expense'] = field_info or True
@@ -474,12 +474,12 @@ class Transaction(BaseModel):
         total = Decimal(kwargs.get('amount', 0))
         if splits and total:
             for split in splits:
-                if split.percent is None:
+                if split.percent is None and split.amount is not None:
                     split.percent = Decimal(
                         round(split.amount / total * 100, 2)
                     )
                 # Check if the split percentage is correct
-                elif split.amount is not None and not (
+                elif split.percent is not None and split.amount is not None and not (
                     Decimal(round(split.percent, 2))
                     == Decimal(
                         round(

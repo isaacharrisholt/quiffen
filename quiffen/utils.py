@@ -2,7 +2,7 @@ import re
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from dateutil import parser
 from pydantic import ValidationError, parse_obj_as
@@ -114,7 +114,7 @@ def convert_custom_fields_to_qif_string(
 
 def apply_csv_formatting_to_scalar(
     obj: Any,
-    date_format: str = '%Y-%m-%d',
+    date_format: Optional[str] = '%Y-%m-%d',
 ) -> Union[str, int, float]:
     """Apply CSV-friendly formatting to a scalar value"""
     if isinstance(obj, (datetime, date)) and date_format:
@@ -132,7 +132,7 @@ def apply_csv_formatting_to_scalar(
 
 def apply_csv_formatting_to_container(
     obj: Union[List[Any], Dict[Any, Any]],
-    date_format: str = '%Y-%m-%d',
+    date_format: Optional[str] = '%Y-%m-%d',
 ) -> Union[List[Any], Dict[Any, Any], str, int, float]:
     """Recursively apply CSV-friendly formatting to a container"""
     if isinstance(obj, list):

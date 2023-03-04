@@ -68,7 +68,7 @@ class Qif(BaseModel):
     classes: Dict[str, Class] = {}
     securities: Dict[str, Security] = {}
 
-    __CUSTOM_FIELDS: List[Field] = []
+    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         accounts_str = '\n'.join(str(acc) for acc in self.accounts.values())
@@ -187,7 +187,7 @@ class Qif(BaseModel):
             if '!Type:Cat' in header_line:
                 # Section contains category information
                 new_category = Category.from_list(sanitised_section_lines)
-                categories = add_categories_to_container(
+                categories = add_categories_to_container(  # type: ignore
                     new_category,
                     categories,
                 )
@@ -211,6 +211,14 @@ class Qif(BaseModel):
                     day_first=day_first,
                     line_number=line_number,
                 )
+
+                if last_account is None:
+                    raise ParserException(
+                        f'Line {line_number}: '
+                        'No account found before investment. '
+                        'This should not happen.'
+                    )
+
                 accounts[last_account].add_transaction(
                     new_investment,
                     AccountType('Invst'),
@@ -221,6 +229,11 @@ class Qif(BaseModel):
                     sanitised_section_lines,
                     line_number=line_number,
                 )
+                if new_security.symbol is None:
+                    raise ParserException(
+                        f'Line {line_number}: '
+                        f'No symbol found for security.'
+                    )
                 securities[new_security.symbol] = new_security
             elif '!Type' in header_line and not accounts:
                 # Accounts is empty and there's a transaction, so create default
@@ -244,6 +257,14 @@ class Qif(BaseModel):
                     day_first=day_first,
                     line_number=line_number,
                 )
+
+                if last_account is None:
+                    raise ParserException(
+                        f'Line {line_number}: '
+                        'No account found before transactions. '
+                        'This should not happen.'
+                    )
+
                 accounts[last_account].add_transaction(
                     new_transaction,
                     AccountType(header_line.split(':')[1]),
@@ -289,7 +310,7 @@ class Qif(BaseModel):
 
     def add_category(self, new_category: Category) -> None:
         """Add a new category to the Qif object"""
-        self.categories = add_categories_to_container(
+        self.categories = add_categories_to_container(  # type: ignore
             new_category,
             self.categories,
         )
@@ -333,6 +354,11 @@ class Qif(BaseModel):
 
     def add_security(self, new_security: Security) -> None:
         """Add a new security to the Qif object"""
+        if not new_security.symbol:
+            raise ValueError(
+                'Cannot add a security without a symbol to the Qif object.'
+            )
+
         if new_security.symbol in self.securities:
             self.securities[new_security.symbol].merge(new_security)
         else:
@@ -434,7 +460,7 @@ class Qif(BaseModel):
             )
 
         # Format and hide private fields
-        return [
+        return [  # type: ignore
             utils.apply_csv_formatting_to_container(
                 {
                     k: v for k, v in data_dict.items()
