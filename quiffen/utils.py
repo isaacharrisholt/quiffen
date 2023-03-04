@@ -115,32 +115,36 @@ def convert_custom_fields_to_qif_string(
 def apply_csv_formatting_to_scalar(
     obj: Any,
     date_format: Optional[str] = "%Y-%m-%d",
-) -> Union[str, int, float]:
+    stringify: bool = False,
+) -> Any:
     """Apply CSV-friendly formatting to a scalar value"""
     if isinstance(obj, (datetime, date)) and date_format:
         return obj.strftime(date_format)
-    elif isinstance(obj, (datetime, date)):
-        return obj.isoformat()
     elif isinstance(obj, Enum):
         return str(obj.value)
     elif isinstance(obj, Decimal):
         if obj % 1:
             return float(obj)
         return int(obj)
-    return str(obj)
+    elif stringify:
+        return str(obj)
+
+    return obj
 
 
 def apply_csv_formatting_to_container(
     obj: Union[List[Any], Dict[Any, Any]],
     date_format: Optional[str] = "%Y-%m-%d",
-) -> Union[List[Any], Dict[Any, Any], str, int, float]:
+) -> Union[List[Any], Dict[Any, Any], Any]:
     """Recursively apply CSV-friendly formatting to a container"""
     if isinstance(obj, list):
         return [apply_csv_formatting_to_container(item, date_format) for item in obj]
     elif isinstance(obj, dict):
         return {
             apply_csv_formatting_to_scalar(
-                key, date_format
+                key,
+                date_format,
+                stringify=True,
             ): apply_csv_formatting_to_container(value, date_format)
             for key, value in obj.items()
         }
