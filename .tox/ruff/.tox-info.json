@@ -1,0 +1,6 @@
+{
+  "ToxEnv": {
+    "name": "ruff",
+    "type": "VirtualEnvRunner"
+  }
+}

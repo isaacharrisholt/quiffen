@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -22,25 +22,25 @@ class Security(BaseModel):
     line_number : int
         The line number of the security in the QIF file
     """
-    name: str = None
-    symbol: str = None
-    type: str = None
-    goal: str = None
-    line_number: int = None
 
-    # pylint: disable-next=unused-private-member
-    __CUSTOM_FIELDS: List[Field] = []
+    name: Optional[str] = None
+    symbol: Optional[str] = None
+    type: Optional[str] = None
+    goal: Optional[str] = None
+    line_number: Optional[int] = None
+
+    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __str__(self) -> str:
-        return_str = 'Security:'
+        return_str = "Security:"
         if self.name:
-            return_str += f'\n\tName: {self.name}'
+            return_str += f"\n\tName: {self.name}"
         if self.symbol:
-            return_str += f'\n\tSymbol: {self.symbol}'
+            return_str += f"\n\tSymbol: {self.symbol}"
         if self.type:
-            return_str += f'\n\tType: {self.type}'
+            return_str += f"\n\tType: {self.type}"
         if self.goal:
-            return_str += f'\n\tGoal: {self.goal}'
+            return_str += f"\n\tGoal: {self.goal}"
 
         return return_str
 
@@ -59,16 +59,16 @@ class Security(BaseModel):
 
     def to_qif(self) -> str:
         """Converts a Security to a QIF string"""
-        qif = '!Type:Security\n'
+        qif = "!Type:Security\n"
 
         if self.name:
-            qif += f'N{self.name}\n'
+            qif += f"N{self.name}\n"
         if self.symbol:
-            qif += f'S{self.symbol}\n'
+            qif += f"S{self.symbol}\n"
         if self.type:
-            qif += f'T{self.type}\n'
+            qif += f"T{self.type}\n"
         if self.goal:
-            qif += f'G{self.goal}\n'
+            qif += f"G{self.goal}\n"
 
         qif += utils.convert_custom_fields_to_qif_string(
             self._get_custom_fields(),
@@ -81,7 +81,7 @@ class Security(BaseModel):
     def from_list(
         cls,
         lst: List[str],
-        line_number: int = None,
+        line_number: Optional[int] = None,
     ) -> Security:
         """Return a class instance from a list of QIF strings.
 
@@ -114,19 +114,19 @@ class Security(BaseModel):
             if found:
                 continue
 
-            if line_code == 'N':
-                kwargs['name'] = field_info
-            elif line_code == 'S':
-                kwargs['symbol'] = field_info
-            elif line_code == 'T':
-                kwargs['type'] = field_info
-            elif line_code == 'G':
-                kwargs['goal'] = field_info
+            if line_code == "N":
+                kwargs["name"] = field_info
+            elif line_code == "S":
+                kwargs["symbol"] = field_info
+            elif line_code == "T":
+                kwargs["type"] = field_info
+            elif line_code == "G":
+                kwargs["goal"] = field_info
             else:
-                raise ValueError(f'Unknown line code: {line_code}')
+                raise ValueError(f"Unknown line code: {line_code}")
 
         if line_number is not None:
-            kwargs['line_number'] = line_number
+            kwargs["line_number"] = line_number
 
         return cls(**kwargs)
 
@@ -134,8 +134,8 @@ class Security(BaseModel):
     def from_string(
         cls,
         string: str,
-        separator: str = '\n',
-        line_number: int = None,
+        separator: str = "\n",
+        line_number: Optional[int] = None,
     ) -> Security:
         """Return a class instance from a QIF string.
 
