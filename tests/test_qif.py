@@ -547,7 +547,7 @@ def test_get_data_dicts_transactions():
         memo='Test Memo',
         category=Category(name='Test Category'),
     )
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
     qif.add_account(account)
     data_dicts = qif._get_data_dicts(data_type=QifDataType.TRANSACTIONS)
@@ -570,7 +570,7 @@ def test_get_data_dicts_transactions_with_date_format_and_ignore():
         memo='Test Memo',
         category=Category(name='Test Category'),
     )
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
     qif.add_account(account)
     data_dicts = qif._get_data_dicts(
@@ -613,7 +613,7 @@ def test_get_data_dicts_accounts():
     """Test the get_data_dicts method with accounts"""
     qif = Qif()
     account = Account(name='Test Account')
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     qif.add_account(account)
     data_dicts = qif._get_data_dicts(data_type=QifDataType.ACCOUNTS)
 
@@ -633,7 +633,7 @@ def test_get_data_dicts_investments():
         security='Test Security',
         price=Decimal('10'),
     )
-    account.set_header('Invst')
+    account.set_header(AccountType.INVST)
     account.add_transaction(investment)
     qif.add_account(account)
     data_dicts = qif._get_data_dicts(data_type=QifDataType.INVESTMENTS)
@@ -667,7 +667,7 @@ def test_to_csv_transactions():
         memo='Test Memo',
         category=Category(name='Test Category'),
     )
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
     qif.add_account(account)
 
@@ -734,7 +734,7 @@ def test_to_csv_accounts():
     """Test the to_csv method with accounts"""
     qif = Qif()
     account = Account(name='Test Account', account_type='Bank')
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     qif.add_account(account)
 
     csv_file = Path(__file__).parent / 'test_files' / 'test_output.csv'
@@ -762,7 +762,7 @@ def test_to_csv_investments():
         security='Test Security',
         price=Decimal('10'),
     )
-    account.set_header('Invst')
+    account.set_header(AccountType.INVST)
     account.add_transaction(investment)
     qif.add_account(account)
 
@@ -814,7 +814,7 @@ def test_to_csv_transactions_with_date_format_and_ignore_list():
         memo='Test Memo',
         category=Category(name='Test Category'),
     )
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
     qif.add_account(account)
 
@@ -852,7 +852,7 @@ def test_to_csv_transactions_multiple():
         memo='Test Memo',
         category=Category(name='Test Category'),
     )
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
 
     transaction2 = transaction.copy()
@@ -895,7 +895,7 @@ def test_to_dataframe_transactions():
         memo='Test Memo',
         category=Category(name='Test Category'),
     )
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
     qif.add_account(account)
 
@@ -973,7 +973,7 @@ def test_to_dataframe_investments():
         security='Test Security',
         price=Decimal('10'),
     )
-    account.set_header('Invst')
+    account.set_header(AccountType.INVST)
     account.add_transaction(investment)
     qif.add_account(account)
 
@@ -997,7 +997,7 @@ def test_to_dataframe_transactions_with_ignore_list():
         memo='Test Memo',
         category=Category(name='Test Category'),
     )
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
     qif.add_account(account)
 
@@ -1025,7 +1025,7 @@ def test_to_dataframe_transactions_multiple():
         memo='Test Memo',
         category=Category(name='Test Category'),
     )
-    account.set_header('Bank')
+    account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
 
     transaction2 = transaction.copy()
@@ -1085,3 +1085,23 @@ def test_transaction_before_account_definition_2(qif_file):
 def test_empty_qif():
     qif = Qif()
     assert qif.to_qif() == ''
+
+
+def test_transaction_account_type_qif():
+    qif = Qif()
+    account = Account(name='Test Account')
+    qif.add_account(account)
+    transaction = Transaction(
+        date=datetime(2019, 1, 1),
+        amount=Decimal('100'),
+    )
+    account.set_header(AccountType.CASH)
+    account.add_transaction(transaction)
+    assert qif.to_qif() == '''!Account
+NTest Account
+^
+!Type:Cash
+D2019-01-01
+T100
+^
+'''
