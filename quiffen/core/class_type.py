@@ -21,7 +21,7 @@ class Class(BaseModel):
         The description of the class.
     """
     name: str
-    desc: str = None
+    desc: Optional[str] = None
     categories: List[Category] = []
 
     # pylint: disable-next=unused-private-member

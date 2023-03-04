@@ -103,26 +103,26 @@ class Transaction(BaseModel):
     # pylint: enable=line-too-long
     date: datetime
     amount: Decimal
-    memo: str = None
-    cleared: str = None
-    payee: str = None
-    payee_address: str = None
-    category: Category = None
-    check_number: Union[int, str] = None
-    reimbursable_expense: bool = None
-    small_business_expense: bool = None
-    to_account: str = None
-    first_payment_date: datetime = None
-    loan_length: Decimal = None
-    num_payments: int = None
-    periods_per_annum: int = None
-    interest_rate: Decimal = None
-    current_loan_balance: Decimal = None
-    original_loan_amount: Decimal = None
-    line_number: int = None
+    memo: Optional[str] = None
+    cleared: Optional[str] = None
+    payee: Optional[str] = None
+    payee_address: Optional[str] = None
+    category: Optional[Category] = None
+    check_number: Optional[Union[int, str]] = None
+    reimbursable_expense: Optional[bool] = None
+    small_business_expense: Optional[bool] = None
+    to_account: Optional[str] = None
+    first_payment_date: Optional[datetime] = None
+    loan_length: Optional[Decimal] = None
+    num_payments: Optional[int] = None
+    periods_per_annum: Optional[int] = None
+    interest_rate: Optional[Decimal] = None
+    current_loan_balance: Optional[Decimal] = None
+    original_loan_amount: Optional[Decimal] = None
+    line_number: Optional[int] = None
     splits: List[Split] = []
     _split_categories: Dict[str, Category] = {}
-    _last_split: Split = None
+    _last_split: Optional[Split] = None
 
     __CUSTOM_FIELDS: List[Field] = []
 
@@ -256,7 +256,7 @@ class Transaction(BaseModel):
     def to_qif(
         self,
         date_format: str = '%Y-%m-%d',
-        classes: Dict[str, Class] = None,
+        classes: Optional[Dict[str, Class]] = None,
     ) -> str:
         """Converts a Transaction to a QIF string"""
         if classes is None:
@@ -320,7 +320,7 @@ class Transaction(BaseModel):
         cls,
         lst: List[str],
         day_first: bool = False,
-        line_number: int = None,
+        line_number: Optional[int] = None,
     ) -> Tuple[Transaction, Dict[str, Class]]:
         """Return a class instance from a list of QIF strings.
 
@@ -510,7 +510,7 @@ class Transaction(BaseModel):
         string: str,
         separator: str = '\n',
         day_first: bool = False,
-        line_number: int = None,
+        line_number: Optional[int] = None,
     ) -> Tuple[Transaction, Dict[str, Class]]:
         """Return a class instance from a QIF string.
 

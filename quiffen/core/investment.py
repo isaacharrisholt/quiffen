@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -46,18 +46,18 @@ class Investment(BaseModel):
         The line number of the investment in the QIF file.
     """
     date: datetime
-    action: str = None
-    security: str = None
-    price: Decimal = None
-    quantity: Decimal = None
-    cleared: str = None
-    amount: Decimal = None
-    memo: str = None
-    first_line: str = None
-    to_account: str = None
-    transfer_amount: Decimal = None
-    commission: Decimal = None
-    line_number: int = None
+    action: Optional[str] = None
+    security: Optional[str] = None
+    price: Optional[Decimal] = None
+    quantity: Optional[Decimal] = None
+    cleared: Optional[str] = None
+    amount: Optional[Decimal] = None
+    memo: Optional[str] = None
+    first_line: Optional[str] = None
+    to_account: Optional[str] = None
+    transfer_amount: Optional[Decimal] = None
+    commission: Optional[Decimal] = None
+    line_number: Optional[int] = None
 
     __CUSTOM_FIELDS: List[Field] = []
 
@@ -116,7 +116,7 @@ class Investment(BaseModel):
         cls,
         lst: List[str],
         day_first: bool = False,
-        line_number: int = None,
+        line_number: Optional[int] = None,
     ) -> Investment:
         """Return a class instance from a list of QIF strings.
 
@@ -191,7 +191,7 @@ class Investment(BaseModel):
         string: str,
         separator: str = '\n',
         day_first: bool = False,
-        line_number: int = None,
+        line_number: Optional[int] = None,
     ) -> Investment:
         """Return a class instance from a QIF string.
 

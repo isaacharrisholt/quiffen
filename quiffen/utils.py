@@ -40,16 +40,16 @@ def parse_date(date_string: str, day_first: bool = False) -> datetime:
     date_string = date_string.replace(' ', '0')
     date_string = date_string.replace('\'', '/')
 
-    try:
-        # QIF files allow some really strange date formats, such as
-        # %d0%B0%Y (e.g. 0100202022 for 2022-02-01)
-        # This extends also to month-first dates. The following regex  checks
-        # for this and converts it to a date string that can be parsed by
-        # dateutil.parser
-        date_parts = ZERO_SEPARATED_DATE.search(date_string).groups()
+    # QIF files allow some really strange date formats, such as
+    # %d0%B0%Y (e.g. 0100202022 for 2022-02-01)
+    # This extends also to month-first dates. The following regex  checks
+    # for this and converts it to a date string that can be parsed by
+    # dateutil.parser
+    date_search = ZERO_SEPARATED_DATE.search(date_string)
+
+    if date_search:
+        date_parts = date_search.groups()
         date_string = ' '.join(date_parts)
-    except AttributeError:
-        pass
 
     return parser.parse(date_string, dayfirst=day_first)
 
@@ -115,26 +115,25 @@ def convert_custom_fields_to_qif_string(
 def apply_csv_formatting_to_scalar(
     obj: Any,
     date_format: str = '%Y-%m-%d',
-    stringify: bool = False,
 ) -> Union[str, int, float]:
     """Apply CSV-friendly formatting to a scalar value"""
     if isinstance(obj, (datetime, date)) and date_format:
         return obj.strftime(date_format)
+    elif isinstance(obj, (datetime, date)):
+        return obj.isoformat()
     elif isinstance(obj, Enum):
         return str(obj.value)
     elif isinstance(obj, Decimal):
         if obj % 1:
             return float(obj)
         return int(obj)
-    elif stringify:
-        return str(obj)
-    return obj
+    return str(obj)
 
 
 def apply_csv_formatting_to_container(
     obj: Union[List[Any], Dict[Any, Any]],
     date_format: str = '%Y-%m-%d',
-) -> Union[List[Any], Dict[Any, Any], str]:
+) -> Union[List[Any], Dict[Any, Any], str, int, float]:
     """Recursively apply CSV-friendly formatting to a container"""
     if isinstance(obj, list):
         return [
@@ -143,7 +142,7 @@ def apply_csv_formatting_to_container(
         ]
     elif isinstance(obj, dict):
         return {
-            apply_csv_formatting_to_scalar(key, date_format, True):
+            apply_csv_formatting_to_scalar(key, date_format):
                 apply_csv_formatting_to_container(value, date_format)
             for key, value in obj.items()
         }

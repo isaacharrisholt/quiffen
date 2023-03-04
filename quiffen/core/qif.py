@@ -350,7 +350,7 @@ class Qif(BaseModel):
 
     def to_qif(
         self,
-        path: Union[FilePath, str, None] = None,
+        path: Optional[Union[FilePath, str, None]] = None,
         date_format: str = '%Y-%m-%d',
     ) -> str:
         """Convert the Qif object to a QIF file"""
@@ -383,7 +383,7 @@ class Qif(BaseModel):
         self,
         data_type: QifDataType = QifDataType.TRANSACTIONS,
         date_format: Optional[str] = '%Y-%m-%d',
-        ignore: List[str] = None,
+        ignore: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Converts specified data from the Qif object to a list of dicts"""
         if ignore is None:
@@ -447,10 +447,10 @@ class Qif(BaseModel):
 
     def to_csv(
         self,
-        path: Union[FilePath, str, None] = None,
+        path: Optional[Union[FilePath, str, None]] = None,
         data_type: QifDataType = QifDataType.TRANSACTIONS,
         date_format: str = '%Y-%m-%d',
-        ignore: List[str] = None,
+        ignore: Optional[List[str]] = None,
         delimiter: str = ',',
         quote_character: str = '"',
     ) -> str:
@@ -514,7 +514,7 @@ class Qif(BaseModel):
     def to_dataframe(
         self,
         data_type: QifDataType = QifDataType.TRANSACTIONS,
-        ignore: List[str] = None,
+        ignore: Optional[List[str]] = None,
     ) -> pd.DataFrame:
         """Convert part of the Qif object to a Pandas DataFrame. The
         data_type parameter can be used to specify which part of the Qif

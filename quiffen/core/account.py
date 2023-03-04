@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -55,15 +55,15 @@ class Account(BaseModel):
     """
     # pylint: enable=line-too-long
     name: str
-    desc: str = None
-    account_type: AccountType = None
-    credit_limit: Decimal = None
-    balance: Decimal = None
-    date_at_balance: datetime = None
+    desc: Optional[str] = None
+    account_type: Optional[AccountType] = None
+    credit_limit: Optional[Decimal] = None
+    balance: Optional[Decimal] = None
+    date_at_balance: Optional[datetime] = None
     transactions: Dict[str, TransactionList] = {}
-    _last_header: AccountType = None
+    _last_header: Optional[AccountType] = None
 
-    __CUSTOM_FIELDS: List[Field] = []
+    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Account):
@@ -106,7 +106,7 @@ class Account(BaseModel):
     def add_transaction(
         self,
         transaction: TransactionLike,
-        header: AccountType = None,
+        header: Optional[AccountType] = None,
     ) -> None:
         """Add a transaction to the dict of TransactionList objects.
 
@@ -163,7 +163,7 @@ class Account(BaseModel):
     def to_qif(
         self,
         date_format: str = '%Y-%m-%d',
-        classes: Dict[str, Class] = None
+        classes: Optional[Dict[str, Class]] = None
     ) -> str:
         """Return a QIF-formatted string of this account.
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -42,15 +42,15 @@ class Split(BaseModel):
     [Split(amount=100.6, category=Category(name='Electrical', expense=True, hierarchy='Electrical'))]
     """
     # pylint: enable=line-too-long
-    date: datetime = None
-    amount: Decimal = None
-    memo: str = None
-    cleared: str = None
-    category: Category = None
-    to_account: str = None
-    check_number: Union[int, str] = None
-    percent: Decimal = None
-    payee_address: str = None
+    date: Optional[datetime] = None
+    amount: Optional[Decimal] = None
+    memo: Optional[str] = None
+    cleared: Optional[str] = None
+    category: Optional[Category] = None
+    to_account: Optional[str] = None
+    check_number: Optional[Union[int, str]] = None
+    percent: Optional[Decimal] = None
+    payee_address: Optional[str] = None
 
     __CUSTOM_FIELDS: List[Field] = []
 
@@ -72,7 +72,7 @@ class Split(BaseModel):
     def to_qif(
         self,
         date_format: str = '%Y-%m-%d',
-        classes: Dict[str, Class] = None,
+        classes: Optional[Dict[str, Class]] = None,
     ) -> str:
         """Returns a QIF string representation of the split."""
         if classes is None:

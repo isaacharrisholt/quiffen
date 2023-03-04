@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 from pydantic import validator
 
@@ -89,14 +89,14 @@ class Category(BaseModel):
     """
     # pylint: enable=line-too-long
     name: str
-    desc: str = None
-    tax_related: bool = None
+    desc: Optional[str] = None
+    tax_related: Optional[bool] = None
     category_type: CategoryType = CategoryType.EXPENSE
-    budget_amount: Decimal = None
-    tax_schedule_info: str = None
-    hierarchy: str = None
+    budget_amount: Optional[Decimal] = None
+    tax_schedule_info: Optional[str] = None
+    hierarchy: Optional[str] = None
     children: List[Category] = []
-    parent: Category = None
+    parent: Optional[Category] = None
 
     __CUSTOM_FIELDS: List[Field] = []
 
@@ -144,7 +144,7 @@ class Category(BaseModel):
             # pylint: disable-next=protected-access
             child._refresh_hierarchy()
 
-    def dict(self, exclude: Iterable[str] = None, **_) -> Dict[str, Any]:
+    def dict(self, exclude: Optional[Iterable[str]] = None, **_) -> Dict[str, Any]:
         """Return a representation of the Category object as a dict.
 
         Overwrites pydantic.BaseModel.dict or else it will recurse infinitely
@@ -174,7 +174,7 @@ class Category(BaseModel):
         return res
 
     # This is kept for backwards compatibility
-    def to_dict(self, ignore: Iterable[str] = None, **kwargs) -> Dict[str, Any]:
+    def to_dict(self, ignore: Optional[Iterable[str]] = None, **kwargs) -> Dict[str, Any]:
         """Return a representation of the Category object as a dict.
 
         Parameters
@@ -419,7 +419,7 @@ class Category(BaseModel):
             List of strings containing QIF information about the category.
         """
         kwargs: Dict[str, Any] = {}
-        new_parent: Union[Category, None] = None
+        new_parent: Optional[Union[Category, None]] = None
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:

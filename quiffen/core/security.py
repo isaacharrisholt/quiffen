@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -22,11 +22,11 @@ class Security(BaseModel):
     line_number : int
         The line number of the security in the QIF file
     """
-    name: str = None
-    symbol: str = None
-    type: str = None
-    goal: str = None
-    line_number: int = None
+    name: Optional[str] = None
+    symbol: Optional[str] = None
+    type: Optional[str] = None
+    goal: Optional[str] = None
+    line_number: Optional[int] = None
 
     # pylint: disable-next=unused-private-member
     __CUSTOM_FIELDS: List[Field] = []
@@ -81,7 +81,7 @@ class Security(BaseModel):
     def from_list(
         cls,
         lst: List[str],
-        line_number: int = None,
+        line_number: Optional[int] = None,
     ) -> Security:
         """Return a class instance from a list of QIF strings.
 
@@ -135,7 +135,7 @@ class Security(BaseModel):
         cls,
         string: str,
         separator: str = '\n',
-        line_number: int = None,
+        line_number: Optional[int] = None,
     ) -> Security:
         """Return a class instance from a QIF string.
 
