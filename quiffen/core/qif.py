@@ -104,7 +104,11 @@ class Qif(BaseModel):
 
     @classmethod
     def parse(
-        cls, path: Union[FilePath, str], separator: str = "\n", day_first: bool = False
+        cls,
+        path: Union[FilePath, str],
+        separator: str = "\n",
+        day_first: bool = False,
+        encoding: str = "utf-8",
     ) -> Qif:
         """Return a class instance from a QIF file.
 
@@ -113,10 +117,12 @@ class Qif(BaseModel):
         path : Union[FilePath, str]
             The path to the QIF file.
         separator : str, default='\n'
-             The line separator for the QIF file. This probably won't need
-             changing.
+            The line separator for the QIF file. This probably won't need
+            changing.
         day_first : bool, default=False
-             Whether the day or month comes first in the date.
+            Whether the day or month comes first in the date.
+        encoding : str, default='utf-8'
+            The encoding of the QIF file.
 
         Returns
         -------
@@ -130,7 +136,7 @@ class Qif(BaseModel):
         if not path.exists():
             raise ParserException("The file does not exist.")
 
-        data = path.read_text(encoding="utf-8").strip().strip("\n")
+        data = path.read_text(encoding=encoding).strip().strip("\n")
 
         if not data:
             raise ParserException("The file is empty.")
@@ -376,6 +382,7 @@ class Qif(BaseModel):
         self,
         path: Optional[Union[FilePath, str, None]] = None,
         date_format: str = "%Y-%m-%d",
+        encoding: str = "utf-8",
     ) -> str:
         """Convert the Qif object to a QIF file"""
         qif = ""
@@ -399,7 +406,7 @@ class Qif(BaseModel):
             )
 
         if path:
-            Path(path).write_text(qif, encoding="utf-8")
+            Path(path).write_text(qif, encoding=encoding)
 
         return qif
 
@@ -474,6 +481,7 @@ class Qif(BaseModel):
         ignore: Optional[List[str]] = None,
         delimiter: str = ",",
         quote_character: str = '"',
+        encoding: str = "utf-8",
     ) -> str:
         """Convert part of the Qif object to a CSV file. The data_type
         parameter can be used to specify which part of the Qif object to
@@ -497,6 +505,8 @@ class Qif(BaseModel):
         quote_character : str, optional
             The quote character to use when writing the CSV file, by
             default '"'
+        encoding : str, default='utf-8'
+            The encoding to use when writing the CSV file
         """
         if ignore is None:
             ignore = []
@@ -528,7 +538,7 @@ class Qif(BaseModel):
         return_value = output.getvalue()
 
         if path:
-            Path(path).write_text(return_value, encoding="utf-8")
+            Path(path).write_text(return_value, encoding=encoding)
 
         return return_value
 
