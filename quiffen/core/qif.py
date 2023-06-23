@@ -272,7 +272,7 @@ class Qif(BaseModel):
 
                 accounts[last_account].add_transaction(
                     new_transaction,
-                    AccountType(header_line.split(":")[1]),
+                    AccountType(header_line.split(":")[1].strip()),
                 )
 
                 if new_transaction.category:
