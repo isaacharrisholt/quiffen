@@ -388,18 +388,18 @@ class Transaction(BaseModel):
                     current_split.memo = field_info
             elif line_code in {"$", "£"}:
                 if current_split:
-                    current_split.amount = Decimal(field_info.replace(",", ""))
+                    current_split.amount = utils.parse_decimal(field_info)
             elif line_code == "%":
                 if current_split:
-                    current_split.percent = Decimal(
-                        field_info.split(" ")[0].replace("%", "")
+                    current_split.percent = utils.parse_decimal(
+                        field_info.split(" ")[0]
                     )
             elif line_code in {"T", "U"}:
-                amount = field_info.replace(",", "")
+                amount = utils.parse_decimal(field_info)
                 if not splits:
                     kwargs["amount"] = amount
                 elif current_split:
-                    current_split.amount = Decimal(amount)
+                    current_split.amount = amount
             elif line_code == "M":
                 if not splits:
                     kwargs["memo"] = field_info
@@ -480,18 +480,20 @@ class Transaction(BaseModel):
             kwargs["line_number"] = line_number
 
         # Set splits percentage if they don't already have one
-        total = Decimal(kwargs.get("amount", 0))
+        total = utils.parse_decimal(kwargs.get("amount", 0))
         if splits and total:
             for split in splits:
                 if split.percent is None and split.amount is not None:
-                    split.percent = Decimal(round(split.amount / total * 100, 2))
+                    split.percent = utils.parse_decimal(
+                        round(split.amount / total * 100, 2)
+                    )
                 # Check if the split percentage is correct
                 elif (
                     split.percent is not None
                     and split.amount is not None
                     and not (
-                        Decimal(round(split.percent, 2))
-                        == Decimal(
+                        utils.parse_decimal(round(split.percent, 2))
+                        == utils.parse_decimal(
                             round(
                                 split.amount / total * 100,
                                 2,

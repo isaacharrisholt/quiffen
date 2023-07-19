@@ -12,6 +12,9 @@ from quiffen.core.base import Field
 ZERO_SEPARATED_DATE = re.compile(
     r"^(\d{2}|\d{4}|[a-zA-Z]+)0(\d{2}|[a-zA-Z]+)0(\d{2}|\d{4})$",
 )
+INVALID_AMOUNT_CHARACTERS = re.compile(
+    r"[^\d\.-]",
+)
 
 
 def parse_date(date_string: str, day_first: bool = False) -> datetime:
@@ -150,3 +153,10 @@ def apply_csv_formatting_to_container(
         }
     else:
         return apply_csv_formatting_to_scalar(obj, date_format)
+
+
+def parse_decimal(value: Union[str, Decimal]) -> Decimal:
+    """Parse a decimal from a string, removing non-numeric characters."""
+    if isinstance(value, Decimal):
+        return value
+    return Decimal(INVALID_AMOUNT_CHARACTERS.sub("", value))
