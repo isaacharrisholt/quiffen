@@ -866,3 +866,21 @@ def test_check_number_allows_strings():
         check_number="Transfer",
     )
     assert transaction.check_number == "Transfer"
+
+
+def test_from_list_invalid_characters_in_amount_field():
+    """Test that the amount field correctly parses out invalid
+    characters (non-numeric).
+
+    Relates to issue #56.
+    https://github.com/isaacharrisholt/quiffen/issues/56
+    """
+    qif_list = [
+        "D2022-02-01",
+        "T$1,0ab£c00",
+        "L[Test To Account]",  # Brackets denote to account
+        "LTest Category 1",
+        "LTest Category 2",
+    ]
+    transaction, _ = Transaction.from_list(qif_list)
+    assert transaction.amount == 1000
