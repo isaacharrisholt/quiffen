@@ -8,3 +8,7 @@
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+# eclipse
+.project
+.settings
+.pydevproject

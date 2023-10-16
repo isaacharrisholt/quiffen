@@ -123,7 +123,8 @@ class Security(BaseModel):
             elif line_code == "G":
                 kwargs["goal"] = field_info
             else:
-                raise ValueError(f"Unknown line code: {line_code}")
+                line_info=f"{line_number}" if line_number else "?"
+                raise ValueError(f"security - Unknown line code: {line_code} in line {line_info}:{field}")
 
         if line_number is not None:
             kwargs["line_number"] = line_number

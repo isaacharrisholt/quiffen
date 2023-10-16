@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import csv
 import io
+import sys
+import traceback
+from collections import Counter
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union
@@ -49,6 +52,45 @@ class QifDataType(str, Enum):
 class ParserException(Exception):
     pass
 
+class ParserState:
+    """
+    keep track of exception
+    """
+    
+    def __init__(self,lenient:bool=False,debug:bool=False,num_errors_to_show:int=10):
+        self.lenient=lenient
+        self.debug=debug
+        self.errors=[]
+        self.num_errors_to_show=num_errors_to_show
+        
+    def handle_exception(self,ex):
+        if self.lenient:
+            self.errors.append(ex)
+        else:
+            raise ex
+        
+    def show_most_common_errors(self, num_errors=10):  # Default is 1, showing the most common error
+        # Count error types
+        error_types = [type(error).__name__ for error in self.errors]
+        error_type_counts = Counter(error_types)
+        
+        # Display the most common error types
+        most_common_errors = error_type_counts.most_common(num_errors)
+        for error_type, count in most_common_errors:
+            print(f"Error '{error_type}':{count} x.")
+        
+    def show(self):
+        error_count=len(self.errors)
+        if error_count>0:
+            if self.debug:
+                for index,error in enumerate(self.errors):
+                    print(f"error {index+1:4}:{str(error)}")
+                    if index<self.num_errors_to_show:
+                        # Print the stack trace of the exception using traceback
+                        traceback.print_tb(error.__traceback__)
+            self.show_most_common_errors(num_errors=self.num_errors_to_show) 
+            print(f"ignored {error_count} parsing errors while in lenient mode",file=sys.stderr)    
+            
 
 class Qif(BaseModel):
     """
@@ -109,6 +151,9 @@ class Qif(BaseModel):
         separator: str = "\n",
         day_first: bool = False,
         encoding: str = "utf-8",
+        lenient:bool=False,
+        debug:bool=False,
+        num_errors_to_show:int=10
     ) -> Qif:
         """Return a class instance from a QIF file.
 
@@ -123,12 +168,19 @@ class Qif(BaseModel):
             Whether the day or month comes first in the date.
         encoding : str, default='utf-8'
             The encoding of the QIF file.
-
+        lenient: bool, default=False
+            In lenient mode, exceptions are added to an error list and tried to be ignored. Otherwise, they are raised immediately.
+        debug: bool, default=False
+            In debug mode all exceptions are listed and a the most common ones are displayed
+        num_errors_to_show:int, default=10
+            The number of most common errors to show in debug mode
+            
         Returns
         -------
         Qif
             A Qif object containing all the data in the QIF file.
         """
+        parser_state=ParserState(lenient=lenient,debug=debug,num_errors_to_show=num_errors_to_show)
         path = Path(path)
         if path.suffix.lower() != ".qif":
             raise ParserException("The file must be a QIF file.")
@@ -190,106 +242,109 @@ class Qif(BaseModel):
 
             # Check for new categories and accounts first, otherwise it's a
             # transaction so a default account is created
-            if "!Type:Cat" in header_line:
-                # Section contains category information
-                new_category = Category.from_list(sanitised_section_lines)
-                categories = add_categories_to_container(  # type: ignore
-                    new_category,
-                    categories,
-                )
-            elif "!Type:Class" in header_line:
-                new_class = Class.from_list(sanitised_section_lines)
-                if new_class.name in classes:
-                    classes[new_class.name].merge(new_class)
-                else:
-                    classes[new_class.name] = new_class
-            elif "!Account" in header_line:
-                new_account = Account.from_list(sanitised_section_lines)
-                if new_account.name in accounts:
-                    accounts[new_account.name].merge(new_account)
-                else:
-                    accounts[new_account.name] = new_account
-                last_account = new_account.name
-            elif "!Type:Invst" in header_line:
-                # Investment
-                new_investment = Investment.from_list(
-                    sanitised_section_lines,
-                    day_first=day_first,
-                    line_number=line_number,
-                )
-
-                if last_account is None:
-                    raise ParserException(
-                        f"Line {line_number}: "
-                        "No account found before investment. "
-                        "This should not happen."
+            try:
+                if "!Type:Cat" in header_line:
+                    # Section contains category information
+                    new_category = Category.from_list(sanitised_section_lines,line_number=line_number)
+                    categories = add_categories_to_container(  # type: ignore
+                        new_category,
+                        categories,
                     )
-
-                accounts[last_account].add_transaction(
-                    new_investment,
-                    AccountType("Invst"),
-                )
-            elif "!Type:Security" in header_line:
-                # Security
-                new_security = Security.from_list(
-                    sanitised_section_lines,
-                    line_number=line_number,
-                )
-                if new_security.symbol is None:
-                    raise ParserException(
-                        f"Line {line_number}: " f"No symbol found for security."
-                    )
-                securities[new_security.symbol] = new_security
-            elif "!Type" in header_line and not accounts:
-                # Accounts is empty and there's a transaction, so create default
-                # account to put transactions in
-                default_account = Account(
-                    name="Quiffen Default Account",
-                    desc=(
-                        "The default account created by Quiffen when no other "
-                        "accounts were present"
-                    ),
-                )
-                accounts[default_account.name] = default_account
-                last_account = default_account.name
-
-            if header_line.lower().replace(" ", "") in (
-                VALID_TRANSACTION_ACCOUNT_TYPES
-            ):
-                # Other transaction type
-                new_transaction, new_classes = Transaction.from_list(
-                    sanitised_section_lines,
-                    day_first=day_first,
-                    line_number=line_number,
-                )
-
-                if last_account is None:
-                    raise ParserException(
-                        f"Line {line_number}: "
-                        "No account found before transactions. "
-                        "This should not happen."
-                    )
-
-                accounts[last_account].add_transaction(
-                    new_transaction,
-                    AccountType(header_line.split(":")[1].strip()),
-                )
-
-                if new_transaction.category:
-                    root = new_transaction.category.traverse_up()[-1]
-                    if root.name in categories:
-                        categories[root.name].merge(root)
+                elif "!Type:Class" in header_line:
+                    new_class = Class.from_list(sanitised_section_lines,line_number=line_number)
+                    if new_class.name in classes:
+                        classes[new_class.name].merge(new_class)
                     else:
-                        categories[root.name] = root
-
-                for class_name, new_class in new_classes.items():
-                    if class_name in classes:
-                        classes[class_name].merge(new_class)
+                        classes[new_class.name] = new_class
+                elif "!Account" in header_line:
+                    new_account = Account.from_list(sanitised_section_lines,line_number=line_number)
+                    if new_account.name in accounts:
+                        accounts[new_account.name].merge(new_account)
                     else:
-                        classes[class_name] = new_class
-
+                        accounts[new_account.name] = new_account
+                    last_account = new_account.name
+                elif "!Type:Invst" in header_line:
+                    # Investment
+                    new_investment = Investment.from_list(
+                        sanitised_section_lines,
+                        day_first=day_first,
+                        line_number=line_number,
+                    )
+    
+                    if last_account is None:
+                        raise ParserException(
+                            f"Line {line_number}: "
+                            "No account found before investment. "
+                            "This should not happen."
+                        )
+    
+                    accounts[last_account].add_transaction(
+                        new_investment,
+                        AccountType("Invst"),
+                    )
+                elif "!Type:Security" in header_line:
+                    # Security
+                    new_security = Security.from_list(
+                        sanitised_section_lines,
+                        line_number=line_number,
+                    )
+                    if new_security.symbol is None:
+                        raise ParserException(
+                            f"Line {line_number}: " f"No symbol found for security."
+                        )
+                    securities[new_security.symbol] = new_security
+                elif "!Type" in header_line and not accounts:
+                    # Accounts is empty and there's a transaction, so create default
+                    # account to put transactions in
+                    default_account = Account(
+                        name="Quiffen Default Account",
+                        desc=(
+                            "The default account created by Quiffen when no other "
+                            "accounts were present"
+                        ),
+                    )
+                    accounts[default_account.name] = default_account
+                    last_account = default_account.name
+    
+                if header_line.lower().replace(" ", "") in (
+                    VALID_TRANSACTION_ACCOUNT_TYPES
+                ):
+                    # Other transaction type
+                    new_transaction, new_classes = Transaction.from_list(
+                        sanitised_section_lines,
+                        day_first=day_first,
+                        line_number=line_number,
+                    )
+    
+                    if last_account is None:
+                        raise ParserException(
+                            f"Line {line_number}: "
+                            "No account found before transactions. "
+                            "This should not happen."
+                        )
+    
+                    accounts[last_account].add_transaction(
+                        new_transaction,
+                        AccountType(header_line.split(":")[1].strip()),
+                    )
+    
+                    if new_transaction.category:
+                        root = new_transaction.category.traverse_up()[-1]
+                        if root.name in categories:
+                            categories[root.name].merge(root)
+                        else:
+                            categories[root.name] = root
+    
+                    for class_name, new_class in new_classes.items():
+                        if class_name in classes:
+                            classes[class_name].merge(new_class)
+                        else:
+                            classes[class_name] = new_class
+            except Exception as ex:
+                    parser_state.handle_exception(ex)
+   
             line_number += len(section.split("\n"))
-
+        parser_state.show()
         return cls(
             accounts=accounts,
             categories=categories,

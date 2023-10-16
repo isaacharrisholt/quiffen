@@ -70,13 +70,15 @@ class Class(BaseModel):
         return qif
 
     @classmethod
-    def from_list(cls, lst: List[str]) -> Class:
+    def from_list(cls, lst: List[str],line_number:int=None) -> Class:
         """Return a class instance from a list of QIF strings.
 
         Parameters
         ----------
         lst : list of str
             List of strings containing QIF information about the QIF class.
+        line_number: int
+            the line number in the QIF file being parsed (None if unknown)
         """
         kwargs: Dict[str, Any] = {}
         for field in lst:
@@ -98,6 +100,7 @@ class Class(BaseModel):
             elif line_code == "D":
                 kwargs["desc"] = field_info
             else:
-                raise ValueError(f"Unknown line code: {line_code}")
+                line_info=f"{line_number}" if line_number else "?"
+                raise ValueError(f"class - Unknown line code: {line_code} in line {line_info}:{field}")
 
         return cls(**kwargs)

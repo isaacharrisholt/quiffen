@@ -158,5 +158,11 @@ def apply_csv_formatting_to_container(
 def parse_decimal(value: Union[str, Decimal]) -> Decimal:
     """Parse a decimal from a string, removing non-numeric characters."""
     if isinstance(value, Decimal):
-        return value
-    return Decimal(INVALID_AMOUNT_CHARACTERS.sub("", value))
+        decimal_value=value
+    else:
+        try:
+            decimal_value=Decimal(INVALID_AMOUNT_CHARACTERS.sub("", value))
+        except Exception as ex:
+            pass
+            raise ex
+    return decimal_value

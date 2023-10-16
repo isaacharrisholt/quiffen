@@ -18,12 +18,16 @@ class Investment(BaseModel):
     ----------
     date : datetime
         Date investment occurred. May or may not include timestamp.
+    valuta: datetime
+        Date the investment was credited or debited to the account.
     action : str, default=None
         The investment action (Buy, Sell, etc.)
     security : str, default=None
         The security name.
     price : Decimal, default=None
         The price of the security.
+    currency: str, default=USD
+        The ISO 4217 currency code of the transaction
     quantity : Decimal, default=None
         The quantity of the security bought, sold, etc.
     cleared : str, default=None
@@ -47,6 +51,7 @@ class Investment(BaseModel):
     """
 
     date: datetime
+    valuta: Optional[datetime]=None
     action: Optional[str] = None
     security: Optional[str] = None
     price: Optional[Decimal] = None
@@ -156,6 +161,10 @@ class Investment(BaseModel):
             if line_code == "D":
                 transaction_date = utils.parse_date(field_info, day_first)
                 kwargs["date"] = transaction_date
+            elif line_code=="V":
+                valuta_date = utils.parse_date(field_info, day_first)
+                kwargs["valuta"] = valuta_date
+                pass
             elif line_code == "N":
                 kwargs["action"] = field_info
             elif line_code == "Y":
@@ -168,6 +177,38 @@ class Investment(BaseModel):
                 kwargs["cleared"] = field_info
             elif line_code in {"T", "U"}:
                 kwargs["amount"] = field_info.replace(",", "")
+            elif line_code == "F":
+                kwargs["currency"] = field_info
+            elif line_code == "G":
+                # found in Finanzmanager 2020 exports
+                # seems to be some factor that is mostly/always 1
+                # G1.000000
+                pass
+            elif line_code == "@":
+                # found in Finanzmanager 2020 exports holds
+                # a security identification number
+                # e.g. DE000A0F5UH1
+                pass
+            elif line_code == "~":
+                # found in Finanzmanager 2020 exports
+                # holds a WKN (security idenfification number)
+                # e.g. A0F5UH
+                pass
+            elif line_code == "&":
+                # found in Finanzmanager 2020 exports
+                # holds an undocumented parameter with a number e.g.
+                # &1 or &2
+                pass
+            elif line_code == "B":
+                # found in Finanzmanager 2020 exports
+                # holds an undocumented parameter 
+                # B0.00|0.00|0.00
+                pass
+            elif line_code == "O":
+                # found in Finanzmanager 2020 exports
+                # holds an undocumented parameter 
+                # O0.00|0.00|0.00|0.00|0.00|0.00|0.00|0.00|0.00|0.00|0.00|0.00
+                pass
             elif line_code == "M":
                 kwargs["memo"] = field_info
             elif line_code == "P":
@@ -179,7 +220,8 @@ class Investment(BaseModel):
             elif line_code == "O":
                 kwargs["commission"] = field_info.replace(",", "")
             else:
-                raise ValueError(f"Unknown line code: {line_code}")
+                line_info=f"{line_number}" if line_number else "?"
+                raise ValueError(f"investment - Unknown line code: {line_code} in line {line_info}:{field}")
 
         if line_number is not None:
             kwargs["line_number"] = line_number

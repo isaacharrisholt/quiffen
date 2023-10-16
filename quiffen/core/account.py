@@ -216,7 +216,7 @@ class Account(BaseModel):
         return qif
 
     @classmethod
-    def from_list(cls, lst: List[str], day_first: bool = False) -> Account:
+    def from_list(cls, lst: List[str], day_first: bool = False,line_number:int=None) -> Account:
         """Return a class instance from a list of QIF strings.
 
         Parameters
@@ -225,6 +225,9 @@ class Account(BaseModel):
             List of strings containing QIF information about the account.
         day_first : bool, default=False
              Whether the day comes before the month in the date.
+        line_number: int
+            the line number in the QIF file being parsed (None if unknown)
+       
 
         Returns
         -------
@@ -232,6 +235,8 @@ class Account(BaseModel):
             An Account object created from the QIF strings.
         """
         kwargs: Dict[str, Any] = {}
+        line_info=f"{line_number}" if line_number else "?"
+
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:
@@ -251,7 +256,10 @@ class Account(BaseModel):
             elif line_code == "D":
                 kwargs["desc"] = field_info
             elif line_code == "T":
-                kwargs["account_type"] = field_info
+                account_type=field_info
+                if not account_type in AccountType._value2member_map_:
+                   raise ValueError(f"invalid account_type {account_type} in line {line_info}:{field}") 
+                kwargs["account_type"] = account_type 
             elif line_code == "L":
                 kwargs["credit_limit"] = field_info.replace(",", "")
             elif line_code in {"$", "£"}:
@@ -260,6 +268,6 @@ class Account(BaseModel):
                 balance_date = utils.parse_date(field_info, day_first)
                 kwargs["date_at_balance"] = balance_date
             else:
-                raise ValueError(f"Unknown line code: {line_code}")
+                raise ValueError(f"account - Unknown line code: {line_code} in line {line_info}:{field}")
 
         return cls(**kwargs)

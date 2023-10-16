@@ -419,13 +419,15 @@ class Category(BaseModel):
         return "^\n".join([c._to_qif_string() for c in self.traverse_down()])
 
     @classmethod
-    def from_list(cls, lst: List[str]) -> Category:
+    def from_list(cls, lst: List[str],line_number:int=None) -> Category:
         """Return a Category instance from a list of QIF strings.
 
         Parameters
         ----------
         lst : list of str
             List of strings containing QIF information about the category.
+        line_number: int
+            the line number in the QIF file being parsed (None if unknown)
         """
         kwargs: Dict[str, Any] = {}
         new_parent: Optional[Union[Category, None]] = None
@@ -443,7 +445,7 @@ class Category(BaseModel):
             if found:
                 continue
 
-            if line_code == "N":
+            if line_code in ["N","S","L"]:
                 temp_cat = create_categories_from_hierarchy(field_info)
                 kwargs["name"] = temp_cat.name
                 kwargs["hierarchy"] = temp_cat.hierarchy
@@ -463,7 +465,8 @@ class Category(BaseModel):
             elif line_code == "R":
                 kwargs["tax_schedule_info"] = field_info
             else:
-                raise ValueError(f"Unknown line code: {line_code}")
+                line_info=f"{line_number}" if line_number else "?"
+                raise ValueError(f"category - Unknown line code: {line_code} in line {line_info}:{field}")
 
         new_cat = cls(**kwargs)
         new_cat.set_parent(new_parent)
