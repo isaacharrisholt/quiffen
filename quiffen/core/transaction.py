@@ -21,6 +21,16 @@ from quiffen.core.split import Split
 logger = logging.getLogger(__name__)
 
 
+class TransactionConfig:
+    """
+    transaction configuration settings
+    """
+
+    # maximum percentage overshoot of a split transaction above
+    # 100%
+    max_split_overshoot: float = 0.01
+
+
 class Transaction(BaseModel):
     """
     A class used to represent a transaction.
@@ -180,7 +190,8 @@ class Transaction(BaseModel):
     ) -> List[Split]:
         total_percent = sum(split.percent for split in splits if split.percent)
         total_amount = sum(split.amount for split in splits if split.amount is not None)
-        if total_percent - 100 > 0.01:
+        total_over_shoot = total_percent - 100
+        if total_over_shoot > TransactionConfig.max_split_overshoot:
             raise ValueError("Split percentages cannot exceed 100% of the transaction")
         if abs(total_amount) - abs(values.get("amount", 0)) > 0.01:
             raise ValueError(

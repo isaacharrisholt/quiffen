@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from quiffen import Category, Class, Split, Transaction
+from quiffen import Category, Class, Split, Transaction, TransactionConfig
 
 
 def test_create_transaction():
@@ -74,6 +74,22 @@ def test_create_transaction_with_splits_percent_too_high():
                 Split(amount=200, percent=60),
             ],
         )
+
+
+def test_split_overshoot_issue63():
+    """
+    test creating a transaction with overshoot but configured to have no exception
+    """
+    TransactionConfig.max_split_overshoot = 0.1
+    Transaction(
+        date=datetime(2022, 2, 1),
+        amount=300,
+        splits=[
+            Split(amount=100, percent=50),
+            Split(amount=200, percent=50.05),
+        ],
+    )
+    pass
 
 
 def test_create_transaction_with_splits_exactly_100_percent():

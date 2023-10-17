@@ -18,4 +18,9 @@ from quiffen.core.investment import Investment
 from quiffen.core.qif import ParserException, Qif, QifDataType
 from quiffen.core.security import Security
 from quiffen.core.split import Split
-from quiffen.core.transaction import Transaction, TransactionLike, TransactionList
+from quiffen.core.transaction import (
+    Transaction,
+    TransactionConfig,
+    TransactionLike,
+    TransactionList,
+)
