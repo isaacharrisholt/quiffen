@@ -109,6 +109,7 @@ class Qif(BaseModel):
         separator: str = "\n",
         day_first: bool = False,
         encoding: str = "utf-8",
+        progress=None,
     ) -> Qif:
         """Return a class instance from a QIF file.
 
@@ -288,7 +289,10 @@ class Qif(BaseModel):
                     else:
                         classes[class_name] = new_class
 
-            line_number += len(section.split("\n"))
+            section_len = len(section.split("\n"))
+            line_number += section_len
+            if progress:
+                progress.update(section_len)
 
         return cls(
             accounts=accounts,
