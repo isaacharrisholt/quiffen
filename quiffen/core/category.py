@@ -443,7 +443,7 @@ class Category(BaseModel):
             if found:
                 continue
 
-            if line_code == "N":
+            if line_code in ["N","S","L"]:
                 temp_cat = create_categories_from_hierarchy(field_info)
                 kwargs["name"] = temp_cat.name
                 kwargs["hierarchy"] = temp_cat.hierarchy

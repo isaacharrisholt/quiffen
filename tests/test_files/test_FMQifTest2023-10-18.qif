@@ -1,0 +1,675 @@
+!Option:MDY
+!Type:Class
+NAfrica
+DAfrican Continent
+^
+NEhefrau
+DEine Einnahme- oder Ausgabebuchung der 'Frau' zuordnen
+^
+NEhemann
+DEine Einnahme- oder Ausgabebuchung dem 'Mann' zuordnen
+^
+NGeschäftlich
+DDifferenzieren Sie zwischen geschäftlich und privat
+^
+NHaus 1
+DAusgaben bzw. Einnahmen für mehrere Häuser auswerten
+^
+NHaus 2
+DAusgaben bzw. Einnahmen für mehrere Häuser auswerten
+^
+NKind
+DEine Einnahme- oder Ausgabebuchung dem 'Kind' zuordnen
+^
+NPrivat
+DDifferenzieren Sie zwischen geschäftlich und privat
+^
+NProjekt 1
+DWerten Sie mit Klassen mehrere Projekte separat aus
+^
+NProjekt 2
+DWerten Sie mit Klassen mehrere Projekte separat aus
+^
+NSpende
+DSpenden
+^
+!Type:Cat
+NErstattungen
+DRückerstattungen von Versicherungen
+I
+SErstattungen
+^
+NKindergeld
+DZahlung von Kindergeld
+I
+SKinder
+^
+NLohn-Gehalt
+DEinnahmen aus verschiedenen Quellen
+I
+SBeruf
+^
+NLohn-Gehalt:Bonus
+DSonderzahlungen
+I
+SBeruf
+^
+NLohn-Gehalt:Gehalt
+DGehaltszahlungen
+I
+SBeruf
+^
+NLohn-Gehalt:Provisionen
+DProvisionszahlungen
+I
+SBeruf
+^
+NLohn-Gehalt:Spesen
+DRückerstattung von Ausgaben für Spesen
+I
+SBeruf
+^
+NLohn-Gehalt:Urlaubsgeld
+DZahlungen von Urlaubsgeld
+I
+SBeruf
+^
+NLohn-Gehalt:Weihnachtsgeld
+DEinnahme aus Weihnachtsgeld
+I
+SBeruf
+^
+NMieteinnahmen
+DMieteinnahmen
+I
+SImmobilien
+^
+NRente-Pension
+DEinnahmen nach Erreichen der Altersgrenze
+I
+SBeruf
+^
+NSonstige Einnahmen
+DEinnahmen aller Art
+I
+SBeruf
+^
+NVerkäufe Privat
+DEinnahmen aus Verkäufen bei EBay oder Flohmarkt
+I
+SPrivate Verkäufe
+^
+NZinseinkünfte
+DEinnahmen aus Zinsen
+I
+SZinseinkünfte
+^
+NBeruf
+DAufwendungen für berufliche Belange
+E
+SBeruf
+^
+NBeruf:Arbeitsmittel
+DWerkzeuge, Maschinen, Büromöbel, Büromaterial
+E
+SBeruf
+^
+NBeruf:Fortbildung
+DAusgaben für Fortbildung, Seminare, Schulungen
+E
+SBeruf
+^
+NBeruf:Steuerberatung
+DKosten für die steuerliche Beratung
+E
+SBeruf
+^
+NBeruf:Werbungskosten
+DAusgaben für Arbeitsmittel, Rechtsberatung, Reisekoste
+E
+SBeruf
+^
+NFahrzeuge
+DAusgaben für Fahrzeuge
+E
+SFahrzeuge
+^
+NFahrzeuge:Automobilclub
+DBeiträge und Ausgaben für Automobilclubs
+E
+SFahrzeuge
+^
+NFahrzeuge:Kfz-Steuer
+DKosten für jährlich fällige Kfz-Steuer
+E
+SFahrzeuge
+^
+NFahrzeuge:Kfz-Versicherung
+DZahlungen für die Versicherung eines Fahrzeugs
+E
+SFahrzeuge
+^
+NFahrzeuge:Parken
+DAusgaben für Parkgebühren
+E
+SFahrzeuge
+^
+NFahrzeuge:Pflege
+DKosten für die Pflege eines Fahrzeugs
+E
+SFahrzeuge
+^
+NFahrzeuge:Reparatur
+DReparaturarbeiten am Auto
+E
+SFahrzeuge
+^
+NFahrzeuge:Tanken
+DBenzin, Kraftstoffe
+E
+SFahrzeuge
+^
+NFahrzeuge:Wartung
+DWartungsarbeiten für das Auto
+E
+SFahrzeuge
+^
+NFahrzeuge:Zubehör
+DAusgaben rund ums Auto
+E
+SFahrzeuge
+^
+NFinanzierung
+DAufwendungen für die Immobilienfinanzierung
+E
+SImmobilien
+^
+NFreizeit
+DFreizeitaufwendungen
+E
+SFreizeit
+^
+NFreizeit:Computer
+DAufwendungen rund um dem PC
+E
+SFreizeit
+^
+NFreizeit:Fahrrad
+DAusgaben für das Fahrrad
+E
+SFreizeit
+^
+NFreizeit:Foto
+DRund ums Fotografieren
+E
+SFreizeit
+^
+NFreizeit:Garten
+DKosten für die Pflege des Gartens
+E
+SFreizeit
+^
+NFreizeit:Hobby
+DAlle Ausgaben für Hobby
+E
+SFreizeit
+^
+NFreizeit:Lotto
+DGlücksspiel
+E
+SFreizeit
+^
+NFreizeit:Medien
+DCD, Video, Download
+E
+SFreizeit
+^
+NFreizeit:Restaurant
+DAusgehen zum Essen
+E
+SFreizeit
+^
+NFreizeit:Software
+DPC-Spiele, Anwendungsprogramme, Betriebssystem
+E
+SFreizeit
+^
+NFreizeit:Sport
+DAusgaben für Sport und Vereine
+E
+SFreizeit
+^
+NFreizeit:Veranstaltungen
+DEintrittsgelder für Veranstaltungen aller Art
+E
+SFreizeit
+^
+NFreizeit:Zeitungen-Zeitschriften
+DAusgaben für Zeitungen und Zeitschriften
+E
+SFreizeit
+^
+NGesundheit
+DKosten für die Gesundheit
+E
+SGesundheit
+^
+NGesundheit:Arztkosten
+DAusgaben für medizinische Leistungen
+E
+SGesundheit
+^
+NGesundheit:Brille-Kontaktlinsen
+DKosten für Sehhilfen
+E
+SGesundheit
+^
+NGesundheit:Medikamente
+DAufwendungen für Medikamente
+E
+SGesundheit
+^
+NGesundheit:Tierarztkosten
+DÄrztliche Versorgung des Haustiers
+E
+SGesundheit
+^
+NKinder
+DAusgaben rund um die Kinder
+E
+SKinder
+^
+NKinder:Essensgeld
+DAusgaben für die Verpflegung der Kinder
+E
+SKinder
+^
+NKinder:Kinderbetreuung
+DKindergarten, Kita, Babysitter, Tagesmutter
+E
+SKinder
+^
+NKinder:Spielwaren
+DAusgaben für Spielzeug der Kinder
+E
+SKinder
+^
+NKinder:Taschengeld
+DTaschengeld für Kinder
+E
+SKinder
+^
+NKinder:Unterhaltszahlung
+DUnterhaltszahlungen bei Geschiedenen
+E
+SKinder
+^
+NLebenshaltung
+DKosten für Haushalt und Anschaffungen
+E
+SLebenshaltung
+^
+NLebenshaltung:Bankgebühren
+DKontoführungs- und Transaktionsgebühren
+E
+SLebenshaltung
+^
+NLebenshaltung:Barausgabe
+DAusgaben mit Bargeld
+E
+SLebenshaltung
+^
+NLebenshaltung:Bücher
+DEinkauf von Literatur etc.
+E
+SLebenshaltung
+^
+NLebenshaltung:Büromaterial
+DBüromaterial für den Haushalt
+E
+SLebenshaltung
+^
+NLebenshaltung:Drogerie
+DAusgaben für Hygiene- und Pflegeprodukte
+E
+SLebenshaltung
+^
+NLebenshaltung:Geschenke
+DAusgaben für Geschenke
+E
+SLebenshaltung
+^
+NLebenshaltung:Kartenzahlung
+DZahlungen mit Kreditkarte oder Eurocheque-Karte
+E
+SLebenshaltung
+^
+NLebenshaltung:Kleidung
+DAusgaben für Bekleidung
+E
+SLebenshaltung
+^
+NLebenshaltung:Kosmetik
+DKosmetikartikel aller Art
+E
+SLebenshaltung
+^
+NLebenshaltung:Lebensmittel
+DKosten für Lebensmittel und Essen
+E
+SLebenshaltung
+^
+NLebenshaltung:Schuhe
+DAusgaben für Schuhwerk
+E
+SLebenshaltung
+^
+NLebenshaltung:Tierbedarf
+DFutter und alles rund ums Tier
+E
+SLebenshaltung
+^
+NLebenshaltung:Zinszahlung
+DKosten für Kredite und Darlehen
+E
+SLebenshaltung
+^
+NReise
+DAusgaben im Urlaub
+E
+SFreizeit
+^
+NReise:Eintrittsgelder
+DAusgaben für Sehenswürdigkeiten etc. im Urlaub
+E
+SFreizeit
+^
+NReise:Souvenirs
+DEinkäufe im Urlaub für Mitbringsel und Souvenirs
+E
+SFreizeit
+^
+NReise:Transport
+DKosten für die Anreise im Urlaub
+E
+SFreizeit
+^
+NReise:Verpflegung
+DAusgaben für Verpflegung im Urlaub
+E
+SFreizeit
+^
+NReise:Übernachtung
+DKosten für Übernachtungen im Urlaub
+E
+SFreizeit
+^
+NSoziales
+DAllgemeinnütziges, Spenden und Parteien
+E
+SSoziales
+^
+NSoziales:Mitgliedsbeiträge
+DBeiträge für die Mitgliedschaft in Vereinen oder Clubs
+E
+SSoziales
+^
+NSoziales:Parteien
+DAusgaben für Parteien
+E
+SSoziales
+^
+NSoziales:Spende
+DSpenden an gemeinnützige Organisationen etc.
+E
+SSoziales
+^
+NSoziales:Vereine
+DAusgaben rund um die Arbeit im Verein
+E
+SSoziales
+^
+NSteuern
+DAlle möglichen Ausgaben für Steuern
+E
+SSteuern
+^
+NSteuern:Einkommensteuer
+DAbzüge der Einkommenssteuer
+E
+SSteuern
+^
+NSteuern:Erbschaftssteuer
+DKosten für die Erbschaftssteuer
+E
+SSteuern
+^
+NSteuern:Grunderwerbssteuer
+DKosten der Grunderwerbssteuer
+E
+SSteuern
+^
+NSteuern:Hundesteuer
+DKosten für die Hundesteuer
+E
+SSteuern
+^
+NSteuern:Kapitalertragssteuer
+DAbzüge der Kapitalertragssteuer
+E
+SSteuern
+^
+NSteuern:Solidaritätsbeitrag
+DAbzüge des Solidaritätsbeitrags
+E
+SSteuern
+^
+NSteuern:Vermögenssteuer
+DAbzüge der Vermögenssteuer
+E
+SSteuern
+^
+NTelekommunikation
+DFernsehen und Internet
+E
+SLebenshaltung
+^
+NTelekommunikation:Festnetz
+DKosten für Festnetztelefonie
+E
+SLebenshaltung
+^
+NTelekommunikation:Internet
+DKosten für den Zugang zum Internet
+E
+SLebenshaltung
+^
+NTelekommunikation:Kabel
+DAusgaben Fernsehen
+E
+SLebenshaltung
+^
+NTelekommunikation:Mobiltelefon
+DKosten für Mobiltelefone
+E
+SLebenshaltung
+^
+NVersicherungen
+DVersicherungsbeiträge
+E
+SVersicherungen
+^
+NVersicherungen:Berufsunfähigkeitsversicherung
+DAusgaben für private Berufsunfähigkeitsversicherung
+E
+SVersicherungen
+^
+NVersicherungen:Haftpflichtversicherung
+DKosten für die Haftpflichtversicherung
+E
+SVersicherungen
+^
+NVersicherungen:Hausratversicherung
+DVersicherung für den eigenen Hausrat
+E
+SVersicherungen
+^
+NVersicherungen:Krankenversicherung
+DAufwendungen für die private Krankenversicherung
+E
+SVersicherungen
+^
+NVersicherungen:Lebensversicherung
+DKosten für eine Lebensversicherung
+E
+SVersicherungen
+^
+NVersicherungen:Pflegeversicherung
+DZusatzkosten für eine Pflegeversicherung
+E
+SVersicherungen
+^
+NVersicherungen:Rechtsschutzversicherung
+DKosten für eine Rechtsschutzversicherung
+E
+SVersicherungen
+^
+NVersicherungen:Rentenversicherung
+DPrivate Rentenvorsorge
+E
+SVersicherungen
+^
+NVersicherungen:Unfallversicherung
+DPrivate Unfallversicherung
+E
+SVersicherungen
+^
+NWohnen
+DRund ums Wohnen
+E
+SWohnen
+^
+NWohnen:Anschaffungen
+DEinkäufe Möbel und Einrichtungsgegenstände
+E
+SWohnen
+^
+NWohnen:Bausparen
+DZahlungen für einen Bausparvertrag
+E
+SWohnen
+^
+NWohnen:Einrichtung
+DEinkäufe Möbel und Einrichtungsgegenstände
+E
+SWohnen
+^
+NWohnen:Grundsteuer
+DGrundsteuer für Immobilien
+E
+SImmobilien
+^
+NWohnen:Instandhaltung
+DInstandhaltung von Gebäuden
+E
+SWohnen
+^
+NWohnen:Miete
+DAusgaben für Miete und Pacht
+E
+SWohnen
+^
+NWohnen:Nebenkosten
+DNebenkosten für die Wohnung
+E
+SWohnnebenkosten
+^
+NWohnen:Nebenkosten:Gas-Öl
+DKosten für Erdgas/Heizöl
+E
+SWohnnebenkosten
+^
+NWohnen:Nebenkosten:Heizung
+DAusgaben für die Heizung
+E
+SWohnnebenkosten
+^
+NWohnen:Nebenkosten:Müllgebühren
+DZahlung der Abfallgebühren
+E
+SWohnnebenkosten
+^
+NWohnen:Nebenkosten:Strom
+DAusgaben für die Stromversorgung
+E
+SWohnnebenkosten
+^
+NWohnen:Nebenkosten:Wasser
+DKosten für die Wasserversorgung
+E
+SWohnnebenkosten
+^
+NWohnen:Rundfunkgebühren
+DKosten für die GEZ
+E
+SWohnen
+^
+NWohnen:Rückstellungen
+DRückstellungen für Renovierungen
+E
+SWohnen
+^
+NDonation
+DDonation
+E
+^
+!Option:AutoSwitch
+!Account
+NKD-Bank Berlin
+TBank
+DSpendenkonto
+^
+!Clear:AutoSwitch
+!Option:AutoSwitch
+!Account
+NKD-Bank Berlin
+DSpendenkonto
+TBank
+^
+!Type:Bank 
+D10.18.23
+U0.00
+T0.00
+CX
+PEröffnungssaldo
+L[KD-Bank Berlin]
+^
+D10.18.23
+U200.00
+T200.00
+CX
+PDonor
+MDonation for Welthungerhilfe
+LDonation/Spende
+SDonation/Spende
+EDonation for Welthungerhilfe
+$200.00
+SDonation/Africa
+E50% for Africa
+$0.00
+^
+!Type:Memorized
+KD
+U200.00
+T200.00
+PDonor
+MDonation for Welthungerhilfe
+LDonation/Spende
+%
+SDonation/Spende
+EDonation for Welthungerhilfe
+$200.00
+SDonation/Africa
+E50% for Africa
+$0.00
+^
