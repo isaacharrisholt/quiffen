@@ -362,13 +362,13 @@ class Qif(BaseModel):
             if progress:
                 progress.update(section_len)
         parser_state.show()
-        qif_result=cls(
+        qif_result = cls(
             accounts=accounts,
             categories=categories,
             classes=classes,
             securities=securities,
         )
-        qif_result.parser_state=parser_state
+        qif_result.parser_state = parser_state
         return qif_result
 
     def add_account(self, new_account: Account) -> None:
