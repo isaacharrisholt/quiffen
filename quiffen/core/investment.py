@@ -156,12 +156,23 @@ class Investment(BaseModel):
             if line_code == "D":
                 transaction_date = utils.parse_date(field_info, day_first)
                 kwargs["date"] = transaction_date
+            elif line_code == "V":
+                # valuta_date = utils.parse_date(field_info, day_first)
+                # don't try this yet - would break tests and
+                # make investment incompatible with standard QIF
+                # just ignore for the time being
+                # kwargs["valuta_date"] = valuta_date
+                pass
             elif line_code == "N":
                 kwargs["action"] = field_info
             elif line_code == "Y":
                 kwargs["security"] = field_info
             elif line_code == "I":
                 kwargs["price"] = field_info.replace(",", "")
+            elif line_code == "F":
+                # ignore this for the time being
+                # kwargs["currency"] = field_info
+                pass
             elif line_code == "Q":
                 kwargs["quantity"] = field_info.replace(",", "")
             elif line_code == "C":
@@ -176,6 +187,31 @@ class Investment(BaseModel):
                 kwargs["to_account"] = field_info
             elif line_code == "$":
                 kwargs["transfer_amount"] = field_info.replace(",", "")
+            elif line_code == "G":
+                # found in Finanzmanager 2020 exports
+                # seems to be some factor that is mostly/always 1
+                # G1.000000
+                pass
+            elif line_code == "@":
+                # found in Finanzmanager 2020 exports holds
+                # a security identification number
+                # e.g. DE000A0F5UH1
+                pass
+            elif line_code == "~":
+                # found in Finanzmanager 2020 exports
+                # holds a WKN (security idenfification number)
+                # e.g. A0F5UH
+                pass
+            elif line_code == "&":
+                # found in Finanzmanager 2020 exports
+                # holds an undocumented parameter with a number e.g.
+                # &1 or &2
+                pass
+            elif line_code == "B":
+                # found in Finanzmanager 2020 exports
+                # holds an undocumented parameter
+                # B0.00|0.00|0.00
+                pass
             elif line_code == "O":
                 kwargs["commission"] = field_info.replace(",", "")
             else:
