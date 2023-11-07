@@ -101,6 +101,74 @@ def test_create_transaction_with_splits_exactly_100_percent():
     Transaction.from_list(transaction_list)
 
 
+def test_create_transaction_with_splits_percent_rounding_error_less_than_01():
+    """
+    Test creating a transaction with splits amounts that could lead to a sum
+    of percentages higher than 100.01 when they are rounded at two decimal
+    positions.
+
+    With the data below, the sum of the percentages rounded to 2 decimal positions
+        gives 100.02
+
+    Relates to issue #63.
+    https://github.com/isaacharrisholt/quiffen/issues/63
+    """
+    transaction_list = [
+        "D13/05'2009",
+        "CX",
+        "T-1,910.22",
+        "PPayee",
+        "LMetaCategory A",
+        "SMetaCategory A",
+        "EMetaCategory A",
+        "$-29.23",
+        "SCategory B",
+        "ECategory B",
+        "$-697.91",
+        "SCategory B",
+        "ECategory B",
+        "$-34.37",
+        "SCategory B",
+        "ECategory B",
+        "$-22.47",
+        "SCategory B",
+        "ECategory B",
+        "$-44.06",
+        "SCategory B",
+        "ECategory B",
+        "$-18.00",
+        "SCategory B",
+        "ECategory B",
+        "$-58.00",
+        "SCategory B",
+        "ECategory B",
+        "$-4.95",
+        "SCategory B",
+        "ECategory B",
+        "$-18.65",
+        "SCategory B",
+        "ECategory B",
+        "$-53.68",
+        "SCategory B",
+        "ECategory B",
+        "$-13.55",
+        "SCategory B",
+        "ECategory B",
+        "$-7.58",
+        "SCategory B",
+        "ECategory B",
+        "$-140.00",
+        "SCategory B",
+        "ECategory B",
+        "$-661.52",
+        "SCategory B",
+        "ECategory B",
+        "$-106.25",
+    ]
+    # Should not raise an error
+    Transaction.from_list(transaction_list)
+
+
 def test_create_transaction_with_splits_amount_too_high():
     """Test creating a transaction with splits where the amount is too high"""
     with pytest.raises(ValueError):
