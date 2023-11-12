@@ -485,7 +485,7 @@ class Transaction(BaseModel):
             for split in splits:
                 if split.percent is None and split.amount is not None:
                     split.percent = utils.parse_decimal(
-                        round(split.amount / total * 100, 2)
+                        round(split.amount / total * 100, 9)
                     )
                 # Check if the split percentage is correct
                 elif (
