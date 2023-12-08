@@ -324,6 +324,7 @@ class Transaction(BaseModel):
         lst: List[str],
         day_first: bool = False,
         line_number: Optional[int] = None,
+        locale: str = 'en_US'
     ) -> Tuple[Transaction, Dict[str, Class]]:
         """Return a class instance from a list of QIF strings.
 
@@ -395,7 +396,7 @@ class Transaction(BaseModel):
                         field_info.split(" ")[0]
                     )
             elif line_code in {"T", "U"}:
-                amount = utils.parse_decimal(field_info)
+                amount = utils.parse_decimal(field_info, locale=locale)
                 if not splits:
                     kwargs["amount"] = amount
                 elif current_split:
