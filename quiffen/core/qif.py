@@ -109,6 +109,7 @@ class Qif(BaseModel):
         separator: str = "\n",
         day_first: bool = False,
         encoding: str = "utf-8",
+        locale: str = 'en_US'
     ) -> Qif:
         """Return a class instance from a QIF file.
 
@@ -261,6 +262,7 @@ class Qif(BaseModel):
                     sanitised_section_lines,
                     day_first=day_first,
                     line_number=line_number,
+                    locale=locale
                 )
 
                 if last_account is None:

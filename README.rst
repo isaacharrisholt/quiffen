@@ -122,3 +122,16 @@ License
 -------
 
 The project is licensed under the GNU GPLv3 license.
+
+
+Build the Package
+=================
+Run the following command in the terminal to build the package:
+```bash
+python setup sdist
+```
+This command will create a dist/ directory with a source distribution of your library.
+Install the local package using pip:
+```bash
+pip install dist/quiffen-1.0.tar.gz
+```
