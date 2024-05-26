@@ -39,6 +39,11 @@ def nonexistent_file():
     return Path(__file__).parent / "test_files" / "nonexistent.qif"
 
 
+@pytest.fixture
+def qif_file_with_clear_autoswitch():
+    return Path(__file__).parent / "test_files" / "test_clear_autoswitch.qif"
+
+
 def test_create_qif():
     """Test creating a Qif instance"""
     qif = Qif()
@@ -1101,3 +1106,14 @@ T100
 ^
 """
     )
+
+
+def test_clear_autoswitch_ignored(qif_file_with_clear_autoswitch):
+    """Tests that `!Clear:AutoSwitch` flag exported by Quicken and GNUCash
+    is ignored.
+
+    Relates to discussion #89.
+    """
+    qif = Qif.parse(qif_file_with_clear_autoswitch)
+    assert len(qif.accounts) == 1
+    assert list(qif.accounts.keys()) == ["My Bank Account"]

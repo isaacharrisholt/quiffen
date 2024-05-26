@@ -160,12 +160,20 @@ class Qif(BaseModel):
                 continue
 
             # Allow for comments and blank lines at the top of sections
+            # Also skip `!Clear:` lines to ignore flags such as `!Clear:AutoSwitch`
             for i, line in enumerate(section_lines):
+                if (
+                    not line.strip()
+                    or line.strip().startswith("!Clear:")
+                    or line[0] == "#"
+                ):
+                    continue
+
+                # Found the header line
                 header_line = line
-                if line.strip() and line[0] != "#":
-                    line_number += i
-                    section_lines = section_lines[i:]
-                    break
+                line_number += i
+                section_lines = section_lines[i:]
+                break
             else:
                 # Empty section
                 continue
