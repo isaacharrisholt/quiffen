@@ -1125,7 +1125,7 @@ def test_clear_autoswitch_ignored(qif_file_with_clear_autoswitch):
 
 
 def test_option_autoswitch_ignored(qif_file_with_option_autoswitch):
-    """Tests that `!Clear:OpitonSwitch` flag exported by Quicken
+    """Tests that `!Opiton:AutoSwitch` flag exported by Quicken
     is ignored.
 
     Relates to discussion #92.
