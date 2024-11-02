@@ -161,10 +161,12 @@ class Qif(BaseModel):
 
             # Allow for comments and blank lines at the top of sections
             # Also skip `!Clear:` lines to ignore flags such as `!Clear:AutoSwitch`
+            # Also skip `!Option:` lines to ignore flags such as `!Option:AutoSwitch`
             for i, line in enumerate(section_lines):
                 if (
                     not line.strip()
                     or line.strip().startswith("!Clear:")
+                    or line.strip().startswith("!Option:")
                     or line[0] == "#"
                 ):
                     continue
