@@ -49,6 +49,11 @@ def qif_file_with_option_autoswitch():
     return Path(__file__).parent / "test_files" / "test_option_autoswitch.qif"
 
 
+@pytest.fixture
+def qif_file_with_split_to_account():
+    return Path(__file__).parent / "test_files" / "test_split.qif"
+
+
 def test_create_qif():
     """Test creating a Qif instance"""
     qif = Qif()
@@ -1133,3 +1138,20 @@ def test_option_autoswitch_ignored(qif_file_with_option_autoswitch):
     qif = Qif.parse(qif_file_with_option_autoswitch)
     assert len(qif.accounts) == 1
     assert list(qif.accounts.keys()) == ["My Bank Account"]
+
+
+def test_split_to_account(qif_file_with_split_to_account):
+    """Tests that a split to an account is recorded appropriately,"""
+    qif = Qif.parse(qif_file_with_split_to_account)
+    account = qif.accounts["Quiffen Default Account"]
+
+    # Validate the splits
+    transactions = account.transactions
+    bank_transactions = transactions[AccountType.BANK]
+    split_transaction = bank_transactions[0]
+
+    assert split_transaction.amount == Decimal("-10")
+    assert split_transaction.splits[0].to_account == "An Account"
+    assert split_transaction.splits[0].category is None
+    assert split_transaction.splits[1].to_account is None
+    assert split_transaction.splits[1].category == Category(name="A Category")

@@ -1,0 +1,11 @@
+!Type:Bank
+D1/ 1'00
+U-10.00
+T-10.00
+PA Payee
+L--Split--
+S[An Account]
+$-9.00
+SA Category
+$-1.00
+^
