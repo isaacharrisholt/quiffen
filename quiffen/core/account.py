@@ -255,7 +255,7 @@ class Account(BaseModel):
                 if field_info in AccountType:
                     kwargs["account_type"] = field_info
                 else:
-                    kwargs["account_type"] = "Unknown"
+                    kwargs["account_type"] = AccountType.UNKNOWN.value
             elif line_code == "L":
                 kwargs["credit_limit"] = field_info.replace(",", "")
             elif line_code in {"$", "£"}:
