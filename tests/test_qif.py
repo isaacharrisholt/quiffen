@@ -44,6 +44,11 @@ def qif_file_with_clear_autoswitch():
     return Path(__file__).parent / "test_files" / "test_clear_autoswitch.qif"
 
 
+@pytest.fixture
+def qif_file_with_option_autoswitch():
+    return Path(__file__).parent / "test_files" / "test_option_autoswitch.qif"
+
+
 def test_create_qif():
     """Test creating a Qif instance"""
     qif = Qif()
@@ -1115,5 +1120,16 @@ def test_clear_autoswitch_ignored(qif_file_with_clear_autoswitch):
     Relates to discussion #89.
     """
     qif = Qif.parse(qif_file_with_clear_autoswitch)
+    assert len(qif.accounts) == 1
+    assert list(qif.accounts.keys()) == ["My Bank Account"]
+
+
+def test_option_autoswitch_ignored(qif_file_with_option_autoswitch):
+    """Tests that `!Opiton:AutoSwitch` flag exported by Quicken
+    is ignored.
+
+    Relates to discussion #92.
+    """
+    qif = Qif.parse(qif_file_with_option_autoswitch)
     assert len(qif.accounts) == 1
     assert list(qif.accounts.keys()) == ["My Bank Account"]
