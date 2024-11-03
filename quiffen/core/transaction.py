@@ -369,8 +369,11 @@ class Transaction(BaseModel):
                     classes,
                 )
 
-                split_category = create_categories_from_hierarchy(field_info)
-                new_split = Split(category=split_category)
+                if field_info.startswith("["):
+                    new_split = Split(to_account=field_info[1:-1])
+                else:
+                    split_category = create_categories_from_hierarchy(field_info)
+                    new_split = Split(category=split_category)
                 splits.append(new_split)
                 current_split = new_split
             elif line_code == "D":
