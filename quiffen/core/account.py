@@ -252,7 +252,7 @@ class Account(BaseModel):
             elif line_code == "D":
                 kwargs["desc"] = field_info
             elif line_code == "T":
-                if field_info in AccountType:
+                if field_info in [item.value for item in AccountType]:
                     kwargs["account_type"] = field_info
                 else:
                     kwargs["account_type"] = AccountType.UNKNOWN.value
