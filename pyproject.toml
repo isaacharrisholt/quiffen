@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quiffen"
-version = "2.0.12"
+version = "2.0.13"
 description = "Quiffen"
 authors = ["Isaac Harris-Holt <isaac@harris-holt.com>"]
 license = "GPL-3.0-or-later"
