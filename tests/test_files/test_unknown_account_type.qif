@@ -1,0 +1,26 @@
+# This is a strange file but it is representative of a real Quicken
+# export. It's unclear what the purpose of the !Option section is.
+# But it seems like non-standard account types are used in this section,
+# even though when the account transactions appear, they use a standard
+# type (Invst). Since the meaning is unclear we take the simplest
+# approach. The first time !Account is encountered, that is where
+# the account is defined. If the account type is unknown it will
+# be identified as such. In this case, the transactions may be
+# categorized under a different account type, which isn't ideal but
+# the QIF standard seems to allow for this.
+!Option:AutoSwitch
+!Account
+^
+NPortfolio Account
+TPort
+^
+!Clear:AutoSwitch
+!Account
+NPortfolio Account
+TInvst
+^
+!Type:Invst
+D1/ 1'01
+NCash
+L[Portfolio Account]
+^

@@ -21,6 +21,7 @@ class AccountType(str, Enum):
     OTH_L = "Oth L"
     INVOICE = "Invoice"
     INVST = "Invst"
+    UNKNOWN = "Unknown"
 
 
 class Account(BaseModel):
@@ -251,7 +252,10 @@ class Account(BaseModel):
             elif line_code == "D":
                 kwargs["desc"] = field_info
             elif line_code == "T":
-                kwargs["account_type"] = field_info
+                if field_info in [item.value for item in AccountType]:
+                    kwargs["account_type"] = field_info
+                else:
+                    kwargs["account_type"] = AccountType.UNKNOWN.value
             elif line_code == "L":
                 kwargs["credit_limit"] = field_info.replace(",", "")
             elif line_code in {"$", "£"}:

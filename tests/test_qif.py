@@ -49,6 +49,16 @@ def qif_file_with_option_autoswitch():
     return Path(__file__).parent / "test_files" / "test_option_autoswitch.qif"
 
 
+@pytest.fixture
+def qif_file_with_split_to_account():
+    return Path(__file__).parent / "test_files" / "test_split.qif"
+
+
+@pytest.fixture
+def qif_file_with_unknown_account_type():
+    return Path(__file__).parent / "test_files" / "test_unknown_account_type.qif"
+
+
 def test_create_qif():
     """Test creating a Qif instance"""
     qif = Qif()
@@ -1133,3 +1143,35 @@ def test_option_autoswitch_ignored(qif_file_with_option_autoswitch):
     qif = Qif.parse(qif_file_with_option_autoswitch)
     assert len(qif.accounts) == 1
     assert list(qif.accounts.keys()) == ["My Bank Account"]
+
+
+def test_split_to_account(qif_file_with_split_to_account):
+    """Tests that a split to an account is recorded appropriately.
+
+    Relates to discussion #94
+    """
+    qif = Qif.parse(qif_file_with_split_to_account)
+    account = qif.accounts["Quiffen Default Account"]
+
+    # Validate the splits
+    transactions = account.transactions
+    bank_transactions = transactions[AccountType.BANK]
+    split_transaction = bank_transactions[0]
+
+    assert split_transaction.amount == Decimal("-10")
+    assert split_transaction.splits[0].to_account == "An Account"
+    assert split_transaction.splits[0].category is None
+    assert split_transaction.splits[1].to_account is None
+    assert split_transaction.splits[1].category == Category(name="A Category")
+
+
+def test_unknown_account_type(qif_file_with_unknown_account_type):
+    """Tests that unknown account types are handled.
+
+    Relates to discussion #95.
+    """
+    qif = Qif.parse(qif_file_with_unknown_account_type)
+    assert qif.accounts["Portfolio Account"].account_type == AccountType.UNKNOWN
+    # Oddly, the transactions are grouped under a known account type.
+    transactions = qif.accounts["Portfolio Account"].transactions
+    assert AccountType.INVST in transactions
