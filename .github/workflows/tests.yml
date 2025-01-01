@@ -18,6 +18,12 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+    # see https://github.com/pre-commit/action/#using-this-action
+    - name: pre-commit checks
+      uses: pre-commit/action@v3.0.1
+      env:
+        # it's okay for github to commit to main/master
+        SKIP: no-commit-to-branch
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
