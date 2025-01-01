@@ -172,6 +172,21 @@ def test_from_list_with_unknown_line_code():
         Security.from_list(qif_list)
 
 
+def test_from_list_no_symbol():
+    """Test creating a security from a list with no custom fields"""
+    qif_list = [
+        "NTest Security",
+        "TTest Type",
+        "GTest Goal",
+    ]
+    security = Security.from_list(qif_list)
+    assert security.name == "Test Security"
+    # Since we need a symbol, use the name as the symbol
+    assert security.symbol == security.name
+    assert security.type == "Test Type"
+    assert security.goal == "Test Goal"
+
+
 def test_from_string_default_separator():
     """Test creating a security from a string with the default separator"""
     qif_string = "NTest Security\n" "STest Symbol\n" "TTest Type\n" "GTest Goal\n"
