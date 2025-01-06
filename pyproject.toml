@@ -1,43 +1,57 @@
-[tool.poetry]
+[project]
+authors = [
+    {name = "Isaac Harris-Holt", email = "isaac@harris-holt.com"},
+]
+license = {text = "GPL-3.0-or-later"}
+requires-python = "<4.0,>=3.9"
+dependencies = [
+    "pydantic>2.0.0,>=1.10.2",
+    "pandas>2.2.0",
+    "numpy>1.24.4",
+    "python-dateutil>=2.9.0.post0",
+]
 name = "quiffen"
 version = "2.0.13"
 description = "Quiffen"
-authors = ["Isaac Harris-Holt <isaac@harris-holt.com>"]
-license = "GPL-3.0-or-later"
 readme = "README.rst"
+keywords = [
+    "qif",
+    "finance",
+    "data processing",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+]
+
+[project.urls]
 homepage = "https://github.com/isaacharrisholt/quiffen"
 repository = "https://github.com/isaacharrisholt/quiffen"
 documentation = "https://quiffen.readthedocs.io/en/latest/"
-keywords = ['qif', 'finance', 'data processing']
-classifiers = [
-  "Development Status :: 5 - Production/Stable",
-  "Intended Audience :: Developers",
-  "Programming Language :: Python :: 3",
-  "Operating System :: MacOS :: MacOS X",
-  "Operating System :: Microsoft :: Windows",
+
+[dependency-groups]
+dev = [
+    "pytest<8.0.0,>=7.2.0",
+    "black<24.0.0,>=23.1.0",
+    "isort<6.0.0,>=5.12.0",
+    "ruff>=0.0.254,<1.0.0",
+    "tox<5.0.0,>=4.4.6",
+    "pyright<2.0.0,>=1.1.296",
+    "pre-commit<4.0.0,>=3.1.1",
+    "tox-uv>=1.17.0",
+    "pandas-stubs>=2.2.2.240807",
+    "mypy>=1.14.1",
+    "types-python-dateutil>=2.9.0.20241206",
 ]
 
-
-[tool.poetry.dependencies]
-python = "^3.8"
-pydantic = "^1.10.2"
-pandas = "^1.5.1"
-python-dateutil = "^2.8.2"
-
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.2.0"
-black = "^23.1.0"
-isort = "^5.12.0"
-ruff = "^0.0.254"
-tox = "^4.4.6"
-pyright = "^1.1.296"
-pre-commit = "^3.1.1"
-
-
+[tool.pdm.build]
+includes = []
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [tool.isort]
 profile = "black"
@@ -45,12 +59,37 @@ include_trailing_comma = true
 
 [tool.ruff]
 line-length = 88
+target-version = "py39"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+# see https://docs.astral.sh/ruff/configuration/#using-pyprojecttoml
+select = [
+  # default Ruff checkers: E4, E7, E9, F
+  "E4",
+  "E7",
+  "E9",
+  # "F" contains autoflake, see https://github.com/astral-sh/ruff/issues/1647
+  "F",  # pyflakes
+
+  "I",   # isort
+
+  # TODO: add more rules.  For example:
+  # "B",   # flake8-bugbear
+  # "C4",  # flake8-comprehensions
+  # "EXE", # flake8-executable
+  # "ICN", # flake8-import-conventions
+  # "ISC", # flake8-implicit-str-concat
+  # "PL",  # pylint
+  # "RUF",
+  # "UP",  # pyupgrade
+]
+
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"] # Ignore unused imports in __init__.py
 
 [tool.pyright]
-pythonVersion = "3.8"
+pythonVersion = "3.9"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
