@@ -453,10 +453,14 @@ class Transaction(BaseModel):
                     if class_name:
                         classes[class_name].add_category(category)
             elif line_code == "N":
+                try:
+                    check_number: Union[int, str] = int(field_info)
+                except ValueError:
+                    check_number = field_info
                 if not splits:
-                    kwargs["check_number"] = field_info
+                    kwargs["check_number"] = check_number
                 elif current_split:
-                    current_split.check_number = field_info
+                    current_split.check_number = check_number
             elif line_code == "F":
                 kwargs["reimbursable_expense"] = field_info or True
             elif line_code == "1":
