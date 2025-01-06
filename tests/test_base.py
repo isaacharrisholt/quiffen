@@ -9,7 +9,7 @@ def test_create_field():
     field = Field(line_code="T", attr="test", type=str)
     assert field.line_code == "T"
     assert field.attr == "test"
-    assert field.type == str
+    assert field.type is str
 
 
 def test_sorting_fields():
