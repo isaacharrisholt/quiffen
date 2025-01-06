@@ -49,13 +49,10 @@ dev = [
 
 [tool.pdm.build]
 includes = []
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
-
-[tool.isort]
-profile = "black"
-include_trailing_comma = true
 
 [tool.ruff]
 line-length = 88
