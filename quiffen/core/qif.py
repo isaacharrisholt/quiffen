@@ -6,6 +6,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union
 
+import pandas as pd
 from pydantic.types import FilePath
 
 from quiffen import utils
@@ -16,13 +17,6 @@ from quiffen.core.class_type import Class
 from quiffen.core.investment import Investment
 from quiffen.core.security import Security
 from quiffen.core.transaction import Transaction
-
-try:
-    import pandas as pd
-
-    PANDAS_INSTALLED = True
-except ModuleNotFoundError:
-    PANDAS_INSTALLED = False
 
 VALID_TRANSACTION_ACCOUNT_TYPES = [
     "!type:cash",
@@ -576,11 +570,6 @@ class Qif(BaseModel):
         pd.DataFrame
             The data as a Pandas DataFrame
         """
-        if not PANDAS_INSTALLED:
-            raise ModuleNotFoundError(
-                "The pandas module must be installed to use this method"
-            )
-
         if ignore is None:
             ignore = []
 
