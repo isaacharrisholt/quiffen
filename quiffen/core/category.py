@@ -125,8 +125,13 @@ class Category(BaseModel):
                     )
         return "Category:" + properties
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: Category) -> bool:
         return self.name < other.name
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Category):
+            return False
+        return self.dict() == other.dict()
 
     @validator("hierarchy", pre=True, always=True)
     def _set_hierarchy(cls, v: str, values) -> str:
@@ -200,7 +205,7 @@ class Category(BaseModel):
         The list is ordered starting with the current category, then its
         children, then the children's children etc.
         """
-        nodes_to_visit = [self]
+        nodes_to_visit: List[Category] = [self]
         all_children = []
         while nodes_to_visit:
             current_node = nodes_to_visit.pop()
@@ -232,7 +237,7 @@ class Category(BaseModel):
         KeyError
             If the category cannot be found.
         """
-        nodes_to_visit = [self]
+        nodes_to_visit: List[Category] = [self]
         while nodes_to_visit:
             current_node = nodes_to_visit.pop()
             if current_node.name == node_name:
@@ -511,27 +516,25 @@ def add_categories_to_container(
         The new iterable, now containing ``new_category``
     """
     # Add categories in hierarchy
-    categories_is_dict = isinstance(categories, dict)
     if new_category.hierarchy != new_category.name or new_category.children:
         # Get the root category in the chain
         root = new_category.traverse_up()[-1]
 
-        iterator = categories.values() if categories_is_dict else categories
+        iterator = categories.values() if isinstance(categories, dict) else categories
 
         # Check if the root category already exists in the categories container
         for category in iterator:
-            category: Category  # Type hint
             success = category.merge(root)
             if success:
                 break
         else:
             # If the category doesn't exist, add it to the categories container
-            if categories_is_dict:
+            if isinstance(categories, dict):
                 categories[root.name] = root
             else:
                 categories.append(root)
     else:
-        if categories_is_dict:
+        if isinstance(categories, dict):
             categories[new_category.name] = new_category
         else:
             categories.append(new_category)
