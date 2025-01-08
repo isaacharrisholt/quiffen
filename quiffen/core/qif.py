@@ -4,9 +4,8 @@ import csv
 import io
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union
 
-import pandas as pd
 from pydantic.types import FilePath
 
 from quiffen import utils
@@ -17,6 +16,9 @@ from quiffen.core.class_type import Class
 from quiffen.core.investment import Investment
 from quiffen.core.security import Security
 from quiffen.core.transaction import Transaction
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 VALID_TRANSACTION_ACCOUNT_TYPES = [
     "!type:cash",
@@ -570,6 +572,13 @@ class Qif(BaseModel):
         pd.DataFrame
             The data as a Pandas DataFrame
         """
+        try:
+            import pandas as pd
+        except ImportError as e:
+            raise ImportError(
+                "The pandas package is required to convert Qif objects to DataFrames. Please install it using `pip install quiffen[pandas]`."
+            ) from e
+
         if ignore is None:
             ignore = []
 
