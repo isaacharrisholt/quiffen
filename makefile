@@ -10,7 +10,7 @@ lint:
 
 .PHONY:	wheel
 wheel:
-	uv build -f wheel
+	uv build --wheel
 
 .PHONY:	install
 install:	wheel
