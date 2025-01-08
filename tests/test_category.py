@@ -55,7 +55,7 @@ def test_eq_success():
     parent1 = Category(name="Parent")
     parent2 = Category(name="Parent")
     child1 = Category(name="Child")
-    child2 = child1.model_copy()
+    child2 = child1.copy()
     parent1.add_child(child1)
     parent2.add_child(child2)
     assert parent1 == parent2
