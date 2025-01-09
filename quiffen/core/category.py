@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any, Dict, Iterable, List, Optional, TypeVar, Union
 
 from pydantic import validator
 
@@ -475,7 +475,7 @@ class Category(BaseModel):
         return new_cat
 
 
-ListOrDictOfCategories = Union[List[Category], Dict[str, Category]]
+T = TypeVar("T", List[Category], Dict[str, Category])
 
 
 def create_categories_from_hierarchy(hierarchy: str) -> Category:
@@ -494,8 +494,8 @@ def create_categories_from_hierarchy(hierarchy: str) -> Category:
 
 def add_categories_to_container(
     new_category: Category,
-    categories: ListOrDictOfCategories,
-) -> ListOrDictOfCategories:
+    categories: T,
+) -> T:
     """Add ``new_category`` to ``categories`` after first creating necessary
     hierarchy.
 
@@ -526,17 +526,13 @@ def add_categories_to_container(
         for category in iterator:
             success = category.merge(root)
             if success:
-                break
-        else:
-            # If the category doesn't exist, add it to the categories container
-            if isinstance(categories, dict):
-                categories[root.name] = root
-            else:
-                categories.append(root)
+                return categories
     else:
-        if isinstance(categories, dict):
-            categories[new_category.name] = new_category
-        else:
-            categories.append(new_category)
+        root = new_category
+
+    if isinstance(categories, dict):
+        categories[root.name] = root
+    else:
+        categories.append(root)
 
     return categories

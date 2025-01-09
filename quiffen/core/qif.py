@@ -199,7 +199,7 @@ class Qif(BaseModel):
             if "!Type:Cat" in header_line:
                 # Section contains category information
                 new_category = Category.from_list(sanitised_section_lines)
-                categories = add_categories_to_container(  # type: ignore
+                categories = add_categories_to_container(
                     new_category,
                     categories,
                 )
@@ -321,7 +321,7 @@ class Qif(BaseModel):
 
     def add_category(self, new_category: Category) -> None:
         """Add a new category to the Qif object"""
-        self.categories = add_categories_to_container(  # type: ignore
+        self.categories = add_categories_to_container(
             new_category,
             self.categories,
         )
