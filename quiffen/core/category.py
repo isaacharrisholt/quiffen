@@ -518,21 +518,19 @@ def add_categories_to_container(
     # Add categories in hierarchy
     if new_category.hierarchy != new_category.name or new_category.children:
         # Get the root category in the chain
-        root = new_category.traverse_up()[-1]
+        new_category = new_category.traverse_up()[-1]
 
         iterator = categories.values() if isinstance(categories, dict) else categories
 
         # Check if the root category already exists in the categories container
         for category in iterator:
-            success = category.merge(root)
+            success = category.merge(new_category)
             if success:
                 return categories
-    else:
-        root = new_category
 
     if isinstance(categories, dict):
-        categories[root.name] = root
+        categories[new_category.name] = new_category
     else:
-        categories.append(root)
+        categories.append(new_category)
 
     return categories
