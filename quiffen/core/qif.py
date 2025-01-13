@@ -574,8 +574,8 @@ class Qif(BaseModel):
         """
         try:
             import pandas as pd
-        except ImportError as e:
-            raise ImportError(
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
                 "The pandas package is required to convert Qif objects to DataFrames. Please install it using `pip install quiffen[pandas]`."
             ) from e
 

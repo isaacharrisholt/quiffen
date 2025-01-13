@@ -475,9 +475,6 @@ class Category(BaseModel):
         return new_cat
 
 
-T = TypeVar("T", List[Category], Dict[str, Category])
-
-
 def create_categories_from_hierarchy(hierarchy: str) -> Category:
     """Create a Category instance from a QIF hierarchy string. Returns the
     lowest category of the hierarchy.
@@ -490,6 +487,9 @@ def create_categories_from_hierarchy(hierarchy: str) -> Category:
         for category in categories[1:]:
             current_category = current_category.add_child(category)
     return current_category
+
+
+T = TypeVar("T", List[Category], Dict[str, Category])
 
 
 def add_categories_to_container(
