@@ -137,6 +137,32 @@ class Qif(BaseModel):
         if not data:
             raise ParserException("The file is empty.")
 
+        return cls.parse_string(data, separator=separator, day_first=day_first)
+
+    @classmethod
+    def parse_string(
+        cls, data: str, separator: str = "\n", day_first: bool = False
+    ) -> Qif:
+        """Return a class instance from a string containing QIF data.
+
+        Parameters
+        ----------
+        data : str
+            The string of QIF data
+        separator : str, default='\n'
+            The line separator for the QIF file. This probably won't need
+            changing.
+        day_first : bool, default=False
+            Whether the day or month comes first in the date.
+
+        Returns
+        -------
+        Qif
+            A Qif object containing all the data in the QIF file.
+        """
+        if not data:
+            raise ParserException("The file is empty.")
+
         accounts: Dict[str, Account] = {}
         last_account = None
         categories: Dict[str, Category] = {}
