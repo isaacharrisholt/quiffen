@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, overload
 
 from pydantic import root_validator, validator
 
@@ -319,7 +319,7 @@ class Transaction(BaseModel):
         return qif
 
     @classmethod
-    def from_list(
+    def from_list(  # type: ignore - this one needs an incompatible return type
         cls,
         lst: List[str],
         day_first: bool = False,
