@@ -4,7 +4,7 @@ import csv
 import io
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union
 
 from pydantic.types import FilePath
 
@@ -17,12 +17,8 @@ from quiffen.core.investment import Investment
 from quiffen.core.security import Security
 from quiffen.core.transaction import Transaction
 
-try:
+if TYPE_CHECKING:
     import pandas as pd
-
-    PANDAS_INSTALLED = True
-except ModuleNotFoundError:
-    PANDAS_INSTALLED = False
 
 VALID_TRANSACTION_ACCOUNT_TYPES = [
     "!type:cash",
@@ -203,7 +199,7 @@ class Qif(BaseModel):
             if "!Type:Cat" in header_line:
                 # Section contains category information
                 new_category = Category.from_list(sanitised_section_lines)
-                categories = add_categories_to_container(  # type: ignore
+                categories = add_categories_to_container(
                     new_category,
                     categories,
                 )
@@ -325,7 +321,7 @@ class Qif(BaseModel):
 
     def add_category(self, new_category: Category) -> None:
         """Add a new category to the Qif object"""
-        self.categories = add_categories_to_container(  # type: ignore
+        self.categories = add_categories_to_container(
             new_category,
             self.categories,
         )
@@ -576,10 +572,12 @@ class Qif(BaseModel):
         pd.DataFrame
             The data as a Pandas DataFrame
         """
-        if not PANDAS_INSTALLED:
+        try:
+            import pandas as pd
+        except ModuleNotFoundError as e:
             raise ModuleNotFoundError(
-                "The pandas module must be installed to use this method"
-            )
+                "The pandas package is required to convert Qif objects to DataFrames. Please install it using `pip install quiffen[pandas]`."
+            ) from e
 
         if ignore is None:
             ignore = []

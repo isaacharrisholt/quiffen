@@ -1,25 +1,25 @@
 PKG_NAME = 	quiffen
 
-.PHONY:		test
+.PHONY:	test
 test:
-		( cd tests ; poetry run pytest )
+	( cd tests ; uv run pytest )
 
-.PHONY:     lint
+.PHONY:	lint
 lint:
-        ( poetry run pylint $(PKG_NAME); poetry run pylint tests )
+	( uv run ruff check $(PKG_NAME); uv run ruff check tests )
 
-.PHONY:		wheel
+.PHONY:	wheel
 wheel:
-		poetry build -f wheel
+	uv build --wheel
 
-.PHONY:		install
+.PHONY:	install
 install:	wheel
-		poetry install
+	uv sync
 
-.PHONY:		reinstall
+.PHONY:	reinstall
 reinstall:	clean install
 
-.PHONY:		clean
+.PHONY:	clean
 clean:
-		find . -type d -name __pycache__ -prune -exec rm -r {} \;
-		rm -fr build dist *.egg-info test2.qif
+	find . -type d -name __pycache__ -prune -exec rm -r {} \;
+	rm -fr build dist *.egg-info test2.qif
