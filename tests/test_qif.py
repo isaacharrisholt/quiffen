@@ -217,12 +217,33 @@ def test_from_list():
         qif.from_list([])
 
 
-def test_parse_works(qif_file):
+def test_parse_string_works():
+    """Test parsing a QIF file"""
+    qif_string = (
+        "!Type:Class\n"
+        "NTest class\n"
+        "DThis is just a class I added here for test purposes\n"
+        "^\n"
+        "!Type:Class\n"
+        "NTest class 2\n"
+        "DThis is just a class I added here for test purposes\n"
+        "^\n"
+    )
+    Qif.parse_string(qif_string)
+
+
+def test_parse_empty_string():
+    """Test parsing an empty QIF file"""
+    with pytest.raises(ParserException):
+        Qif.parse("")
+
+
+def test_parse_file_works(qif_file):
     """Test parsing a QIF file"""
     Qif.parse(qif_file)
 
 
-def test_parse_works_with_oth_a_account(qif_file_with_oth_a_account):
+def test_parse_file_works_with_oth_a_account(qif_file_with_oth_a_account):
     """Test parsing a QIF file with an OTH account"""
     Qif.parse(qif_file_with_oth_a_account)
 
