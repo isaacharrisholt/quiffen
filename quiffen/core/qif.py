@@ -161,7 +161,7 @@ class Qif(BaseModel):
             A Qif object containing all the data in the QIF file.
         """
         if not data:
-            raise ParserException("The file is empty.")
+            raise ParserException("The data string is empty.")
 
         accounts: Dict[str, Account] = {}
         last_account = None
