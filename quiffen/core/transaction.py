@@ -319,7 +319,7 @@ class Transaction(BaseModel):
         return qif
 
     @classmethod
-    def from_list(
+    def from_list(  # type: ignore - this one needs an incompatible return type
         cls,
         lst: List[str],
         day_first: bool = False,

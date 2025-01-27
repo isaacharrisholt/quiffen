@@ -1,9 +1,7 @@
 from abc import abstractmethod
-from typing import Any, Dict, Generic, Iterable, List, Optional, Type, TypeVar
+from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar
 
 from pydantic import BaseModel as PydanticBaseModel
-
-T = TypeVar("T")
 
 
 class Field(PydanticBaseModel):
@@ -38,7 +36,10 @@ class Field(PydanticBaseModel):
         )
 
 
-class BaseModel(PydanticBaseModel, Generic[T]):
+TModel = TypeVar("TModel", bound="BaseModel")
+
+
+class BaseModel(PydanticBaseModel):
     class Config:
         extra = "allow"
 
@@ -85,11 +86,11 @@ class BaseModel(PydanticBaseModel, Generic[T]):
 
     @classmethod
     @abstractmethod
-    def from_list(cls, lst: List[str]) -> T:
+    def from_list(cls: Type[TModel], lst: List[str]) -> TModel:
         pass
 
     @classmethod
-    def from_string(cls, string: str, separator: str = "\n") -> T:
+    def from_string(cls: Type[TModel], string: str, separator: str = "\n") -> TModel:
         """Create a class instance from a string."""
         return cls.from_list(string.split(separator))
 
