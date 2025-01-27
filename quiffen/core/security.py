@@ -128,6 +128,9 @@ class Security(BaseModel):
         if line_number is not None:
             kwargs["line_number"] = line_number
 
+        # if symbol is not present, use the name
+        kwargs["symbol"] = kwargs.get("symbol", kwargs.get("name"))
+
         return cls(**kwargs)
 
     @classmethod
