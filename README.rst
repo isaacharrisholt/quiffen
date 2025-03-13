@@ -121,4 +121,4 @@ If you are having issues, please let me know.
 License
 -------
 
-The project is licensed under the GNU GPLv3 license.
+The project is licensed under the MIL license.
