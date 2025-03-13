@@ -59,6 +59,11 @@ def qif_file_with_unknown_account_type():
     return Path(__file__).parent / "test_files" / "test_unknown_account_type.qif"
 
 
+@pytest.fixture
+def qif_file_with_no_symbol():
+    return Path(__file__).parent / "test_files" / "test_nosymbol.qif"
+
+
 def test_create_qif():
     """Test creating a Qif instance"""
     qif = Qif()
@@ -388,6 +393,13 @@ def test_parsed_securities(qif_file):
     assert qif.securities["USD0000"].symbol == "USD0000"
     assert qif.securities["USD0000"].type == "Stock"
     assert qif.securities["USD0000"].goal == "Growth"
+
+
+def test_parse_nosymbol(qif_file_with_no_symbol):
+    """Test that a security with no symbol can still be parsed without error"""
+    qif = Qif.parse(qif_file_with_no_symbol)
+
+    assert list(qif.securities.keys()) == ["Example"]
 
 
 def test_add_account():
