@@ -121,4 +121,4 @@ If you are having issues, please let me know.
 License
 -------
 
-The project is licensed under the MIL license.
+The project is licensed under the MIT license.
