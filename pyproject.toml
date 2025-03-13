@@ -9,7 +9,7 @@ dependencies = [
     "python-dateutil>=2.8.2,<3.0.0",
 ]
 name = "quiffen"
-version = "2.0.13"
+version = "3.0.0"
 description = "Quiffen"
 readme = "README.rst"
 keywords = [
