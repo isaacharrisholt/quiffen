@@ -3,7 +3,7 @@ authors = [
     {name = "Isaac Harris-Holt", email = "isaac@harris-holt.com"},
 ]
 license = {text = "GPL-3.0-or-later"}
-requires-python = ">=3.9,<3.13"
+requires-python = ">=3.9,<3.14"
 dependencies = [
     "pydantic>=1.10.2,<2.11.0",
     "python-dateutil>=2.8.2,<3.0.0",
