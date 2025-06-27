@@ -84,7 +84,7 @@ personal bank account with Barclays.\n^\n!Type:Bank\nD02/07/2021\nT150.0\n^\n'
 Documentation
 -------------
 
-Documentation can be found at: https://quiffen.readthedocs.io/en/latest
+Documentation can be found at: https://quiffen.readthedocs.io/en/latest/
 
 Installation
 ------------
