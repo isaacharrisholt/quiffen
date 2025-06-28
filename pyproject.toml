@@ -3,7 +3,7 @@ authors = [
     {name = "Isaac Harris-Holt", email = "isaac@harris-holt.com"},
 ]
 license = {text = "GPL-3.0-or-later"}
-requires-python = ">=3.9,<3.14"
+requires-python = ">=3.10,<3.14"
 dependencies = [
     "pydantic>=1.10.2,<2.11.0",
     "python-dateutil>=2.8.2,<3.0.0",
@@ -58,7 +58,7 @@ build-backend = "pdm.backend"
 
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 # see https://docs.astral.sh/ruff/configuration/#using-pyprojecttoml
@@ -87,7 +87,7 @@ select = [
 "__init__.py" = ["F401"] # Ignore unused imports in __init__.py
 
 [tool.pyright]
-pythonVersion = "3.9"
+pythonVersion = "3.10"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
