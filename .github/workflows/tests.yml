@@ -30,7 +30,7 @@ jobs:
         pip install tox tox-gh-actions uv tox-uv
     - name: uv sync maybe?
       run: |
-        uv sync --all-extras
+        uv sync --all-extras --fork-strategy fewest
     - name: Output tree so we can see what's going on.
       run: |
         uv tree
