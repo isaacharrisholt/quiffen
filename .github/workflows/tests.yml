@@ -28,11 +28,5 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions uv tox-uv
-    - name: uv sync maybe?
-      run: |
-        uv sync --all-extras
-    - name: Output tree so we can see what's going on.
-      run: |
-        uv tree
     - name: Test with tox
       run: tox
