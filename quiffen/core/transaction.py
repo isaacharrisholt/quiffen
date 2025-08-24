@@ -481,7 +481,7 @@ class Transaction(BaseModel):
             elif line_code == "7":
                 kwargs["original_loan_amount"] = field_info.replace(",", "")
             elif line_code == "X":
-                # Ignore X line code used for invoices in Quicken business versions 
+                # Ignore X line code used for invoices in Quicken business versions
                 pass
             else:
                 raise ValueError(f"Unknown line code: {line_code}")
