@@ -355,6 +355,7 @@ def test_parsed_classes(qif_file):
     assert len(test_class.categories) == 1
     cell_phone = test_class.categories[0]
     assert cell_phone.name == "Cell Phone"
+    assert cell_phone.parent is not None
     assert cell_phone.parent.name == "Bills"
 
     # Validate test class 2
@@ -727,6 +728,7 @@ def test_to_csv_transactions():
     assert csv_file.exists()
     with csv_file.open() as f:
         reader = csv.DictReader(f)
+        assert reader.fieldnames is not None
         assert len(reader.fieldnames) == 20
 
         results = list(reader)
@@ -751,6 +753,8 @@ def test_to_csv_categories():
     assert csv_file.exists()
     with csv_file.open() as f:
         reader = csv.DictReader(f)
+
+        assert reader.fieldnames is not None
         assert len(reader.fieldnames) == 9
 
         results = list(reader)
@@ -771,6 +775,8 @@ def test_to_csv_classes():
     assert csv_file.exists()
     with csv_file.open() as f:
         reader = csv.DictReader(f)
+
+        assert reader.fieldnames is not None
         assert len(reader.fieldnames) == 3
 
         results = list(reader)
@@ -783,7 +789,7 @@ def test_to_csv_classes():
 def test_to_csv_accounts():
     """Test the to_csv method with accounts"""
     qif = Qif()
-    account = Account(name="Test Account", account_type="Bank")
+    account = Account(name="Test Account", account_type=AccountType.BANK)
     account.set_header(AccountType.BANK)
     qif.add_account(account)
 
@@ -793,6 +799,8 @@ def test_to_csv_accounts():
     assert csv_file.exists()
     with csv_file.open() as f:
         reader = csv.DictReader(f)
+
+        assert reader.fieldnames is not None
         assert len(reader.fieldnames) == 7
 
         results = list(reader)
@@ -822,6 +830,8 @@ def test_to_csv_investments():
     assert csv_file.exists()
     with csv_file.open() as f:
         reader = csv.DictReader(f)
+
+        assert reader.fieldnames is not None
         assert len(reader.fieldnames) == 13
 
         results = list(reader)
@@ -845,6 +855,8 @@ def test_to_csv_securities():
     assert csv_file.exists()
     with csv_file.open() as f:
         reader = csv.DictReader(f)
+
+        assert reader.fieldnames is not None
         assert len(reader.fieldnames) == 5
 
         results = list(reader)
@@ -879,6 +891,8 @@ def test_to_csv_transactions_with_date_format_and_ignore_list():
     assert csv_file.exists()
     with csv_file.open() as f:
         reader = csv.DictReader(f)
+
+        assert reader.fieldnames is not None
         assert len(reader.fieldnames) == 19
 
         results = list(reader)
@@ -917,6 +931,8 @@ def test_to_csv_transactions_multiple():
     assert csv_file.exists()
     with csv_file.open() as f:
         reader = csv.DictReader(f)
+
+        assert reader.fieldnames is not None
         assert len(reader.fieldnames) == 20
 
         results = list(reader)
@@ -1003,7 +1019,7 @@ def test_to_dataframe_securities():
 def test_to_dataframe_accounts():
     """Test the to_dataframe method with accounts"""
     qif = Qif()
-    account = Account(name="Test Account", account_type="Bank")
+    account = Account(name="Test Account", account_type=AccountType.BANK)
     qif.add_account(account)
 
     df = qif.to_dataframe(data_type=QifDataType.ACCOUNTS)
@@ -1111,7 +1127,7 @@ def test_transaction_before_account_definition_1(qif_file):
     acc = qif.accounts["Quiffen Default Account"]
 
     assert len(acc.transactions) == 1
-    assert len(acc.transactions["Bank"]) == 2
+    assert len(acc.transactions[AccountType.BANK]) == 2
 
 
 def test_transaction_before_account_definition_2(qif_file):
@@ -1125,7 +1141,7 @@ def test_transaction_before_account_definition_2(qif_file):
     acc = qif.accounts["Quiffen Default Account"]
 
     assert len(acc.transactions) == 1
-    assert len(acc.transactions["Bank"]) == 2
+    assert len(acc.transactions[AccountType.BANK]) == 2
 
 
 def test_empty_qif():
@@ -1192,6 +1208,7 @@ def test_split_to_account(qif_file_with_split_to_account):
     split_transaction = bank_transactions[0]
 
     assert split_transaction.amount == Decimal("-10")
+    assert isinstance(split_transaction, Transaction)
     assert split_transaction.splits[0].to_account == "An Account"
     assert split_transaction.splits[0].category is None
     assert split_transaction.splits[1].to_account is None

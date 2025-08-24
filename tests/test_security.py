@@ -85,7 +85,7 @@ def test_merge():
 def test_to_qif():
     """Test the to_qif method"""
     security = Security(name="Test Security", symbol="Test Symbol")
-    assert security.to_qif() == ("!Type:Security\n" "NTest Security\n" "STest Symbol\n")
+    assert security.to_qif() == ("!Type:Security\nNTest Security\nSTest Symbol\n")
 
     security2 = Security(
         name="Test Security",
@@ -94,11 +94,7 @@ def test_to_qif():
         goal="Test Goal",
     )
     assert security2.to_qif() == (
-        "!Type:Security\n"
-        "NTest Security\n"
-        "STest Symbol\n"
-        "TTest Type\n"
-        "GTest Goal\n"
+        "!Type:Security\nNTest Security\nSTest Symbol\nTTest Type\nGTest Goal\n"
     )
 
 
@@ -152,9 +148,9 @@ def test_from_list_with_custom_fields():
     assert security.symbol == "Test Symbol"
     assert security.type == "Test Type"
     assert security.goal == "Test Goal"
-    assert security.custom_field_1 == "Custom field 1"
-    assert security.custom_field_2 == Decimal("9238479")
-    assert security.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)
+    assert security.custom_field_1 == "Custom field 1"  # type: ignore
+    assert security.custom_field_2 == Decimal("9238479")  # type: ignore
+    assert security.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)  # type: ignore
     setattr(Security, "__CUSTOM_FIELDS", [])  # Reset custom fields
 
 
@@ -189,7 +185,7 @@ def test_from_list_no_symbol():
 
 def test_from_string_default_separator():
     """Test creating a security from a string with the default separator"""
-    qif_string = "NTest Security\n" "STest Symbol\n" "TTest Type\n" "GTest Goal\n"
+    qif_string = "NTest Security\nSTest Symbol\nTTest Type\nGTest Goal\n"
     security = Security.from_string(qif_string)
     assert security.name == "Test Security"
     assert security.symbol == "Test Symbol"
@@ -199,7 +195,7 @@ def test_from_string_default_separator():
 
 def test_from_string_custom_separator():
     """Test creating a security from a string with a custom separator"""
-    qif_string = "NTest Security---" "STest Symbol---" "TTest Type---" "GTest Goal---"
+    qif_string = "NTest Security---STest Symbol---TTest Type---GTest Goal---"
     security = Security.from_string(qif_string, separator="---")
     assert security.name == "Test Security"
     assert security.symbol == "Test Symbol"

@@ -111,7 +111,7 @@ class Category(BaseModel):
             if value:
                 if object_property == "parent":
                     properties += (
-                        f'\n\tParent: {self.parent.name if self.parent else "None"}'
+                        f"\n\tParent: {self.parent.name if self.parent else 'None'}"
                     )
                 elif object_property == "children":
                     properties += f"\n\tChildren: {len(self.children)}"
@@ -120,7 +120,7 @@ class Category(BaseModel):
                 else:
                     properties += (
                         f"\n\t"
-                        f'{object_property.replace("_", " ").strip().title()}: '
+                        f"{object_property.replace('_', ' ').strip().title()}: "
                         f"{value}"
                     )
         return "Category:" + properties
@@ -536,7 +536,7 @@ def add_categories_to_container(
 
     if isinstance(categories, dict):
         categories[new_category.name] = new_category
-    else:
+    elif isinstance(categories, list):
         categories.append(new_category)
 
     return categories

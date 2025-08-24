@@ -39,10 +39,7 @@ def test_str_method():
 
     cls2 = Class(name="Test2", desc="Test Description")
     assert str(cls2) == (
-        "Class:\n\t"
-        "Name: Test2\n\t"
-        "Description: Test Description\n\t"
-        "Categories: 0"
+        "Class:\n\tName: Test2\n\tDescription: Test Description\n\tCategories: 0"
     )
 
 
@@ -149,9 +146,9 @@ def test_from_list_with_custom_fields():
     cls = Class.from_list(qif_list)
     assert cls.name == "Test"
     assert cls.desc == "Test Description"
-    assert cls.custom_field_1 == "Custom field 1"
-    assert cls.custom_field_2 == Decimal("9238479")
-    assert cls.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)
+    assert cls.custom_field_1 == "Custom field 1"  # type: ignore
+    assert cls.custom_field_2 == Decimal("9238479")  # type: ignore
+    assert cls.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)  # type: ignore
     setattr(Class, "__CUSTOM_FIELDS", [])  # Reset custom fields
 
 
@@ -170,7 +167,7 @@ def test_from_list_with_unknown_line_code():
 
 def test_from_string_default_separator():
     """Test creating a class from a QIF string"""
-    qif_string = "NTest\n" "DTest Description\n"
+    qif_string = "NTest\nDTest Description\n"
     cls = Class.from_string(qif_string)
     assert cls.name == "Test"
     assert cls.desc == "Test Description"
@@ -178,7 +175,7 @@ def test_from_string_default_separator():
 
 def test_from_string_custom_separator():
     """Test creating a class from a QIF string with a custom separator"""
-    qif_string = "NTest---" "DTest Description---"
+    qif_string = "NTest---DTest Description---"
     cls = Class.from_string(qif_string, separator="---")
     assert cls.name == "Test"
     assert cls.desc == "Test Description"

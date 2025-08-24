@@ -418,11 +418,7 @@ def test_render_tree(tree):
     render = parent.render_tree()
     print(render)
     assert render == (
-        "Parent (root)\n"
-        "└─ Child1\n"
-        "   └─ Grandchild1\n"
-        "   └─ Grandchild2\n"
-        "└─ Child2"
+        "Parent (root)\n└─ Child1\n   └─ Grandchild1\n   └─ Grandchild2\n└─ Child2"
     )
 
 
@@ -504,11 +500,8 @@ def test_to_qif():
     root = Category(name="Root")
     child = Category(name="Child")
     root.add_child(child)
-    assert (
-        root.to_qif()
-        == (  # Should show both root and child
-            "!Type:Cat\nNRoot\nE\n^\n" "!Type:Cat\nNRoot:Child\nE\n"
-        )
+    assert root.to_qif() == (  # Should show both root and child
+        "!Type:Cat\nNRoot\nE\n^\n!Type:Cat\nNRoot:Child\nE\n"
     )
     assert child.to_qif() == "!Type:Cat\nNRoot:Child\nE\n"
 
@@ -537,12 +530,12 @@ def test_to_qif_with_custom_fields():
         field_type=datetime,
     )
 
-    root.custom_field_1 = "Custom field 1"
-    root.custom_field_2 = Decimal("9238479")
-    root.custom_field_3 = datetime(2022, 1, 1, 0, 0, 0, 1)
-    child.custom_field_1 = "Custom field 1"
-    child.custom_field_2 = Decimal("9238479")
-    child.custom_field_3 = datetime(2022, 1, 1, 0, 0, 0, 1)
+    root.custom_field_1 = "Custom field 1"  # type: ignore
+    root.custom_field_2 = Decimal("9238479")  # type: ignore
+    root.custom_field_3 = datetime(2022, 1, 1, 0, 0, 0, 1)  # type: ignore
+    child.custom_field_1 = "Custom field 1"  # type: ignore
+    child.custom_field_2 = Decimal("9238479")  # type: ignore
+    child.custom_field_3 = datetime(2022, 1, 1, 0, 0, 0, 1)  # type: ignore
 
     assert (
         root.to_qif()
@@ -629,9 +622,9 @@ def test_from_list_with_custom_fields():
     assert category.category_type == "expense"
     assert category.tax_schedule_info == "Tax schedule info"
     assert category.budget_amount == Decimal("123.45")
-    assert category.custom_field_1 == "Custom field 1"
-    assert category.custom_field_2 == Decimal("9238479")
-    assert category.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)
+    assert category.custom_field_1 == "Custom field 1"  # type: ignore
+    assert category.custom_field_2 == Decimal("9238479")  # type: ignore
+    assert category.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)  # type: ignore
     setattr(Category, "__CUSTOM_FIELDS", [])  # Reset custom fields
 
 
@@ -656,12 +649,7 @@ def test_from_list_with_unknown_line_code():
 def test_from_string_default_separator():
     """Test creating a category from a QIF string"""
     qif_string = (
-        "NParent\n"
-        "DSome category description\n"
-        "E\n"
-        "T\n"
-        "B123.45\n"
-        "RTax schedule info\n"
+        "NParent\nDSome category description\nE\nT\nB123.45\nRTax schedule info\n"
     )
     category = Category.from_string(qif_string)
     assert category.name == "Parent"
@@ -674,12 +662,7 @@ def test_from_string_default_separator():
 def test_from_string_custom_separator():
     """Test creating a category from a QIF string with a custom separator"""
     qif_string = (
-        "NParent---"
-        "DSome category description---"
-        "E---"
-        "T---"
-        "B123.45---"
-        "RTax schedule info---"
+        "NParent---DSome category description---E---T---B123.45---RTax schedule info---"
     )
     category = Category.from_string(qif_string, separator="---")
     assert category.name == "Parent"
@@ -694,7 +677,9 @@ def test_create_categories_from_hierarchy():
     hierarchy = "Parent:Child:Grandchild"
     grandchild = create_categories_from_hierarchy(hierarchy)
     assert grandchild.name == "Grandchild"
+    assert grandchild.parent is not None
     assert grandchild.parent.name == "Child"
+    assert grandchild.parent.parent is not None
     assert grandchild.parent.parent.name == "Parent"
 
 

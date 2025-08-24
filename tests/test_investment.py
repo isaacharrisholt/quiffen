@@ -18,9 +18,9 @@ def test_create_investment():
         date=date,
         action="Buy",
         security="Test Security",
-        price=100,
+        price=Decimal(100),
         memo="Test Memo",
-        commission=10,
+        commission=Decimal(10),
     )
     assert investment2.action == "Buy"
     assert investment2.security == "Test Security"
@@ -36,17 +36,17 @@ def test_eq_success():
         date=date,
         action="Buy",
         security="Test Security",
-        price=100,
+        price=Decimal(100),
         memo="Test Memo",
-        commission=10,
+        commission=Decimal(10),
     )
     investment2 = Investment(
         date=date,
         action="Buy",
         security="Test Security",
-        price=100,
+        price=Decimal(100),
         memo="Test Memo",
-        commission=10,
+        commission=Decimal(10),
     )
     assert investment == investment2
 
@@ -58,17 +58,17 @@ def test_eq_failure():
         date=date,
         action="Buy",
         security="Test Security",
-        price=100,
+        price=Decimal(100),
         memo="Test Memo",
-        commission=10,
+        commission=Decimal(10),
     )
     investment2 = Investment(
         date=date,
         action="Buy",
         security="Test Security",
-        price=100,
+        price=Decimal(100),
         memo="Test Memo",
-        commission=20,
+        commission=Decimal(20),
     )
     assert investment != investment2
 
@@ -80,9 +80,9 @@ def test_str_method():
         date=date,
         action="Buy",
         security="Test Security",
-        price=100,
+        price=Decimal(100),
         memo="Test Memo",
-        commission=10,
+        commission=Decimal(10),
     )
     assert str(investment) == (
         "Investment:\n\tDate: 2022-01-01 00:00:00\n\tAction: Buy\n\tSecurity: "
@@ -97,9 +97,9 @@ def test_to_qif():
         date=date,
         action="Buy",
         security="Test Security",
-        price=100,
+        price=Decimal(100),
         memo="Test Memo",
-        commission=10,
+        commission=Decimal(10),
     )
     assert investment.to_qif() == (
         "D2022-01-01\nNBuy\nYTest Security\nI100\nMTest Memo\nO10\n"
@@ -113,9 +113,9 @@ def test_to_dict():
         date=date,
         action="Buy",
         security="Test Security",
-        price=100,
+        price=Decimal(100),
         memo="Test Memo",
-        commission=10,
+        commission=Decimal(10),
     )
     assert investment.to_dict() == {
         "date": date,
@@ -141,9 +141,9 @@ def test_to_dict_with_ignore():
         date=date,
         action="Buy",
         security="Test Security",
-        price=100,
+        price=Decimal(100),
         memo="Test Memo",
-        commission=10,
+        commission=Decimal(10),
     )
     assert investment.to_dict(ignore=["action", "security"]) == {
         "date": date,
@@ -218,7 +218,7 @@ def test_from_list_with_custom_fields():
     assert investment.price == 100
     assert investment.memo == "Test Memo"
     assert investment.commission == 10
-    assert investment.custom_field_1 == "Custom field 1"
-    assert investment.custom_field_2 == Decimal("9238479")
-    assert investment.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)
+    assert investment.custom_field_1 == "Custom field 1"  # type: ignore
+    assert investment.custom_field_2 == Decimal("9238479")  # type: ignore
+    assert investment.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)  # type: ignore
     setattr(Investment, "__CUSTOM_FIELDS", [])  # Reset custom fields

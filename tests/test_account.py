@@ -3,7 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from quiffen import Account, AccountType, Transaction
+from quiffen import Account, Transaction
+from quiffen.core.account import AccountType
 
 
 def test_create_account():
@@ -19,9 +20,9 @@ def test_create_account():
 
     account2 = Account(
         name="Test Account",
-        account_type="Bank",
+        account_type=AccountType.BANK,
         desc="Test Description",
-        balance=100,
+        balance=Decimal(100),
     )
     assert account2.name == "Test Account"
     assert account2.account_type == "Bank"
@@ -31,11 +32,13 @@ def test_create_account():
 
     account3 = Account(
         name="Test Account",
-        account_type="Bank",
+        account_type=AccountType.BANK,
         desc="Test Description",
-        balance=100,
+        balance=Decimal(100),
         transactions={
-            "Bank": [Transaction(date=datetime(2022, 2, 1), amount=0)],
+            AccountType.BANK: [
+                Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))
+            ],
         },
     )
     assert account3.name == "Test Account"
@@ -60,8 +63,8 @@ def test_eq_failure():
     account2 = Account(name="Test Account 2")
     assert account1 != account2
 
-    account3 = Account(name="Test Account", account_type="CCard")
-    account4 = Account(name="Test Account", account_type="Bank")
+    account3 = Account(name="Test Account", account_type=AccountType.CREDIT_CARD)
+    account4 = Account(name="Test Account", account_type=AccountType.BANK)
     assert account3 != account4
 
 
@@ -69,11 +72,13 @@ def test_str_method():
     """Test the string representation of an account"""
     account = Account(
         name="Test Account",
-        account_type="Bank",
+        account_type=AccountType.BANK,
         desc="Test Description",
-        balance=100,
+        balance=Decimal(100),
         transactions={
-            "Bank": [Transaction(date=datetime(2022, 2, 1), amount=0)],
+            AccountType.BANK: [
+                Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))
+            ],
         },
     )
     assert str(account) == (
@@ -82,7 +87,7 @@ def test_str_method():
     )
 
     account.add_transaction(
-        Transaction(date=datetime(2022, 2, 1), amount=0),
+        Transaction(date=datetime(2022, 2, 1), amount=Decimal(0)),
         header=AccountType.BANK,
     )
     assert str(account) == (
@@ -91,7 +96,7 @@ def test_str_method():
     )
 
     account.add_transaction(
-        Transaction(date=datetime(2022, 2, 1), amount=0),
+        Transaction(date=datetime(2022, 2, 1), amount=Decimal(0)),
         header=AccountType.CREDIT_CARD,
     )
     assert str(account) == (
@@ -115,8 +120,8 @@ def test_set_header():
 def test_add_transaction():
     """Test adding a transaction to an account"""
     account = Account(name="Test Account")
-    transaction = Transaction(date=datetime(2022, 2, 1), amount=0)
-    account.add_transaction(transaction, header="Bank")
+    transaction = Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))
+    account.add_transaction(transaction, header=AccountType.BANK)
     assert account.transactions == {
         "Bank": [Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))],
     }
@@ -125,15 +130,15 @@ def test_add_transaction():
 def test_add_transaction_invalid_header():
     """Test adding a transaction to an account with an invalid header"""
     account = Account(name="Test Account")
-    transaction = Transaction(date=datetime(2022, 2, 1), amount=0)
+    transaction = Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))
     with pytest.raises(ValueError):
-        account.add_transaction(transaction, header="Invalid")
+        account.add_transaction(transaction, header="Invalid")  # type: ignore
 
 
 def test_add_transaction_no_header():
     """Test adding a transaction to an account with no header"""
     account = Account(name="Test Account")
-    transaction = Transaction(date=datetime(2022, 2, 1), amount=0)
+    transaction = Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))
     with pytest.raises(RuntimeError):
         account.add_transaction(transaction)
 
@@ -142,26 +147,30 @@ def test_merge():
     """Test merging two accounts"""
     account1 = Account(
         name="Test Account",
-        account_type="Bank",
-        balance=100,
+        account_type=AccountType.BANK,
+        balance=Decimal(100),
         transactions={
-            "Bank": [Transaction(date=datetime(2022, 2, 1), amount=0)],
+            AccountType.BANK: [
+                Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))
+            ],
         },
     )
     account2 = Account(
         name="Test Account",
-        account_type="Bank",
+        account_type=AccountType.BANK,
         desc="Test Description",
-        balance=100,
+        balance=Decimal(100),
         transactions={
-            "Bank": [Transaction(date=datetime(2022, 2, 1), amount=0)],
+            AccountType.BANK: [
+                Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))
+            ],
         },
     )
     account1.merge(account2)
     assert account1.name == "Test Account"
     assert account1.desc == "Test Description"
     assert account1.transactions == {
-        "Bank": [
+        AccountType.BANK: [
             Transaction(date=datetime(2022, 2, 1), amount=Decimal(0)),
             Transaction(date=datetime(2022, 2, 1), amount=Decimal(0)),
         ],
@@ -172,11 +181,13 @@ def test_to_qif():
     """Test converting an account to QIF"""
     account = Account(
         name="Test Account",
-        account_type="Bank",
+        account_type=AccountType.BANK,
         desc="Test Description",
-        balance=100,
+        balance=Decimal(100),
         transactions={
-            "Bank": [Transaction(date=datetime(2022, 2, 1), amount=0)],
+            AccountType.BANK: [
+                Transaction(date=datetime(2022, 2, 1), amount=Decimal(0))
+            ],
         },
     )
     account_qif = account.to_qif()
@@ -249,9 +260,9 @@ def test_from_list_with_custom_fields():
     assert account.balance == 100
     assert account.date_at_balance == datetime(2022, 2, 1)
     assert not account.transactions
-    assert account.custom_field_1 == "Custom field 1"
-    assert account.custom_field_2 == Decimal("9238479")
-    assert account.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)
+    assert account.custom_field_1 == "Custom field 1"  # type: ignore
+    assert account.custom_field_2 == Decimal("9238479")  # type: ignore
+    assert account.custom_field_3 == datetime(2022, 1, 1, 0, 0, 0, 1)  # type: ignore
     setattr(Account, "__CUSTOM_FIELDS", [])  # Reset custom fields
 
 

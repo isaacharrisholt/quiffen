@@ -10,7 +10,7 @@ def test_create_transaction():
     """Test creating a transaction"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=100,
+        amount=Decimal(100),
     )
     assert transaction.date == datetime(2022, 2, 1)
     assert transaction.amount == 100
@@ -26,7 +26,7 @@ def test_create_transaction_more_fields():
     """Test creating a transaction with more fields"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=100,
+        amount=Decimal(100),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
@@ -45,22 +45,22 @@ def test_create_transaction_more_fields():
 def test_create_transaction_with_splits():
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=100,
+        amount=Decimal(100),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100)],
+        splits=[Split(amount=Decimal(100))],
     )
     assert transaction.date == datetime(2022, 2, 1)
-    assert transaction.amount == 100
+    assert transaction.amount == Decimal(100)
     assert transaction.check_number == 1
     assert transaction.payee == "Test Payee"
     assert transaction.memo == "Test Memo"
     assert transaction.payee_address == "Test Address"
     assert transaction.category == Category(name="Test Category")
-    assert transaction.splits == [Split(amount=100)]
+    assert transaction.splits == [Split(amount=Decimal(100))]
 
 
 def test_create_transaction_with_splits_percent_too_high():
@@ -68,10 +68,10 @@ def test_create_transaction_with_splits_percent_too_high():
     with pytest.raises(ValueError):
         Transaction(
             date=datetime(2022, 2, 1),
-            amount=100,
+            amount=Decimal(100),
             splits=[
-                Split(amount=100, percent=50),
-                Split(amount=200, percent=60),
+                Split(amount=Decimal(100), percent=Decimal(50)),
+                Split(amount=Decimal(200), percent=Decimal(60)),
             ],
         )
 
@@ -174,8 +174,8 @@ def test_create_transaction_with_splits_amount_too_high():
     with pytest.raises(ValueError):
         Transaction(
             date=datetime(2022, 2, 1),
-            amount=100,
-            splits=[Split(amount=100), Split(amount=200)],
+            amount=Decimal(100),
+            splits=[Split(amount=Decimal(100)), Split(amount=Decimal(200))],
         )
 
 
@@ -183,33 +183,33 @@ def test_eq_success():
     """Test equality"""
     transaction1 = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
     )
     transaction2 = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
     )
     assert transaction1 == transaction2
 
     transaction3 = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200)],
+        splits=[Split(amount=Decimal(100)), Split(amount=Decimal(200))],
     )
     transaction4 = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200)],
+        splits=[Split(amount=Decimal(100)), Split(amount=Decimal(200))],
     )
     assert transaction3 == transaction4
 
@@ -218,58 +218,62 @@ def test_eq_failure():
     """Test inequality"""
     transaction1 = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
     )
     transaction2 = Transaction(
         date=datetime(2022, 2, 2),
-        amount=1000,
+        amount=Decimal(1000),
     )
     assert transaction1 != transaction2
 
     transaction3 = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200)],
+        splits=[Split(amount=Decimal(100)), Split(amount=Decimal(200))],
     )
     transaction4 = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200), Split(amount=300)],
+        splits=[
+            Split(amount=Decimal(100)),
+            Split(amount=Decimal(200)),
+            Split(amount=Decimal(300)),
+        ],
     )
     assert transaction3 != transaction4
 
     transaction5 = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200)],
+        splits=[Split(amount=Decimal(100)), Split(amount=Decimal(200))],
     )
-    transaction5.splits[0].amount = 300
+    transaction5.splits[0].amount = Decimal(300)
     assert transaction3 != transaction5
 
     transaction6 = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo 2",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200)],
+        splits=[Split(amount=Decimal(100)), Split(amount=Decimal(200))],
     )
     assert transaction3 != transaction6
 
@@ -278,13 +282,13 @@ def test_str_method():
     """Test the string method"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200)],
+        splits=[Split(amount=Decimal(100)), Split(amount=Decimal(200))],
     )
     assert str(transaction) == (
         "Transaction:\n\t"
@@ -303,19 +307,19 @@ def test_is_split():
     """Test the is_split property"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200)],
+        splits=[Split(amount=Decimal(100)), Split(amount=Decimal(200))],
     )
     assert transaction.is_split
 
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
@@ -329,49 +333,52 @@ def test_add_split():
     """Test the add_split method"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
     )
-    transaction.add_split(Split(amount=100))
-    assert transaction.splits == [Split(amount=100)]
-    transaction.add_split(Split(amount=200))
-    assert transaction.splits == [Split(amount=100), Split(amount=200)]
+    transaction.add_split(Split(amount=Decimal(100)))
+    assert transaction.splits == [Split(amount=Decimal(100))]
+    transaction.add_split(Split(amount=Decimal(200)))
+    assert transaction.splits == [
+        Split(amount=Decimal(100)),
+        Split(amount=Decimal(200)),
+    ]
 
 
 def test_add_split_percent_too_high():
     """Test the add_split method where the sum of the percentages is too high"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100, percent=60)],
+        splits=[Split(amount=Decimal(100), percent=Decimal(60))],
     )
     with pytest.raises(ValueError):
-        transaction.add_split(Split(amount=100, percent=60))
+        transaction.add_split(Split(amount=Decimal(100), percent=Decimal(60)))
 
 
 def test_add_split_amount_too_high():
     """Test the add_split method where the sum of the amounts is too high"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100)],
+        splits=[Split(amount=Decimal(100))],
     )
     with pytest.raises(ValueError):
-        transaction.add_split(Split(amount=950))
+        transaction.add_split(Split(amount=Decimal(950)))
 
 
 def test_add_splits_exactly_100_percent():
@@ -401,50 +408,59 @@ def test_remove_splits_one_filter():
     """Test the remove_splits method with one filter"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200, memo="Test Memo")],
+        splits=[
+            Split(amount=Decimal(100)),
+            Split(amount=Decimal(200), memo="Test Memo"),
+        ],
     )
     transaction.remove_splits(memo="Test Memo")
-    assert transaction.splits == [Split(amount=100)]
+    assert transaction.splits == [Split(amount=Decimal(100))]
 
 
 def test_remove_splits_multiple_filters():
     """Test the remove_splits method with multiple filters"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=100, memo="Test Memo")],
+        splits=[
+            Split(amount=Decimal(100)),
+            Split(amount=Decimal(100), memo="Test Memo"),
+        ],
     )
-    transaction.remove_splits(memo="Test Memo", amount=100)
-    assert transaction.splits == [Split(amount=100)]
+    transaction.remove_splits(memo="Test Memo", amount=Decimal(100))
+    assert transaction.splits == [Split(amount=Decimal(100))]
 
 
 def test_remove_splits_no_match():
     """Test the remove_splits method with no match"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=100, memo="Test Memo")],
+        splits=[
+            Split(amount=Decimal(100)),
+            Split(amount=Decimal(100), memo="Test Memo"),
+        ],
     )
-    transaction.remove_splits(memo="Test Memo", amount=100, check_number=1)
+    transaction.remove_splits(memo="Test Memo", amount=Decimal(100), check_number=1)
     assert transaction.splits == [
-        Split(amount=100),
-        Split(amount=100, memo="Test Memo"),
+        Split(amount=Decimal(100)),
+        Split(amount=Decimal(100), memo="Test Memo"),
     ]
 
 
@@ -452,13 +468,13 @@ def test_remove_splits_no_filters():
     """Test the remove_splits method with no filters"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
         payee_address="Test Address",
         category=Category(name="Test Category"),
-        splits=[Split(amount=100), Split(amount=200)],
+        splits=[Split(amount=Decimal(100)), Split(amount=Decimal(200))],
     )
     transaction.remove_splits()
     assert not transaction.splits
@@ -469,7 +485,7 @@ def test_to_qif_no_splits_no_classes():
     """Test the to_qif method with no splits and no classes"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
@@ -499,7 +515,7 @@ def test_to_qif_no_split_with_class():
 
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
@@ -521,7 +537,7 @@ def test_to_qif_with_splits_no_classes():
     """Test the to_qif method with splits and no classes"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
@@ -529,11 +545,11 @@ def test_to_qif_with_splits_no_classes():
         category=Category(name="Test Category"),
         splits=[
             Split(
-                amount=100,
+                amount=Decimal(100),
                 memo="Test Memo",
                 category=Category(name="Test Split Category"),
             ),
-            Split(amount=200, memo="Test Memo 2"),
+            Split(amount=Decimal(200), memo="Test Memo 2"),
         ],
     )
     assert transaction.to_qif() == (
@@ -567,7 +583,7 @@ def test_to_qif_with_splits_with_classes():
 
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         check_number=1,
         payee="Test Payee",
         memo="Test Memo",
@@ -575,11 +591,11 @@ def test_to_qif_with_splits_with_classes():
         category=child,
         splits=[
             Split(
-                amount=100,
+                amount=Decimal(100),
                 memo="Test Memo",
                 category=Category(name="Test Split Category"),
             ),
-            Split(amount=200, memo="Test Memo 2"),
+            Split(amount=Decimal(200), memo="Test Memo 2"),
         ],
     )
     assert transaction.to_qif(classes={"Test Class": cls}) == (
@@ -688,13 +704,13 @@ def test_from_list_with_splits_no_classes():
         Split(
             category=Category(name="Test Split Category 1"),
             memo="Test Split Memo",
-            amount=100,
+            amount=Decimal(100),
             percent=Decimal("10"),
         ),
         Split(
             category=Category(name="Test Split Category 2"),
             memo="Memo",
-            amount=100,
+            amount=Decimal(100),
             percent=Decimal("10"),
         ),
     ]
@@ -726,13 +742,13 @@ def test_from_list_with_splits_with_classes():
         Split(
             category=Category(name="Test Split Category 1"),
             memo="Test Split Memo",
-            amount=100,
+            amount=Decimal(100),
             percent=Decimal("10"),
         ),
         Split(
             category=Category(name="Test Split Category 2"),
             memo="Memo",
-            amount=100,
+            amount=Decimal(100),
             percent=Decimal("10"),
         ),
     ]
@@ -762,7 +778,9 @@ def test_from_list_multiple_categories():
     assert transaction.date == datetime(2022, 2, 1)
     assert transaction.amount == 1000
     assert transaction.to_account == "Test To Account"
+    assert transaction.category is not None
     assert transaction.category.name == "Test Category 2"
+    assert transaction.category.parent is not None
     assert transaction.category.parent.name == "Test Category 1"
 
 
@@ -800,7 +818,7 @@ def test_to_dict():
     """Test converting a category to a dict"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         to_account="Test To Account",
         category=Category(name="Test Category"),
     )
@@ -842,7 +860,7 @@ def test_to_dict_with_ignore():
     """Test converting a category to a dict with ignored fields"""
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         to_account="Test To Account",
         category=Category(name="Test Category"),
     )
@@ -908,13 +926,13 @@ def test_from_list_zero_value_with_splits():
         Split(
             category=Category(name="Test Split Category 1"),
             memo="Test Split Memo",
-            amount=0,
+            amount=Decimal(0),
             percent=None,
         ),
         Split(
             category=Category(name="Test Split Category 2"),
             memo="Memo",
-            amount=0,
+            amount=Decimal(0),
             percent=None,
         ),
     ]
@@ -928,7 +946,7 @@ def test_check_number_allows_strings():
     """
     transaction = Transaction(
         date=datetime(2022, 2, 1),
-        amount=1000,
+        amount=Decimal(1000),
         to_account="Test To Account",
         category=Category(name="Test Category"),
         check_number="Transfer",

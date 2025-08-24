@@ -26,11 +26,11 @@ def test_base_model_allows_extra_fields():
 
     class TestModel(BaseModel):
         @classmethod
-        def from_list(cls, lst: list[str]) -> None:
+        def from_list(cls, lst: list[str]) -> None:  # type: ignore
             pass
 
-    test_model = TestModel(test="test")
-    assert test_model.test == "test"
+    test_model = TestModel(test="test")  # type: ignore
+    assert test_model.test == "test"  # type: ignore
 
 
 def test_add_custom_field():
