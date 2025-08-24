@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar
 
 from pydantic import BaseModel as PydanticBaseModel
+from pydantic import ConfigDict
 
 
 class Field(PydanticBaseModel):
@@ -40,8 +41,7 @@ TModel = TypeVar("TModel", bound="BaseModel")
 
 
 class BaseModel(PydanticBaseModel):
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
     __CUSTOM_FIELDS: List[Field] = []  # type: ignore
 
@@ -98,4 +98,4 @@ class BaseModel(PydanticBaseModel):
         """Convert the class instance to a dict."""
         if ignore is None:
             ignore = []
-        return self.dict(exclude=set(ignore))
+        return self.model_dump(exclude=set(ignore))

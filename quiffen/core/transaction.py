@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from pydantic import root_validator, validator
+from pydantic import field_validator, model_validator
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -160,7 +160,8 @@ class Transaction(BaseModel):
 
         return "Transaction:" + properties
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def create_split_categories(cls, values: Dict[str, Any]) -> Dict:
         if splits := values.get("splits"):
             for split in splits:
@@ -172,17 +173,18 @@ class Transaction(BaseModel):
             values["_last_split"] = splits[-1]
         return values
 
-    @validator("splits")
+    @field_validator("splits")
+    @classmethod
     def check_split_percentages_and_amounts(
         cls,
         splits: List[Split],
-        values: Dict[str, Any],
+        info,
     ) -> List[Split]:
         total_percent = sum(split.percent for split in splits if split.percent)
         total_amount = sum(split.amount for split in splits if split.amount is not None)
         if total_percent - 100 > 0.01:
             raise ValueError("Split percentages cannot exceed 100% of the transaction")
-        if abs(total_amount) - abs(values.get("amount", 0)) > 0.01:
+        if abs(total_amount) - abs(info.data.get("amount", 0)) > 0.01:
             raise ValueError(
                 "Split amounts cannot exceed the amount of the transaction"
             )

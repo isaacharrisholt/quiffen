@@ -4,7 +4,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Any, Dict, Iterable, List, Optional, TypeVar, Union
 
-from pydantic import validator
+from pydantic import model_validator
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -133,18 +133,24 @@ class Category(BaseModel):
             return False
         return self.dict() == other.dict()
 
-    @validator("hierarchy", pre=True, always=True)
-    def _set_hierarchy(cls, v: str, values) -> str:
+    @model_validator(mode="before")
+    @classmethod
+    def _set_hierarchy(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        v = values.get("hierarchy")
         if not v:
-            return values["name"]
+            values["hierarchy"] = values.get("name", "")
+            return values
 
-        if values.get("parent", None) and v != values["name"]:
+        name = values.get("name", "")
+        parent = values.get("parent", None)
+        
+        if parent and v != name:
             raise ValueError("Hierarchy must match name if no parent is set.")
 
-        if not v.endswith(values["name"]):
-            raise ValueError("Hierarchy must end with name.", v, values["name"])
+        if not v.endswith(name):
+            raise ValueError("Hierarchy must end with name.", v, name)
 
-        return v
+        return values
 
     def _refresh_hierarchy(self) -> None:
         """Refreshes the hierarchy of the current category and all its children

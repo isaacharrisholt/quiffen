@@ -70,7 +70,7 @@ class Split(BaseModel):
 
     def __str__(self) -> str:
         properties = ""
-        for object_property, value in self.dict().items():
+        for object_property, value in self.model_dump().items():
             if value:
                 if object_property == "category":
                     properties += f'\n\t\tCategory: {value["name"]}'

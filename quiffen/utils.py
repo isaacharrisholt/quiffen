@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from dateutil import parser
-from pydantic import ValidationError, parse_obj_as
+from pydantic import TypeAdapter, ValidationError
 
 from quiffen.core.base import Field
 
@@ -91,9 +91,8 @@ def add_custom_field_to_object_dict(
     for custom_field in custom_fields:
         if field.startswith(custom_field.line_code):
             try:
-                object_dict[custom_field.attr] = parse_obj_as(
-                    custom_field.type,
-                    field[len(custom_field.line_code) :],
+                object_dict[custom_field.attr] = TypeAdapter(custom_field.type).validate_python(
+                    field[len(custom_field.line_code) :]
                 )
                 return object_dict, True
             except ValidationError:

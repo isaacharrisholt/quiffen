@@ -64,6 +64,11 @@ def qif_file_with_no_symbol():
     return Path(__file__).parent / "test_files" / "test_nosymbol.qif"
 
 
+@pytest.fixture
+def qif_file_circular_reference():
+    return Path(__file__).parent / "test_files" / "test_circular_reference.qif"
+
+
 def test_create_qif():
     """Test creating a Qif instance"""
     qif = Qif()
@@ -147,12 +152,7 @@ def test_str_method_with_accounts():
     qif = Qif()
     qif.add_account(Account(name="Test Account"))
     assert str(qif) == (
-        "QIF\n"
-        "===\n\n"
-        "Accounts\n"
-        "--------\n\n"
-        "Account:\n\t"
-        "Name: Test Account\n\n"
+        "QIF\n===\n\nAccounts\n--------\n\nAccount:\n\tName: Test Account\n\n"
     )
 
 
@@ -282,7 +282,7 @@ def test_parsed_accounts(qif_file):
 
     assert account.name == account_name
     assert account.desc == (
-        "The default account created by Quiffen when no other accounts were " "present"
+        "The default account created by Quiffen when no other accounts were present"
     )
 
 
@@ -905,7 +905,7 @@ def test_to_csv_transactions_multiple():
     account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
 
-    transaction2 = transaction.copy()
+    transaction2 = transaction.model_copy()
     transaction2.amount = Decimal("200")
 
     account.add_transaction(transaction2)
@@ -1078,7 +1078,7 @@ def test_to_dataframe_transactions_multiple():
     account.set_header(AccountType.BANK)
     account.add_transaction(transaction)
 
-    transaction2 = transaction.copy()
+    transaction2 = transaction.model_copy()
     transaction2.amount = Decimal("200")
 
     account.add_transaction(transaction2)
@@ -1208,3 +1208,12 @@ def test_unknown_account_type(qif_file_with_unknown_account_type):
     # Oddly, the transactions are grouped under a known account type.
     transactions = qif.accounts["Portfolio Account"].transactions
     assert AccountType.INVST in transactions
+
+
+def test_to_csv_circular_reference(qif_file_circular_reference):
+    """Tests that a circular reference is handled.
+
+    Relates to discussion #113.
+    """
+    qif = Qif.parse(qif_file_circular_reference, day_first=False)
+    qif.to_csv()
