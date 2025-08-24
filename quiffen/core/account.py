@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -72,10 +72,10 @@ class Account(BaseModel):
     credit_limit: Optional[Decimal] = None
     balance: Optional[Decimal] = None
     date_at_balance: Optional[datetime] = None
-    transactions: Dict[AccountType, TransactionList] = {}
+    transactions: dict[AccountType, TransactionList] = {}
     _last_header: Optional[AccountType] = None
 
-    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
+    __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Account):
@@ -170,7 +170,7 @@ class Account(BaseModel):
             self.transactions[header].extend(other.transactions[header])
 
     def to_qif(
-        self, date_format: str = "%Y-%m-%d", classes: Optional[Dict[str, Class]] = None
+        self, date_format: str = "%Y-%m-%d", classes: Optional[dict[str, Class]] = None
     ) -> str:
         """Return a QIF-formatted string of this account.
 
@@ -178,7 +178,7 @@ class Account(BaseModel):
         ----------
         date_format : str
             The date format to use for the date field.
-        classes : Dict[str, Class]
+        classes : dict[str, Class]
             A dict of Class objects in the account's transactions, keyed by
             their name.
 
@@ -217,7 +217,7 @@ class Account(BaseModel):
         return qif
 
     @classmethod
-    def from_list(cls, lst: List[str], day_first: bool = False) -> Account:
+    def from_list(cls, lst: list[str], day_first: bool = False) -> Account:
         """Return a class instance from a list of QIF strings.
 
         Parameters
@@ -232,7 +232,7 @@ class Account(BaseModel):
         Account
             An Account object created from the QIF strings.
         """
-        kwargs: Dict[str, Any] = {}
+        kwargs: dict[str, Any] = {}
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:

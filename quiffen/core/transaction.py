@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Iterable, Optional, Union
 
 from pydantic import field_validator, model_validator
 
@@ -134,11 +134,11 @@ class Transaction(BaseModel):
     current_loan_balance: Optional[Decimal] = None
     original_loan_amount: Optional[Decimal] = None
     line_number: Optional[int] = None
-    splits: List[Split] = []
-    _split_categories: Dict[str, Category] = {}
+    splits: list[Split] = []
+    _split_categories: dict[str, Category] = {}
     _last_split: Optional[Split] = None
 
-    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
+    __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         properties = ""
@@ -162,7 +162,7 @@ class Transaction(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def create_split_categories(cls, values: Dict[str, Any]) -> Dict:
+    def create_split_categories(cls, values: dict[str, Any]) -> dict:
         if splits := values.get("splits"):
             for split in splits:
                 if split.category:
@@ -177,9 +177,9 @@ class Transaction(BaseModel):
     @classmethod
     def check_split_percentages_and_amounts(
         cls,
-        splits: List[Split],
+        splits: list[Split],
         info,
-    ) -> List[Split]:
+    ) -> list[Split]:
         total_percent = sum(split.percent for split in splits if split.percent)
         total_amount = sum(split.amount for split in splits if split.amount is not None)
         if total_percent - 100 > 0.01:
@@ -191,7 +191,7 @@ class Transaction(BaseModel):
         return splits
 
     @property
-    def split_categories(self) -> Dict[str, Category]:
+    def split_categories(self) -> dict[str, Category]:
         return self._split_categories
 
     @property
@@ -226,7 +226,7 @@ class Transaction(BaseModel):
 
         self.splits.append(split)
 
-    def remove_splits(self, **filters) -> List[Split]:
+    def remove_splits(self, **filters) -> list[Split]:
         """Remove splits from Transaction if they match a set of filters
 
         Takes filters as kwargs and removes splits that match all filters. If
@@ -249,8 +249,8 @@ class Transaction(BaseModel):
     @staticmethod
     def _create_class_from_category_string(
         category_string: str,
-        classes: Dict[str, Class],
-    ) -> Tuple[Optional[str], str, Dict[str, Class]]:
+        classes: dict[str, Class],
+    ) -> tuple[Optional[str], str, dict[str, Class]]:
         if "/" in category_string:
             field_info, class_name = category_string.split("/")
             if class_name not in classes:
@@ -261,7 +261,7 @@ class Transaction(BaseModel):
     def to_qif(
         self,
         date_format: str = "%Y-%m-%d",
-        classes: Optional[Dict[str, Class]] = None,
+        classes: Optional[dict[str, Class]] = None,
     ) -> str:
         """Converts a Transaction to a QIF string"""
         if classes is None:
@@ -323,10 +323,10 @@ class Transaction(BaseModel):
     @classmethod
     def from_list(  # type: ignore - this one needs an incompatible return type
         cls,
-        lst: List[str],
+        lst: list[str],
         day_first: bool = False,
         line_number: Optional[int] = None,
-    ) -> Tuple[Transaction, Dict[str, Class]]:
+    ) -> tuple[Transaction, dict[str, Class]]:
         """Return a class instance from a list of QIF strings.
 
         Parameters
@@ -343,12 +343,12 @@ class Transaction(BaseModel):
         -------
         Transaction
             A Transaction object created from the QIF strings.
-        Dict[str, Class]
+        dict[str, Class]
             A dictionary of Class objects created from the QIF strings.
         """
-        kwargs: Dict[str, Any] = {}
-        classes: Dict[str, Class] = {}
-        splits: List[Split] = []
+        kwargs: dict[str, Any] = {}
+        classes: dict[str, Class] = {}
+        splits: list[Split] = []
         current_split: Optional[Split] = None
 
         for field in lst:
@@ -532,7 +532,7 @@ class Transaction(BaseModel):
         separator: str = "\n",
         day_first: bool = False,
         line_number: Optional[int] = None,
-    ) -> Tuple[Transaction, Dict[str, Class]]:
+    ) -> tuple[Transaction, dict[str, Class]]:
         """Return a class instance from a QIF string.
 
         Parameters
@@ -551,13 +551,15 @@ class Transaction(BaseModel):
         -------
         Transaction
             A Transaction object created from the QIF strings.
-        Dict[str, Class]
+        dict[str, Class]
             A dictionary of classes created from the QIF strings.
         """
         lines = string.split(separator)
         return cls.from_list(lines, day_first, line_number)
 
-    def to_dict(self, ignore: Optional[Iterable[str]] = None, **kwargs) -> Dict[str, Any]:
+    def to_dict(
+        self, ignore: Optional[Iterable[str]] = None, **kwargs
+    ) -> dict[str, Any]:
         """Convert the class instance to a dict.
 
         Handles circular references in category hierarchies by using the
@@ -569,41 +571,47 @@ class Transaction(BaseModel):
         # Use model_dump but handle category specially
         try:
             result = self.model_dump(exclude=set(ignore), **kwargs)
-            
+
             # If category exists and causes issues, handle it specially
             if self.category and "category" not in ignore:
                 result["category"] = self.category.dict()
-                
+
             # Handle split categories similarly - only include if non-empty
-            if (hasattr(self, '_split_categories') and 
-                self._split_categories and 
-                "_split_categories" not in ignore):
+            if (
+                hasattr(self, "_split_categories")
+                and self._split_categories
+                and "_split_categories" not in ignore
+            ):
                 result["_split_categories"] = {
                     name: cat.dict() for name, cat in self._split_categories.items()
                 }
-                
+
             return result
         except ValueError as e:
             if "Circular reference" in str(e):
                 # Fallback: exclude problematic fields and handle them manually
-                result = self.model_dump(exclude=set(ignore) | {"category", "_split_categories"}, **kwargs)
-                
+                result = self.model_dump(
+                    exclude=set(ignore) | {"category", "_split_categories"}, **kwargs
+                )
+
                 # Add category manually if needed
                 if self.category and "category" not in ignore:
                     result["category"] = self.category.dict()
-                    
+
                 # Add split categories manually if needed - only include if non-empty
-                if (hasattr(self, '_split_categories') and 
-                    self._split_categories and 
-                    "_split_categories" not in ignore):
+                if (
+                    hasattr(self, "_split_categories")
+                    and self._split_categories
+                    and "_split_categories" not in ignore
+                ):
                     result["_split_categories"] = {
                         name: cat.dict() for name, cat in self._split_categories.items()
                     }
-                    
+
                 return result
             else:
                 raise
 
 
 TransactionLike = Union[Transaction, Investment, Split]
-TransactionList = List[TransactionLike]
+TransactionList = list[TransactionLike]

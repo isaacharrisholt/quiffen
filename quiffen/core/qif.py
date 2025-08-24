@@ -4,7 +4,7 @@ import csv
 import io
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from pydantic.types import FilePath
 
@@ -62,12 +62,12 @@ class Qif(BaseModel):
         A dict of classes in the form {'Class Name': class_object}.
     """
 
-    accounts: Dict[str, Account] = {}
-    categories: Dict[str, Category] = {}
-    classes: Dict[str, Class] = {}
-    securities: Dict[str, Security] = {}
+    accounts: dict[str, Account] = {}
+    categories: dict[str, Category] = {}
+    classes: dict[str, Class] = {}
+    securities: dict[str, Security] = {}
 
-    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
+    __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         accounts_str = "\n".join(str(acc) for acc in self.accounts.values())
@@ -92,7 +92,7 @@ class Qif(BaseModel):
         return return_str
 
     @classmethod
-    def from_list(cls, lst: List[str]) -> Qif:
+    def from_list(cls, lst: list[str]) -> Qif:
         raise NotImplementedError(
             "This method is not implemented for Qif objects. Use Qif.parse to "
             "parse a QIF file."
@@ -163,11 +163,11 @@ class Qif(BaseModel):
         if not data:
             raise ParserException("The data string is empty.")
 
-        accounts: Dict[str, Account] = {}
+        accounts: dict[str, Account] = {}
         last_account = None
-        categories: Dict[str, Category] = {}
-        classes: Dict[str, Class] = {}
-        securities: Dict[str, Security] = {}
+        categories: dict[str, Category] = {}
+        classes: dict[str, Class] = {}
+        securities: dict[str, Security] = {}
 
         sections = data.split("^")
         last_header = None
@@ -446,8 +446,8 @@ class Qif(BaseModel):
         self,
         data_type: QifDataType = QifDataType.TRANSACTIONS,
         date_format: Optional[str] = "%Y-%m-%d",
-        ignore: Optional[List[str]] = None,
-    ) -> List[Dict[str, Any]]:
+        ignore: Optional[list[str]] = None,
+    ) -> list[dict[str, Any]]:
         """Converts specified data from the Qif object to a list of dicts"""
         if ignore is None:
             ignore = []
@@ -510,7 +510,7 @@ class Qif(BaseModel):
         path: Optional[Union[FilePath, str, None]] = None,
         data_type: QifDataType = QifDataType.TRANSACTIONS,
         date_format: str = "%Y-%m-%d",
-        ignore: Optional[List[str]] = None,
+        ignore: Optional[list[str]] = None,
         delimiter: str = ",",
         quote_character: str = '"',
         encoding: str = "utf-8",
@@ -529,7 +529,7 @@ class Qif(BaseModel):
         date_format : str, optional
             The date format to use when converting dates to strings, by
             default '%Y-%m-%d'
-        ignore : List[str], optional
+        ignore : list[str], optional
             A list of fields to ignore when converting to CSV, by default
             None
         delimiter : str, optional
@@ -549,7 +549,7 @@ class Qif(BaseModel):
             ignore=ignore,
         )
 
-        headers: Set[str] = set()
+        headers: set[str] = set()
         for data_dict in data_dicts:
             headers.update(k for k in data_dict.keys())
 
@@ -577,7 +577,7 @@ class Qif(BaseModel):
     def to_dataframe(
         self,
         data_type: QifDataType = QifDataType.TRANSACTIONS,
-        ignore: Optional[List[str]] = None,
+        ignore: Optional[list[str]] = None,
     ) -> pd.DataFrame:
         """Convert part of the Qif object to a Pandas DataFrame. The
         data_type parameter can be used to specify which part of the Qif
@@ -589,7 +589,7 @@ class Qif(BaseModel):
         data_type : QifDataType, optional
             The type of data to convert to a DataFrame, by default
             QifDataType.TRANSACTIONS
-        ignore : List[str], optional
+        ignore : list[str], optional
             A list of fields to ignore when converting to a DataFrame, by
             default None
 

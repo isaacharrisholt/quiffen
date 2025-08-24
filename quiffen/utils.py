@@ -2,7 +2,7 @@ import re
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 from dateutil import parser
 from pydantic import TypeAdapter, ValidationError
@@ -57,7 +57,7 @@ def parse_date(date_string: str, day_first: bool = False) -> datetime:
     return parser.parse(date_string, dayfirst=day_first)
 
 
-def parse_line_code_and_field_info(field: str) -> Tuple[str, str]:
+def parse_line_code_and_field_info(field: str) -> tuple[str, str]:
     """Parse a QIF field into a line code and field info."""
     field = field.replace("\n", "")
 
@@ -75,9 +75,9 @@ def parse_line_code_and_field_info(field: str) -> Tuple[str, str]:
 
 def add_custom_field_to_object_dict(
     field: str,  # Takes in the whole field to allow multi-character line codes
-    custom_fields: List[Field],
-    object_dict: Dict[str, Any],
-) -> Tuple[Dict[str, Any], bool]:
+    custom_fields: list[Field],
+    object_dict: dict[str, Any],
+) -> tuple[dict[str, Any], bool]:
     """Add custom QIF fields to a dict representing a Quiffen object based on
     the QIF file line.
 
@@ -91,9 +91,9 @@ def add_custom_field_to_object_dict(
     for custom_field in custom_fields:
         if field.startswith(custom_field.line_code):
             try:
-                object_dict[custom_field.attr] = TypeAdapter(custom_field.type).validate_python(
-                    field[len(custom_field.line_code) :]
-                )
+                object_dict[custom_field.attr] = TypeAdapter(
+                    custom_field.type
+                ).validate_python(field[len(custom_field.line_code) :])
                 return object_dict, True
             except ValidationError:
                 return object_dict, False
@@ -102,7 +102,7 @@ def add_custom_field_to_object_dict(
 
 
 def convert_custom_fields_to_qif_string(
-    custom_fields: List[Field],
+    custom_fields: list[Field],
     obj: Any,
 ) -> str:
     """Convert custom fields to a QIF string."""
@@ -135,9 +135,9 @@ def apply_csv_formatting_to_scalar(
 
 
 def apply_csv_formatting_to_container(
-    obj: Union[List[Any], Dict[Any, Any]],
+    obj: Union[list[Any], dict[Any, Any]],
     date_format: Optional[str] = "%Y-%m-%d",
-) -> Union[List[Any], Dict[Any, Any], Any]:
+) -> Union[list[Any], dict[Any, Any], Any]:
     """Recursively apply CSV-friendly formatting to a container"""
     if isinstance(obj, list):
         return [apply_csv_formatting_to_container(item, date_format) for item in obj]

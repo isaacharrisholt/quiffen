@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -60,7 +60,7 @@ class Investment(BaseModel):
     commission: Optional[Decimal] = None
     line_number: Optional[int] = None
 
-    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
+    __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         properties = ""
@@ -115,7 +115,7 @@ class Investment(BaseModel):
     @classmethod
     def from_list(
         cls,
-        lst: List[str],
+        lst: list[str],
         day_first: bool = False,
         line_number: Optional[int] = None,
     ) -> Investment:
@@ -136,7 +136,7 @@ class Investment(BaseModel):
         Investment
             An Investment object created from the QIF strings.
         """
-        kwargs: Dict[str, Any] = {}
+        kwargs: dict[str, Any] = {}
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:

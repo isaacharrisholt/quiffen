@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Optional, TypeVar, Union
+from typing import Any, Iterable, Optional, TypeVar, Union
 
 from pydantic import model_validator
 
@@ -100,10 +100,10 @@ class Category(BaseModel):
     budget_amount: Optional[Decimal] = None
     tax_schedule_info: Optional[str] = None
     hierarchy: Optional[str] = None
-    children: List[Category] = []
+    children: list[Category] = []
     parent: Optional[Category] = None
 
-    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
+    __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         properties = ""
@@ -135,7 +135,7 @@ class Category(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def _set_hierarchy(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def _set_hierarchy(cls, values: dict[str, Any]) -> dict[str, Any]:
         v = values.get("hierarchy")
         if not v:
             values["hierarchy"] = values.get("name", "")
@@ -143,7 +143,7 @@ class Category(BaseModel):
 
         name = values.get("name", "")
         parent = values.get("parent", None)
-        
+
         if parent and v != name:
             raise ValueError("Hierarchy must match name if no parent is set.")
 
@@ -161,7 +161,7 @@ class Category(BaseModel):
             )
             child._refresh_hierarchy()
 
-    def dict(self, exclude: Optional[Iterable[str]] = None, **_) -> Dict[str, Any]:
+    def dict(self, exclude: Optional[Iterable[str]] = None, **_) -> dict[str, Any]:
         """Return a representation of the Category object as a dict.
 
         Overwrites pydantic.BaseModel.dict or else it will recurse infinitely
@@ -193,7 +193,7 @@ class Category(BaseModel):
     # This is kept for backwards compatibility
     def to_dict(
         self, ignore: Optional[Iterable[str]] = None, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Return a representation of the Category object as a dict.
 
         Parameters
@@ -204,14 +204,14 @@ class Category(BaseModel):
         """
         return self.dict(exclude=ignore, **kwargs)
 
-    def traverse_down(self) -> List[Category]:
+    def traverse_down(self) -> list[Category]:
         """Return a flat list of all children, grandchildren etc. of the
         current category.
 
         The list is ordered starting with the current category, then its
         children, then the children's children etc.
         """
-        nodes_to_visit: List[Category] = [self]
+        nodes_to_visit: list[Category] = [self]
         all_children = []
         while nodes_to_visit:
             current_node = nodes_to_visit.pop()
@@ -219,7 +219,7 @@ class Category(BaseModel):
             nodes_to_visit.extend(current_node.children)
         return all_children
 
-    def traverse_up(self: Category) -> List[Category]:
+    def traverse_up(self: Category) -> list[Category]:
         """Return a list of all parents, grandparents etc. of the current
         category.
 
@@ -243,7 +243,7 @@ class Category(BaseModel):
         KeyError
             If the category cannot be found.
         """
-        nodes_to_visit: List[Category] = [self]
+        nodes_to_visit: list[Category] = [self]
         while nodes_to_visit:
             current_node = nodes_to_visit.pop()
             if current_node.name == node_name:
@@ -430,7 +430,7 @@ class Category(BaseModel):
         return "^\n".join([c._to_qif_string() for c in self.traverse_down()])
 
     @classmethod
-    def from_list(cls, lst: List[str]) -> Category:
+    def from_list(cls, lst: list[str]) -> Category:
         """Return a Category instance from a list of QIF strings.
 
         Parameters
@@ -438,7 +438,7 @@ class Category(BaseModel):
         lst : list of str
             List of strings containing QIF information about the category.
         """
-        kwargs: Dict[str, Any] = {}
+        kwargs: dict[str, Any] = {}
         new_parent: Optional[Union[Category, None]] = None
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
@@ -481,7 +481,7 @@ class Category(BaseModel):
         return new_cat
 
 
-CategoryContainer = TypeVar("CategoryContainer", List[Category], Dict[str, Category])
+CategoryContainer = TypeVar("CategoryContainer", list[Category], dict[str, Category])
 
 
 def create_categories_from_hierarchy(hierarchy: str) -> Category:

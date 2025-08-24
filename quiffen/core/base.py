@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar
+from typing import Any, Iterable, Optional, Type, TypeVar
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import ConfigDict
@@ -43,7 +43,7 @@ TModel = TypeVar("TModel", bound="BaseModel")
 class BaseModel(PydanticBaseModel):
     model_config = ConfigDict(extra="allow")
 
-    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
+    __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     @classmethod
     def add_custom_field(
@@ -79,14 +79,14 @@ class BaseModel(PydanticBaseModel):
         setattr(cls, "__CUSTOM_FIELDS", lst)
 
     @classmethod
-    def _get_custom_fields(cls) -> List[Field]:
+    def _get_custom_fields(cls) -> list[Field]:
         """Return a list of the custom fields for the class, reverse ordered by
         line code length."""
         return sorted(getattr(cls, "__CUSTOM_FIELDS", []), reverse=True)
 
     @classmethod
     @abstractmethod
-    def from_list(cls: Type[TModel], lst: List[str]) -> TModel:
+    def from_list(cls: Type[TModel], lst: list[str]) -> TModel:
         pass
 
     @classmethod
@@ -94,7 +94,7 @@ class BaseModel(PydanticBaseModel):
         """Create a class instance from a string."""
         return cls.from_list(string.split(separator))
 
-    def to_dict(self, ignore: Optional[Iterable[str]] = None) -> Dict[str, Any]:
+    def to_dict(self, ignore: Optional[Iterable[str]] = None) -> dict[str, Any]:
         """Convert the class instance to a dict."""
         if ignore is None:
             ignore = []

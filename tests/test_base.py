@@ -1,5 +1,5 @@
 # pylint: disable=too-few-public-methods,protected-access,abstract-method
-from typing import List
+
 
 from quiffen.core.base import BaseModel, Field
 
@@ -26,7 +26,7 @@ def test_base_model_allows_extra_fields():
 
     class TestModel(BaseModel):
         @classmethod
-        def from_list(cls, lst: List[str]) -> None:
+        def from_list(cls, lst: list[str]) -> None:
             pass
 
     test_model = TestModel(test="test")

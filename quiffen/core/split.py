@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -66,7 +66,7 @@ class Split(BaseModel):
     percent: Optional[Decimal] = None
     payee_address: Optional[str] = None
 
-    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
+    __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         properties = ""
@@ -86,7 +86,7 @@ class Split(BaseModel):
     def to_qif(
         self,
         date_format: str = "%Y-%m-%d",
-        classes: Optional[Dict[str, Class]] = None,
+        classes: Optional[dict[str, Class]] = None,
     ) -> str:
         """Returns a QIF string representation of the split."""
         if classes is None:
@@ -135,5 +135,5 @@ class Split(BaseModel):
         return qif
 
     @classmethod
-    def from_list(cls, lst: List[str]) -> Split:
+    def from_list(cls, lst: list[str]) -> Split:
         raise RuntimeError("Splits can only be created in the context of a transaction")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -29,7 +29,7 @@ class Security(BaseModel):
     goal: Optional[str] = None
     line_number: Optional[int] = None
 
-    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
+    __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     def __str__(self) -> str:
         return_str = "Security:"
@@ -80,7 +80,7 @@ class Security(BaseModel):
     @classmethod
     def from_list(
         cls,
-        lst: List[str],
+        lst: list[str],
         line_number: Optional[int] = None,
     ) -> Security:
         """Return a class instance from a list of QIF strings.
@@ -98,7 +98,7 @@ class Security(BaseModel):
         Security
             A class instance representing the security.
         """
-        kwargs: Dict[str, Any] = {}
+        kwargs: dict[str, Any] = {}
 
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)

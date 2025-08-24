@@ -2,7 +2,7 @@
 # reserved word in Python.
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
@@ -23,9 +23,9 @@ class Class(BaseModel):
 
     name: str
     desc: Optional[str] = None
-    categories: List[Category] = []
+    categories: list[Category] = []
 
-    __CUSTOM_FIELDS: List[Field] = []  # type: ignore
+    __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Class):
@@ -70,7 +70,7 @@ class Class(BaseModel):
         return qif
 
     @classmethod
-    def from_list(cls, lst: List[str]) -> Class:
+    def from_list(cls, lst: list[str]) -> Class:
         """Return a class instance from a list of QIF strings.
 
         Parameters
@@ -78,7 +78,7 @@ class Class(BaseModel):
         lst : list of str
             List of strings containing QIF information about the QIF class.
         """
-        kwargs: Dict[str, Any] = {}
+        kwargs: dict[str, Any] = {}
         for field in lst:
             line_code, field_info = utils.parse_line_code_and_field_info(field)
             if not line_code:
