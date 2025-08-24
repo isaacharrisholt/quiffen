@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 from pydantic import field_validator, model_validator
 
@@ -556,6 +556,53 @@ class Transaction(BaseModel):
         """
         lines = string.split(separator)
         return cls.from_list(lines, day_first, line_number)
+
+    def to_dict(self, ignore: Optional[Iterable[str]] = None, **kwargs) -> Dict[str, Any]:
+        """Convert the class instance to a dict.
+
+        Handles circular references in category hierarchies by using the
+        category's custom dict method when present.
+        """
+        if ignore is None:
+            ignore = []
+
+        # Use model_dump but handle category specially
+        try:
+            result = self.model_dump(exclude=set(ignore), **kwargs)
+            
+            # If category exists and causes issues, handle it specially
+            if self.category and "category" not in ignore:
+                result["category"] = self.category.dict()
+                
+            # Handle split categories similarly - only include if non-empty
+            if (hasattr(self, '_split_categories') and 
+                self._split_categories and 
+                "_split_categories" not in ignore):
+                result["_split_categories"] = {
+                    name: cat.dict() for name, cat in self._split_categories.items()
+                }
+                
+            return result
+        except ValueError as e:
+            if "Circular reference" in str(e):
+                # Fallback: exclude problematic fields and handle them manually
+                result = self.model_dump(exclude=set(ignore) | {"category", "_split_categories"}, **kwargs)
+                
+                # Add category manually if needed
+                if self.category and "category" not in ignore:
+                    result["category"] = self.category.dict()
+                    
+                # Add split categories manually if needed - only include if non-empty
+                if (hasattr(self, '_split_categories') and 
+                    self._split_categories and 
+                    "_split_categories" not in ignore):
+                    result["_split_categories"] = {
+                        name: cat.dict() for name, cat in self._split_categories.items()
+                    }
+                    
+                return result
+            else:
+                raise
 
 
 TransactionLike = Union[Transaction, Investment, Split]
