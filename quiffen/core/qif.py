@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Union
@@ -169,7 +170,7 @@ class Qif(BaseModel):
         classes: dict[str, Class] = {}
         securities: dict[str, Security] = {}
 
-        sections = data.split("^")
+        sections = re.split(r'^\^\s*$',data, flags=re.MULTILINE)
         last_header = None
         line_number = 1
 

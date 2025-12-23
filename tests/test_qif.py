@@ -373,11 +373,12 @@ def test_parsed_securities(qif_file):
     """
     qif = Qif.parse(qif_file)
 
-    assert len(qif.securities) == 3
+    assert len(qif.securities) == 4
     assert sorted(qif.securities.keys()) == [
         "G002864",
         "M039728",
         "USD0000",
+        "^BTCUSD"
     ]
 
     assert qif.securities["G002864"].name == ""
@@ -394,6 +395,11 @@ def test_parsed_securities(qif_file):
     assert qif.securities["USD0000"].symbol == "USD0000"
     assert qif.securities["USD0000"].type == "Stock"
     assert qif.securities["USD0000"].goal == "Growth"
+
+    assert qif.securities["^BTCUSD"].name == "Bitcoin - USD"
+    assert qif.securities["^BTCUSD"].type == "Stock"
+    assert qif.securities["^BTCUSD"].symbol == "^BTCUSD"
+    assert qif.securities["^BTCUSD"].goal is None
 
 
 def test_parse_nosymbol(qif_file_with_no_symbol):
