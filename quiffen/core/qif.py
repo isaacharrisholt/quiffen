@@ -30,6 +30,8 @@ VALID_TRANSACTION_ACCOUNT_TYPES = [
     "!type:invoice",
 ]
 
+SECTION_SPLIT_RE = re.compile(r"^\^\s*$", re.MULTILINE)
+
 
 class QifDataType(str, Enum):
     """An Enum representing the different types of data that can be found in a
@@ -170,7 +172,7 @@ class Qif(BaseModel):
         classes: dict[str, Class] = {}
         securities: dict[str, Security] = {}
 
-        sections = re.split(r'^\^\s*$',data, flags=re.MULTILINE)
+        sections = SECTION_SPLIT_RE.split(data)
         last_header = None
         line_number = 1
 

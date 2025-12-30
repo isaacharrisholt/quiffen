@@ -374,12 +374,7 @@ def test_parsed_securities(qif_file):
     qif = Qif.parse(qif_file)
 
     assert len(qif.securities) == 4
-    assert sorted(qif.securities.keys()) == [
-        "G002864",
-        "M039728",
-        "USD0000",
-        "^BTCUSD"
-    ]
+    assert sorted(qif.securities.keys()) == ["G002864", "M039728", "USD0000", "^BTCUSD"]
 
     assert qif.securities["G002864"].name == ""
     assert qif.securities["G002864"].symbol == "G002864"
