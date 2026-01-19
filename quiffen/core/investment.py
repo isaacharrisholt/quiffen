@@ -6,6 +6,7 @@ from typing import Any, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
+from quiffen.core.category import Category, create_categories_from_hierarchy
 
 
 class Investment(BaseModel):
@@ -36,6 +37,8 @@ class Investment(BaseModel):
         investment.
     first_line : str, default=None
         The first line of the investment.
+    category : Category, default=None
+        The category object that represents the transaction.
     to_account : str, default=None
         The to account of the investment, if applicable.
     transfer_amount : Decimal, default=None
@@ -55,6 +58,7 @@ class Investment(BaseModel):
     amount: Optional[Decimal] = None
     memo: Optional[str] = None
     first_line: Optional[str] = None
+    category: Optional[Category] = None
     to_account: Optional[str] = None
     transfer_amount: Optional[Decimal] = None
     commission: Optional[Decimal] = None
@@ -66,11 +70,14 @@ class Investment(BaseModel):
         properties = ""
         for object_property, value in self.__dict__.items():
             if value:
-                properties += (
-                    f"\n\t"
-                    f'{object_property.replace("_", " ").strip().title()}: '
-                    f"{value}"
-                )
+                if object_property == "category":
+                    properties += f"\n\tCategory: {value.name}"
+                else:
+                    properties += (
+                        f"\n\t"
+                        f"{object_property.replace('_', ' ').strip().title()}: "
+                        f"{value}"
+                    )
 
         return "Investment:" + properties
 
@@ -98,8 +105,14 @@ class Investment(BaseModel):
             qif += f"M{self.memo}\n"
         if self.first_line:
             qif += f"P{self.first_line}\n"
+        if self.category:
+            parent_class = None
+            qif += f"L{self.category.hierarchy}"
+            if parent_class:
+                qif += f"/{parent_class.name}"
+            qif += "\n"
         if self.to_account:
-            qif += f"L{self.to_account}\n"
+            qif += f"L[{self.to_account}]\n"
         if self.transfer_amount:
             qif += f"${self.transfer_amount}\n"
         if self.commission:
@@ -173,7 +186,16 @@ class Investment(BaseModel):
             elif line_code == "P":
                 kwargs["first_line"] = field_info
             elif line_code == "L":
-                kwargs["to_account"] = field_info
+                if field_info.startswith("["):
+                    kwargs["to_account"] = field_info[1:-1]
+                else:
+                    category = create_categories_from_hierarchy(field_info)
+                    category_root = category.traverse_up()[-1]
+                    # If there's already a category, add the new category
+                    # as a child
+                    if "category" in kwargs:
+                        category_root.set_parent(kwargs["category"])
+                    kwargs["category"] = category
             elif line_code == "$":
                 kwargs["transfer_amount"] = field_info.replace(",", "")
             elif line_code == "O":

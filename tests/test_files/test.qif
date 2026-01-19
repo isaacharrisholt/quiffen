@@ -99,6 +99,13 @@ O10
 $100.00
 PTest investment
 ^
+D2/14'20
+NCash
+CR
+U0.05
+T0.05
+LInterest Income
+^
 !Type:Security
 N
 SUSD0000

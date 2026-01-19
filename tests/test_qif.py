@@ -301,7 +301,15 @@ def test_parsed_transactions(qif_file):
 
     # Validate the investment transactions
     investment_transactions = transactions[AccountType.INVST]
-    assert len(investment_transactions) == 1
+    assert len(investment_transactions) == 2
+
+    interest_transaction = (
+        investment_transactions[1]
+        if investment_transactions[1].action == "Cash"
+        else investment_transactions[0]
+    )
+    assert interest_transaction.category is not None
+    assert interest_transaction.category.name == "Interest Income"
 
 
 def test_parsed_categories(qif_file):
@@ -833,7 +841,7 @@ def test_to_csv_investments():
         reader = csv.DictReader(f)
 
         assert reader.fieldnames is not None
-        assert len(reader.fieldnames) == 13
+        assert len(reader.fieldnames) == 14
 
         results = list(reader)
         assert len(results) == 1
@@ -1046,7 +1054,7 @@ def test_to_dataframe_investments():
 
     df = qif.to_dataframe(data_type=QifDataType.INVESTMENTS)
 
-    assert df.shape == (1, 13)
+    assert df.shape == (1, 14)
     assert df["date"][0] == datetime(2019, 1, 1)
     assert df["amount"][0] == 100
     assert df["security"][0] == "Test Security"

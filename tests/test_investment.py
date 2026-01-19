@@ -129,6 +129,7 @@ def test_to_dict():
         "first_line": None,
         "line_number": None,
         "quantity": None,
+        "category": None,
         "to_account": None,
         "transfer_amount": None,
     }
@@ -155,6 +156,7 @@ def test_to_dict_with_ignore():
         "first_line": None,
         "line_number": None,
         "quantity": None,
+        "category": None,
         "to_account": None,
         "transfer_amount": None,
     }
