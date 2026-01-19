@@ -16,6 +16,7 @@ from quiffen.core.category import Category, add_categories_to_container
 from quiffen.core.class_type import Class
 from quiffen.core.investment import Investment
 from quiffen.core.security import Security
+from quiffen.core.tag import Tag
 from quiffen.core.transaction import Transaction
 
 if TYPE_CHECKING:
@@ -69,6 +70,7 @@ class Qif(BaseModel):
     categories: dict[str, Category] = {}
     classes: dict[str, Class] = {}
     securities: dict[str, Security] = {}
+    tags: dict[str, Tag] = {}
 
     __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
@@ -171,6 +173,7 @@ class Qif(BaseModel):
         categories: dict[str, Category] = {}
         classes: dict[str, Class] = {}
         securities: dict[str, Security] = {}
+        tags: dict[str, Tag] = {}
 
         sections = SECTION_SPLIT_RE.split(data)
         last_header = None
@@ -275,6 +278,16 @@ class Qif(BaseModel):
                         f"Line {line_number}: " f"No symbol found for security."
                     )
                 securities[new_security.symbol] = new_security
+            elif "!Type:Tag" in header_line:
+                # Tag
+                new_tag = Tag.from_list(
+                    sanitised_section_lines
+                )
+                if new_tag.name is None:
+                    raise ParserException(
+                        f"Line {line_number}: " f"No tag name found for tag."
+                    )
+                tags[new_tag.name] = new_tag
             elif "!Type" in header_line and not accounts:
                 # Accounts is empty and there's a transaction, so create default
                 # account to put transactions in
@@ -330,6 +343,7 @@ class Qif(BaseModel):
             categories=categories,
             classes=classes,
             securities=securities,
+            tags=tags
         )
 
     def add_account(self, new_account: Account) -> None:
