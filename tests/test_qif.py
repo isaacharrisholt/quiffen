@@ -778,12 +778,14 @@ def test_to_csv_classes():
         reader = csv.DictReader(f)
 
         assert reader.fieldnames is not None
-        assert len(reader.fieldnames) == 3
+        assert len(reader.fieldnames) == 5
 
         results = list(reader)
         assert len(results) == 1
         assert results[0]["name"] == "Test Class"
         assert results[0]["desc"] == "Test Description"
+        assert results[0]["is_tag"] == "False"
+        assert results[0]["class_type"] == ""
     csv_file.unlink()
 
 
@@ -997,9 +999,11 @@ def test_to_dataframe_classes():
 
     df = qif.to_dataframe(data_type=QifDataType.CLASSES)
 
-    assert df.shape == (1, 3)
+    assert df.shape == (1, 5)
     assert df["name"][0] == "Test Class"
     assert df["desc"][0] == "Test Description"
+    assert not df["is_tag"][0]
+    assert df["class_type"][0] is None
 
 
 def test_to_dataframe_securities():

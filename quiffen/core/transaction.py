@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Iterable, List, Optional, Union
 
 from pydantic import field_validator, model_validator
 
@@ -154,7 +154,7 @@ class Transaction(BaseModel):
                 else:
                     properties += (
                         f"\n\t"
-                        f'{object_property.replace("_", " ").strip().title()}: '
+                        f"{object_property.replace('_', ' ').strip().title()}: "
                         f"{value}"
                     )
 
@@ -247,15 +247,18 @@ class Transaction(BaseModel):
         return to_remove
 
     @staticmethod
-    def _create_class_from_category_string(
+    def _create_classes_from_category_string(
         category_string: str,
         classes: dict[str, Class],
-    ) -> tuple[Optional[str], str, dict[str, Class]]:
+    ) -> tuple[Optional[List[str]], str, dict[str, Class]]:
         if "/" in category_string:
-            field_info, class_name = category_string.split("/")
-            if class_name not in classes:
-                classes[class_name] = Class(name=class_name)
-            return class_name, field_info, classes
+            field_info, class_names_str = category_string.split("/")
+            class_names = class_names_str.split(":") if class_names_str else None
+            if class_names:
+                for clazz in class_names:
+                    if clazz not in classes:
+                        classes[clazz] = Class(name=clazz)
+            return class_names, field_info, classes
         return None, category_string, classes
 
     def to_qif(
@@ -366,7 +369,7 @@ class Transaction(BaseModel):
                 continue
 
             if line_code == "S":
-                _, field_info, classes = cls._create_class_from_category_string(
+                _, field_info, classes = cls._create_classes_from_category_string(
                     field_info,
                     classes,
                 )
@@ -424,10 +427,10 @@ class Transaction(BaseModel):
                     current_split.payee_address = field_info
             elif line_code == "L":
                 (
-                    class_name,
+                    class_names,
                     field_info,
                     classes,
-                ) = cls._create_class_from_category_string(
+                ) = cls._create_classes_from_category_string(
                     field_info,
                     classes,
                 )
@@ -452,8 +455,9 @@ class Transaction(BaseModel):
                         category_root.set_parent(current_split.category)
                         current_split.category = category
 
-                    if class_name:
-                        classes[class_name].add_category(category)
+                    if class_names:
+                        for clazz in class_names:
+                            classes[clazz].add_category(category)
             elif line_code == "N":
                 try:
                     check_number: Union[int, str] = int(field_info)

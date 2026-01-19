@@ -208,7 +208,7 @@ class Qif(BaseModel):
             if header_line[0] != "!":
                 if not last_header:
                     raise ParserException(
-                        f"Line {line_number}: " f"No header found before transactions."
+                        f"Line {line_number}: No header found before transactions."
                     )
                 header_line = last_header
 
@@ -232,8 +232,10 @@ class Qif(BaseModel):
                     new_category,
                     categories,
                 )
-            elif "!Type:Class" in header_line:
-                new_class = Class.from_list(sanitised_section_lines)
+            elif "!Type:Class" in header_line or "!Type:Tag" in header_line:
+                new_class = Class.from_list(
+                    sanitised_section_lines, is_tag=("!Type:Tag" in header_line)
+                )
                 if new_class.name in classes:
                     classes[new_class.name].merge(new_class)
                 else:
@@ -272,7 +274,7 @@ class Qif(BaseModel):
                 )
                 if new_security.symbol is None:
                     raise ParserException(
-                        f"Line {line_number}: " f"No symbol found for security."
+                        f"Line {line_number}: No symbol found for security."
                     )
                 securities[new_security.symbol] = new_security
             elif "!Type" in header_line and not accounts:
@@ -410,7 +412,7 @@ class Qif(BaseModel):
             return self.securities.pop(security_symbol)
         except KeyError as e:
             raise KeyError(
-                f'Security "{security_symbol}" does not exist in this Qif ' f"object."
+                f'Security "{security_symbol}" does not exist in this Qif object.'
             ) from e
 
     def to_qif(
@@ -491,8 +493,7 @@ class Qif(BaseModel):
             ]
         else:
             raise ValueError(
-                f"Invalid data_type: {data_type}. Must be one of "
-                f"{list(QifDataType)}"
+                f"Invalid data_type: {data_type}. Must be one of {list(QifDataType)}"
             )
 
         # Format and hide private fields

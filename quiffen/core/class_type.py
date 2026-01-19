@@ -2,11 +2,19 @@
 # reserved word in Python.
 from __future__ import annotations
 
+from enum import Enum
 from typing import Any, Optional
 
 from quiffen import utils
 from quiffen.core.base import BaseModel, Field
 from quiffen.core.category import Category
+
+
+class ClassType(str, Enum):
+    """Enum representing the different types of Tags in a QIF file."""
+
+    EXPENSE = "expense"
+    INCOME = "income"
 
 
 class Class(BaseModel):
@@ -25,6 +33,13 @@ class Class(BaseModel):
     desc: Optional[str] = None
     categories: list[Category] = []
 
+    # If the Class is actually a Tag, then it can have a type
+    # which is either I/E
+    class_type: Optional[ClassType] = None
+
+    # is_tag is true when this is a tag rather than a class
+    is_tag: bool = False
+
     __CUSTOM_FIELDS: list[Field] = []  # type: ignore
 
     def __eq__(self, other) -> bool:
@@ -33,9 +48,11 @@ class Class(BaseModel):
         return self.name == other.name
 
     def __str__(self) -> str:
-        res = f"Class:\n\tName: {self.name}"
+        res = f"{'Tag' if self._istag() else 'Class'}:\n\tName: {self.name}"
         if self.desc:
             res += f"\n\tDescription: {self.desc}"
+        if self.class_type:
+            res += f"\n\tType: {self.class_type}"
         res += f"\n\tCategories: {len(self.categories)}"
         return res
 
@@ -57,10 +74,16 @@ class Class(BaseModel):
 
     def to_qif(self) -> str:
         """Return a QIF-formatted string of this class."""
-        qif = "!Type:Class\n"
+        qif = "!Type:Tag\n" if self._istag() else "!Type:Class\n"
         qif += f"N{self.name}\n"
         if self.desc:
             qif += f"D{self.desc}\n"
+
+        if self.class_type:
+            if self.class_type == ClassType.INCOME:
+                qif += "I\n"
+            elif self.class_type == ClassType.EXPENSE:
+                qif += "E\n"
 
         qif += utils.convert_custom_fields_to_qif_string(
             self._get_custom_fields(),
@@ -70,7 +93,7 @@ class Class(BaseModel):
         return qif
 
     @classmethod
-    def from_list(cls, lst: list[str]) -> Class:
+    def from_list(cls, lst: list[str], is_tag: bool = False) -> Class:
         """Return a class instance from a list of QIF strings.
 
         Parameters
@@ -93,11 +116,23 @@ class Class(BaseModel):
             if found:
                 continue
 
+            if is_tag:
+                kwargs["is_tag"] = True
+
             if line_code == "N":
                 kwargs["name"] = field_info
             elif line_code == "D":
                 kwargs["desc"] = field_info
+            elif line_code == "E":
+                kwargs["tag_type"] = ClassType.EXPENSE
+                kwargs["is_tag"] = True
+            elif line_code == "I":
+                kwargs["tag_type"] = ClassType.INCOME
+                kwargs["is_tag"] = True
             else:
                 raise ValueError(f"Unknown line code: {line_code}")
 
         return cls(**kwargs)
+
+    def _istag(self) -> bool:
+        return self.is_tag or self.class_type

@@ -46,20 +46,30 @@ def test_str_method():
 def test_to_dict():
     """Test the to_dict method"""
     cls = Class(name="Test")
-    assert cls.to_dict() == {"name": "Test", "desc": None, "categories": []}
+    assert cls.to_dict() == {
+        "name": "Test",
+        "desc": None,
+        "categories": [],
+        "is_tag": False,
+        "class_type": None,
+    }
 
     cls2 = Class(name="Test2", desc="Test Description")
     assert cls2.to_dict() == {
         "name": "Test2",
         "desc": "Test Description",
         "categories": [],
+        "is_tag": False,
+        "class_type": None,
     }
 
 
 def test_to_dict_with_ignore():
     """Test the to_dict method with ignore"""
     cls = Class(name="Test", desc="Test Description")
-    assert cls.to_dict(ignore={"desc", "categories"}) == {"name": "Test"}
+    assert cls.to_dict(ignore={"desc", "categories", "is_tag", "class_type"}) == {
+        "name": "Test"
+    }
 
 
 def test_add_category():
