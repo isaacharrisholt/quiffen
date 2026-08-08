@@ -110,12 +110,13 @@ class Split(BaseModel):
 
         qif += "\n"
 
-        if self.date:
-            qif += f"D{self.date.strftime(date_format)}\n"
-        if self.amount:
-            qif += f"${self.amount}\n"
+        # in a split, category, memo, and amount must be adjacent
         if self.memo:
             qif += f"E{self.memo}\n"
+        if self.amount is not None:
+            qif += f"${self.amount}\n"
+        if self.date:
+            qif += f"D{self.date.strftime(date_format)}\n"
         if self.cleared:
             qif += f"C{self.cleared}\n"
         if self.to_account:
