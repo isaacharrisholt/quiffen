@@ -320,6 +320,14 @@ class Qif(BaseModel):
                     else:
                         categories[root.name] = root
 
+                for split in new_transaction.splits:
+                    if split.category:
+                        root = split.category.traverse_up()[-1]
+                        if root.name in categories:
+                            categories[root.name].merge(root)
+                        else:
+                            categories[root.name] = root
+
                 for class_name, new_class in new_classes.items():
                     if class_name in classes:
                         classes[class_name].merge(new_class)
