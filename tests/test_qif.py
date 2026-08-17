@@ -309,8 +309,16 @@ def test_parsed_categories(qif_file):
     qif = Qif.parse(qif_file)
 
     # Validate categories
-    assert len(qif.categories) == 4
-    expected_categories = ["Bills", "Food", "Investments", "Miscellaneous"]
+    assert len(qif.categories) == 7
+    expected_categories = [
+        "Bills",
+        "Food",
+        "Healthcare",
+        "Investments",
+        "Miscellaneous",
+        "Personal Care",
+        "Transportation",
+    ]
     assert sorted(qif.categories.keys()) == expected_categories
 
     # Validate bills category
@@ -337,6 +345,17 @@ def test_parsed_categories(qif_file):
     # Validate miscellaneous category
     miscellaneous = qif.categories["Miscellaneous"]
     assert len(miscellaneous.children) == 0
+
+    # Validate categories that only occur in transaction splits
+    for parent_name, child_name in (
+        ("Healthcare", "Prescriptions"),
+        ("Personal Care", "Haircare"),
+        ("Transportation", "Automobile"),
+    ):
+        category = qif.categories[parent_name]
+        assert len(category.children) == 1
+        assert category.children[0].name == child_name
+        assert category.children[0].parent == category
 
 
 def test_parsed_classes(qif_file):
