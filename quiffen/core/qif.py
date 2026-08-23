@@ -239,7 +239,10 @@ class Qif(BaseModel):
                 else:
                     classes[new_class.name] = new_class
             elif "!Account" in header_line:
-                new_account = Account.from_list(sanitised_section_lines)
+                new_account = Account.from_list(
+                    sanitised_section_lines,
+                    day_first=day_first,
+                )
                 if new_account.name in accounts:
                     accounts[new_account.name].merge(new_account)
                 else:
@@ -316,6 +319,14 @@ class Qif(BaseModel):
                         categories[root.name].merge(root)
                     else:
                         categories[root.name] = root
+
+                for split in new_transaction.splits:
+                    if split.category:
+                        root = split.category.traverse_up()[-1]
+                        if root.name in categories:
+                            categories[root.name].merge(root)
+                        else:
+                            categories[root.name] = root
 
                 for class_name, new_class in new_classes.items():
                     if class_name in classes:
